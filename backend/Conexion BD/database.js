@@ -35,3 +35,58 @@ export async function getPerfilLoginByID(id) {
     const [row]= await pool.query('SELECT * FROM perfil_Login WHERE id= ?',[id] )
     return row[0];
 }
+// Funciones para crear usuario
+// export async function createUsuario(nombre,email,telefono) {
+//     const [result]= await pool.query(
+//         `INSERT INTO usuario(nombre,email,telefono) 
+//          VALUES (?,?,?)`
+//         ,[nombre,email,telefono]);
+//     const usuarioID = result.insertId;
+//     return usuarioID;
+// }
+
+export async function createUsuario(nombre, email, telefono) {
+    try {
+        // Inserta un nuevo usuario y obtiene el resultado
+        const [result] = await pool.query(
+            `INSERT INTO usuario (nombre, email, telefono) VALUES (?, ?, ?)`,
+            [nombre, email, telefono]
+        );
+        // Obtiene el ID del nuevo usuario insertado
+        const usuarioID = result.insertId;
+        // Devuelve un objeto con el ID del nuevo usuario
+        return { id: usuarioID };
+    } catch (error) {
+        console.error('Error en la inserción del usuario:', error);
+        throw error;
+    }
+}
+
+// export async function createPerfilLogin(nombre,email,telefono,usuario,contrasenha) {
+//     const id_usuario = createUsuario(nombre,email,telefono);
+//     const [result]= await pool.query(`INSERT INTO perfil_Login(usuario,contrasenha,id_usuario) 
+//         VALUES (?,?,?) `,[usuario,contrasenha,id_usuario]);
+//     console.log(result) ;
+// }
+
+export async function createPerfilLogin(nombre, email, telefono, usuario, contrasenha) {
+    try {
+        // Espera a que createUsuario se complete y obtén el ID del nuevo usuario
+        const nuevoUsuario = await createUsuario(nombre, email, telefono);
+        const id_usuario = nuevoUsuario.id; // Usa el ID del nuevo usuario
+
+        // Inserta en perfil_Login usando el ID del nuevo usuario
+        const [result] = await pool.query(
+            `INSERT INTO perfil_Login (usuario, contrasenha, id_usuario) 
+             VALUES (?, ?, ?)`,
+            [usuario, contrasenha, id_usuario]
+        );
+
+        // Muestra el resultado de la inserción
+        console.log(result);
+    } catch (error) {
+        console.error('Error en la inserción:', error);
+    }
+}
+
+createPerfilLogin("UwU", "adiosssDFSFDS@", "9sadsaw2", "MANOLOgrfvoo", "MANsdfOLooO2024");
