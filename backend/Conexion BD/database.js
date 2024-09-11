@@ -89,4 +89,28 @@ export async function createPerfilLogin(nombre, email, telefono, usuario, contra
     }
 }
 
-createPerfilLogin("UwU", "adiosssDFSFDS@", "9sadsaw2", "MANOLOgrfvoo", "MANsdfOLooO2024");
+
+
+export async function toggleCompleted(id, value) {
+    const newValue = value === true ? "TRUE" : "FALSE";
+    const [result] = await pool.query(
+      `
+      UPDATE todos
+      SET completed = ${newValue} 
+      WHERE id = ?;
+      `,
+      [id]
+    );
+    return result;
+  }
+  
+  export async function shareTodo(todo_id, user_id, shared_with_id) {
+    const [result] = await pool.query(
+      `
+      INSERT INTO shared_todos (todo_id, user_id, shared_with_id) 
+      VALUES (?, ?, ?);
+      `,
+      [todo_id, user_id, shared_with_id]
+    );
+    return result.insertId;
+  }
