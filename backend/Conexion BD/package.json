@@ -2,20 +2,20 @@
   "name": "ing-de-software-2",
   "version": "1.0.0",
   "main": "index.js",
-  "type": "module", //podemas usar imports como react
+  "type": "module", 
   "scripts": {
-    "start": "nodemon app.js"  // con esto crearemos el comando para ejecutar el server//
+    "start": "npx nodemon app.js"  
   },
   "keywords": [],
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "cors": "^2.8.5",  //nos ayuda a hacer request desde nuestro host
-    "dotenv": "^16.4.5",  //  nos ayuda a crear variables de entorno , para el usar o password
-    "express": "^4.19.2", // 
-    "mysql2": "^3.11.0" // mysql
+    "cors": "^2.8.5",  
+    "dotenv": "^16.4.5",  
+    "express": "^4.19.2",  
+    "mysql2": "^3.11.0" 
   },
   "devDependencies": {
-    "nodemon": "^3.1.4"   //con nodemon los cambios hechos al guardarlo se cambian automaticamente 
+    "nodemon": "^3.1.4"   
   }
 }
