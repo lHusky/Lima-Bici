@@ -1,4 +1,4 @@
-import { createUsuario } from './database.js'; 
+const pool = require("../Conexion BD/database.js")
 
 
 //Utilidad:
@@ -19,8 +19,25 @@ class Usuario{
         this.fotoPerfil = fotoPerfil;
     }
 
-    //Metodos(?
+    //Metodos Usuario
+
+    static async crearUsuario(nombre, email, telefono) {
+      try {
+          const [result] = await pool.query(
+              'INSERT INTO usuario (nombre, email, telefono) VALUES (?, ?, ?)',
+              [nombre, email, telefono]
+          );
+          const usuarioID = result.insertId;
+          return { id: usuarioID };
+      } catch (error) {
+          console.error('Error en la creación del usuario:', error.message);
+          throw error;
+      }
+  }
+
 }
+
+module.exports = Usuario;
 
 //Clase Perfil_Login (Pantalla inicial de la app)
 
@@ -36,19 +53,19 @@ class Perfil_Login{
 
     //Metodos Perfil_Login
 
-    async crearUsuario(nombre, email, telefono) {
-        try {
-          // Llama a la función createUsuario para insertar en la base de datos
-          const nuevoUsuario = await createUsuario(nombre, email, telefono);
-    
-          // Actualiza el ID de usuario con el ID del usuario recién creado
-          this.id_usuario = nuevoUsuario.id;
-    
-          console.log(`Usuario creado exitosamente con ID: ${this.id_usuario}`);
-        } catch (error) {
-          console.error('Error en la creación del usuario:', error.message);
-        }
+    static async crearPerfil(id_usuario, contrasena, email) {
+      try {
+          const [result] = await pool.query(
+              'INSERT INTO perfil_login (usuario, contrasena, id_usuario) VALUES (?, ?, ?)',
+              [email, contrasena, id_usuario]
+          );
+          const perfilID = result.insertId;
+          return { id: perfilID };
+      } catch (error) {
+          console.error('Error en la creación del perfil:', error.message);
+          throw error;
       }
+  }
 
     olvideContrasena() {
         console.log("Recuperar contraseña...");
@@ -59,9 +76,32 @@ class Perfil_Login{
         console.log("Contraseña actualizada.");
       }
     
-    iniciarSesion() {
-        console.log(`Iniciando sesión para el usuario: ${this.usuario}`);
-      }
+      static async iniciarSesion(email) {
+        try {
+            // Consultar database
+            const [rows] = await pool.query(
+                `SELECT p.id, u.id as id_usuario, p.usuario 
+                 FROM perfil_Login p 
+                 JOIN usuario u ON p.id_usuario = u.id 
+                 WHERE u.email = ?`,
+                [email]
+            );
+
+            if (rows.length === 0) {
+                console.log("Usuario no encontrado.");
+                return false; 
+            }
+
+            const perfil = rows[0];
+
+            console.log(`Perfil encontrado: ID del perfil = ${perfil.id}, ID del usuario = ${perfil.id_usuario}`);
+            // falta verificar contraseña (puede ser con bcrypt)
+            return true; 
+        } catch (error) {
+            console.error('Error en el inicio de sesión:', error.message);
+            throw error;
+        }
+    }
     
     cerrarSesion() {
         console.log(`Cerrando sesión para el usuario: ${this.usuario}`);
@@ -71,3 +111,5 @@ class Perfil_Login{
         console.log("Actualizando datos del usuario...");
       }
 }
+
+module.exports = Perfil_Login;
