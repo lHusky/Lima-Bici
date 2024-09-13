@@ -1,24 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, Alert, StyleSheet } from 'react-native';
-//import usuarioApi from '../../api/usuario'; // Asegúrate de que las rutas sean correctas
-//import clienteApi from '../../api/cliente';
+import { KeyboardAvoidingView, ScrollView, TouchableOpacity, TextInput, View, Text, StyleSheet, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+// Asegúrate de que la importación de usuarioApi esté correctamente configurada
+// import usuarioApi from '../../api/usuario';
 
 const Signin = () => {
     const [nombre, setNombre] = useState('');
-    const [apellido, setApellido] = useState('');
+    const [telefono, setTelefono] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confPassword, setConfPassword] = useState('');
     const [userAccounts, setUserAccounts] = useState([]);
     const [error, setError] = useState('');
+    const [passwordError, setPasswordError] = useState(''); // Agregar estado para errores de contraseña
     const navigation = useNavigation();
 
     useEffect(() => {
         handleOnLoad();
     }, []);
 
-    // Función para cargar los usuarios desde la API
     const handleOnLoad = async () => {
         try {
             const usuariosData = await usuarioApi.findAll();
@@ -28,43 +28,37 @@ const Signin = () => {
         }
     };
 
-    // Función para manejar el envío del formulario
     const handleSubmit = async () => {
-        // Validación de contraseñas
         if (password !== confPassword) {
-            setError('Las contraseñas no coinciden');
+            setError('*Las contraseñas no coinciden');
             return;
         }
 
-        // Validación de usuario existente
+        if (password.length < 6) {
+            setPasswordError('*La contraseña debe tener al menos 6 caracteres');
+            return;
+        } else {
+            setPasswordError('');
+        }
+
         const existingUser = userAccounts.find(user => user.email === email);
         if (existingUser) {
             setError('El correo electrónico ya está registrado');
             return;
         }
 
-        // Datos del usuario a crear
         const payloadUsuario = {
             rol: 'cliente',
             email,
             password,
             estado: 'Activo',
+            nombre,
+            telefono,
         };
 
         try {
-            // Crear usuario
-            const response = await usuarioApi.create(payloadUsuario);
-            // Datos del cliente a crear
-            const payloadCliente = {
-                idUsuario: response.id,
-                nombre,
-                apellido,
-                fechaRegistro: new Date(),
-            };
-            // Crear cliente
-            await clienteApi.create(payloadCliente);
-            // Navegar a la pantalla de inicio de sesión
-            navigation.navigate('Login'); // Cambia 'Login' al nombre de tu pantalla de inicio de sesión
+            await usuarioApi.create(payloadUsuario);
+            navigation.navigate('Login'); // Asegúrate de que 'Login' sea el nombre correcto de tu pantalla de inicio de sesión
         } catch (error) {
             console.error('Error al registrar el usuario:', error);
             Alert.alert('Error', 'Hubo un problema al registrar el usuario.');
@@ -74,20 +68,24 @@ const Signin = () => {
     return (
         <View style={styles.container1}>
             <View style={styles.headerContainer}>
-                <Text style={styles.header}>Crear cuenta</Text>
+                <Text style={styles.header}>Hola! Regístrate para comenzar</Text>
             </View>
             <View style={styles.container2}>
                 <TextInput
                     style={styles.input}
-                    placeholder="Nombre"
+                    placeholder="Nombre y apellido"
                     value={nombre}
                     onChangeText={setNombre}
                 />
                 <TextInput
                     style={styles.input}
-                    placeholder="Apellido"
-                    value={apellido}
-                    onChangeText={setApellido}
+                    placeholder="Teléfono"
+                    value={telefono}
+                    onChangeText={(text) => {
+                        const numericText = text.replace(/[^0-9]/g, '');
+                        setTelefono(numericText);
+                    }}
+                    keyboardType="numeric"
                 />
                 <TextInput
                     style={styles.input}
@@ -99,69 +97,74 @@ const Signin = () => {
                 />
                 <TextInput
                     style={styles.input}
-                    placeholder="Password"
+                    placeholder="Contraseña"
                     secureTextEntry
                     value={password}
                     onChangeText={setPassword}
                 />
                 <TextInput
                     style={styles.input}
-                    placeholder="Confirmar Password"
+                    placeholder="Confirmar Contraseña"
                     secureTextEntry
                     value={confPassword}
                     onChangeText={setConfPassword}
                 />
                 {error ? <Text style={styles.errorMessage}>{error}</Text> : null}
-                <Button title="Crear cuenta" onPress={handleSubmit} color="white" />
+                {passwordError ? <Text style={styles.errorMessage}>{passwordError}</Text> : null}
+                <TouchableOpacity style={styles.boton} onPress={handleSubmit}>
+                    <Text style={styles.botonText}>Crear cuenta</Text>
+                </TouchableOpacity>
             </View>
         </View>
     );
 };
 
-// Estilos para el componente
 const styles = StyleSheet.create({
     container1: {
         flex: 1,
-        padding: 0,
         justifyContent: 'center',
-        backgroundColor: "#e4e4e4",
-
+        backgroundColor: "#BFEAAA",
     },
     headerContainer: {
-        backgroundColor: "#064ec6",
-        marginTop: 0,
+        backgroundColor: "#BFEAAA",
         paddingVertical: 80,
         paddingHorizontal: 16,
         marginBottom: 16,
         borderRadius: 20,
     },
     header: {
-        fontSize: 45,
-        color: 'white',
-        textAlign: 'left',
+        fontSize: 40,
+        color: 'black',
+        fontWeight: 'bold',
     },
     container2: {
         flex: 1,
         padding: 48,
-        marginTop: 0,
         justifyContent: 'center',
+        backgroundColor: 'white',
+        borderRadius: 40,
     },
     input: {
-        height: 45,
-        borderColor: 'white',
-        backgroundColor: "white",
+        height: 50,
+        borderColor: 'gray',
         borderWidth: 1,
-        marginBottom: 20,
-        paddingHorizontal: 15,
-        borderRadius: 200,
+        borderRadius: 20,
+        backgroundColor: '#f0f0f0',
+        paddingHorizontal: 10,
+        marginBottom: 5,
     },
     boton: {
-        height: 40,
-        borderWidth: 1,
-        marginBottom: 12,
-        paddingHorizontal: 8,
-        backgroundColor: "blue",
         borderRadius: 20,
+        width: '100%',
+        height: 50,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#228B22'
+    },
+    botonText: {
+        color: 'white',
+        fontSize: 18,
+        fontWeight: 'bold',
     },
     errorMessage: {
         color: 'red',
