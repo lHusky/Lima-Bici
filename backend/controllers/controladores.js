@@ -1,8 +1,8 @@
 // CrearPerfil con ID_Usuario
-
+// import Usuario from '../modules/clases/Usuario.js'; 
+// import Perfil_Login from '../modules/clases/Perfil_Login.js';
 const Usuario = require('../modules/clases/Usuario');
 const Perfil_Login = require('../modules/clases/Perfil_Login');
-
 // Uniendo 
 const crearUsuarioYPerfil = async (req, res) => {
     const { nombre, email, telefono, contrasena } = req.body;
@@ -14,7 +14,7 @@ const crearUsuarioYPerfil = async (req, res) => {
         // Crear perfil asociado al id_usuario
         await Perfil_Login.crearPerfil(usuarioID, contrasena, email);
 
-        // Éxito
+        // Éxito - aprobacion de creacion de objeto
         res.status(201).json({
             message: 'Usuario y perfil creados exitosamente',
             usuarioID
@@ -28,22 +28,7 @@ const crearUsuarioYPerfil = async (req, res) => {
     }
 };
   
-  module.exports = {
+module.exports = {
     crearUsuarioYPerfil
-  };
-
-
-// CLASE PERFIL_LOGIN - Crear Usuario
-//const express = require("../modules/clases");
-
-
-//const crearUsuario = (req,res) => {
-    //const {nombre, email, contrasena,telefono} = req.body;
-    //const nuevoUsuario = Usurio.crearUsuario({nombre, email, contrasena,telefono})
-    
-    //res.status(201).json(nuevoUsuario);
-//}
-
-//module.exports= {crearUsuario};
-
+};
 
