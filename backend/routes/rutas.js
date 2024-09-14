@@ -1,8 +1,14 @@
-const express = require('express');
-const { crearUsuario } = require('../controllers/controladores');
-const router = express.Router();
+// const express = require('express');
 
-// CREAR USUARIO - POST
+// import { Router } from 'express';
+// import { crearUsuarioYPerfil } from '../controllers/controladores.js';
 
-router.post('/usuarios', crearUsuario);
-module.exports = router;
+const { Router } = require('express');
+const { crearUsuarioYPerfil } = require('../controllers/controladores.js');
+
+
+const userRouter = express.Router();
+
+userRouter.post('/usuarios', crearUsuarioYPerfil);
+
+module.exports = userRouter;
