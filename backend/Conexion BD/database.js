@@ -10,16 +10,16 @@ dotenv.config();
 
 
 const pool = mysql
-  .createPool({
-    host: process.env.MYSQL_HOST,
-    user: process.env.MYSQL_USER,
-    password: process.env.MYSQL_PASSWORD,
-    database: process.env.MYSQL_DATABASE,
-  })
-  .promise();
+    .createPool({
+        host: process.env.MYSQL_HOST,
+        user: process.env.MYSQL_USER,
+        password: process.env.MYSQL_PASSWORD,
+        database: process.env.MYSQL_DATABASE,
+    })
+    .promise();
 
 export async function getUsuarioByID(id) {
-    const [rows] = await pool.query('SELECT * FROM usuario WHERE id = ?',[id]);  // Aquí es donde corregimos el paso de parámetros
+    const [rows] = await pool.query('SELECT * FROM usuario WHERE id = ?', [id]);
     return rows[0];
 }
 
@@ -54,14 +54,11 @@ export async function getPerfilLoginByID(id) {
 
 export async function createUsuario(nombre, email, telefono) {
     try {
-        // Inserta un nuevo usuario y obtiene el resultado
         const [result] = await pool.query(
             `INSERT INTO usuario (nombre, email, telefono) VALUES (?, ?, ?)`,
             [nombre, email, telefono]
         );
-        // Obtiene el ID del nuevo usuario insertado
         const usuarioID = result.insertId;
-        // Devuelve un objeto con el ID del nuevo usuario
         return { id: usuarioID };
     } catch (error) {
         console.error('Error en la inserción del usuario:', error);

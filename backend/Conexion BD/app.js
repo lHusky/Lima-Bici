@@ -1,36 +1,20 @@
-//Utilidad:
-    // Se crearán todas las rutas / controladores que sirven para las consultas el frontend con el backend
-//Averiguar:
-    // Definicion y estructura de las rutas / controladores   X 
-                // Ruta: app.get("/usuario/:id", ...)
-                // Controlador: async(req, res) => {...}
+import express from 'express';
+import userRouter from './routes/rutas.js'; // Asegúrate de que esta ruta es correcta
+import { getUsuarioByID } from './database.js'; // Ajusta la ruta según sea necesario
 
-
-
-import express, { json } from "express";
-import{
-    getObjetivoByID,
-    getPerfilLoginByID,
-    getPuntoInteresByID,
-    getRutaByID,
-    getUsuarioByID
-}from "./database.js";  //clases.js
-
-const app= express();
+const app = express();
 app.use(express.json());
 
-// ruta + controlador
-
-//CLASE:
-app.get("/usuario/:id", async(req,res)=>{
+// Ruta existente para obtener un usuario por ID
+app.get("/usuario/:id", async (req, res) => {
     const usuario = await getUsuarioByID(req.params.id);
     res.status(200).send(usuario);
 });
 
-app.listen(3000,()=>{
-    console.log("Server running on port 3000")
-});
+// Usar las rutas del router importado, incluyendo la ruta de prueba "/test"
+app.use("/api", userRouter);
+// Aca ya importamos todas las rutas de Rutas.js, si en el navegador ponemos http://localhost:3000/api/test, nos movera a la ruta
 
-app.get('/test', (req, res) => {
-    res.status(200).send('Ruta de prueba funcionando correctamente');
+app.listen(3000, () => {
+    console.log("Server running on port 3000");
 });
