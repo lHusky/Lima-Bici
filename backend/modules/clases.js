@@ -1,13 +1,5 @@
-const pool = require("../Conexion BD/database.js")
-
-
-//Utilidad:
-    // Se crearán todas las clases aquí 
-//Averiguar:
-    // es dificil crear clases de node js?
-    // como definir las relaciones entre clases en node js?
-
-//Clase usuario
+// import pool from '../Conexion BD/database.js'; 
+const pool = require('../Conexion BD/database.js');
 
 class Usuario{
     constructor(id, nombre, email, telefono, fechaCumple, fotoPerfil){
