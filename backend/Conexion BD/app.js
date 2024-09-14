@@ -30,4 +30,7 @@ app.get("/usuario/:id", async(req,res)=>{
 app.listen(3000,()=>{
     console.log("Server running on port 3000")
 });
- 
+
+app.get('/test', (req, res) => {
+    res.status(200).send('Ruta de prueba funcionando correctamente');
+});
