@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { KeyboardAvoidingView, ScrollView, TouchableOpacity, TextInput, View, Text, StyleSheet, ImageBackground } from 'react-native';
+import usuarioApi from '../../api/usuario';
 
 const styles = StyleSheet.create({
   fondo: {
@@ -93,35 +94,32 @@ const Iniciosesion = ({ navigation }) => {
   const [isSelected, setSelection] = useState(false);
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
-
+  const [userAccounts, setUserAccounts] = useState([]);
   
-  const validateEmail = (email) => {
-    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return re.test(String(email).toLowerCase());
-  };
-
-  const handleLogin = () => {
-    let valid = true;
-
-
-    if (!validateEmail(email)) {
-      setEmailError('*Email no válido');
-      valid = false;
-    } else {
+  const handleLogin = async () => {
+    try {
       setEmailError('');
-    }
-
-    
-    if (password.length < 6) {
-      setPasswordError('*La contraseña debe tener al menos 6 caracteres');
-      valid = false;
-    } else {
       setPasswordError('');
-    }
 
-    if (valid) {
-      console.log("Iniciar sesión exitoso");
-      
+      const usuariosData = await usuarioApi.findAll();
+      setUserAccounts(usuariosData);
+
+      const user = userAccounts.find(user => user.email === email);
+      if (!user) {
+        setEmailError('*El correo no está registrado');
+        return;
+      }
+
+      if (user.password !== password) {
+        setPasswordError('*La contraseña es incorrecta');
+        return;
+      }
+
+      // se ingresa a home de la aplicacion
+      console.log('Inicio de sesión exitoso');
+
+    } catch (error) {
+      console.error('Error al cargar usuarios:', error);
     }
   };
 
