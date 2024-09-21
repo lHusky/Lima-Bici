@@ -48,18 +48,18 @@ const Signin = () => {
         }
 
         const payloadUsuario = {
-            rol: 'cliente',
+            // rol: 'cliente',
+            nombre,
             email,
             password,
-            estado: 'Activo',
-            nombre,
+            // estado: 'Activo',
             telefono,
         }; 
 
         try {
             await gestionUsuarioApi.create(payloadUsuario)
             
-            navigation.navigate('Login'); // Asegúrate de que 'Login' sea el nombre correcto de tu pantalla de inicio de sesión
+            //navigation.navigate('Login'); // Asegúrate de que 'Login' sea el nombre correcto de tu pantalla de inicio de sesión
         } catch (error) {
             console.error('Error al registrar el usuario:', error);
             Alert.alert('Error', 'Hubo un problema al registrar el usuario.');

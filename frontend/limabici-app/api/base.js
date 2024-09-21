@@ -1,4 +1,4 @@
-const URI = 'https://localhost:3000/';
+const URI = 'http://192.168.18.10:3000/';
 
 const get = async (endpoint) => {
   return await fetch(URI + endpoint)

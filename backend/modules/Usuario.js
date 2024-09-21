@@ -1,5 +1,5 @@
 // Usuario.js
-// import { getUsuarioByID, createUsuario } from '../database.js';
+import { pool } from '../database.js';
 
 class Usuario {
     constructor(id, nombre, email, telefono, fechaCumple, fotoPerfil, contrasena, peso, estadoSesion, estadoRecorrido) {

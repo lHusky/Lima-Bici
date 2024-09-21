@@ -9,7 +9,7 @@ dotenv.config();
 // view -- 
 
 
-const pool = mysql
+export const pool = mysql
     .createPool({
         host: process.env.MYSQL_HOST,
         user: process.env.MYSQL_USER,

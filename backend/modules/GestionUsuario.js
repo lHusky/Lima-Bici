@@ -10,9 +10,10 @@ class GestionUsuario {
     registrarUsuario(nombre, email, contrasena, telefono) {
         
         const nuevoUsuario = new Usuario(nombre, email, contrasena, telefono);
+        const { id: usuarioID } =  Usuario.crearUsuario(nombre, email, telefono, contrasena)
         this.listaUsuarios.push(nuevoUsuario);
         console.log(`Usuario registrado: ${nombre}`);
-        return { id: nuevoUsuarioID };
+        return { id: usuarioID };
     }
 
     // Método para iniciar sesión
