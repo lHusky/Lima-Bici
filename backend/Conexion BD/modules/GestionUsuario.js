@@ -1,16 +1,29 @@
 import { getUsuarioByID, createUsuario } from '../database.js';
-import Usuario from 'usuario.js';
+import Usuario from './Usuario.js';
 
 class GestionUsuario {
     constructor() {
         this.listaUsuarios = [];
         this.usuarioLogueado = null; // Almacena el usuario que ha iniciado sesión
     }
-    // Método para registrar un usuario (crea y agrega a la lista)
-    registrarUsuario(nombre, email, contrasena, telefono) {
-        const nuevoUsuario = new Usuario(nombre, email, contrasena, telefono);
-        this.listaUsuarios.push(nuevoUsuario);
-        console.log(`Usuario registrado: ${nombre}`);
+
+    async registrarUsuario(nombre, email, contrasena, telefono) {
+        try {
+            const nuevoUsuario = new Usuario(nombre, email, contrasena, telefono);
+            
+            // Guardar en la base de datos y obtener el ID del nuevo usuario
+            const { id } = await Usuario.crearUsuario(nombre, email, telefono, contrasena);
+        
+            // Asignar el ID a la instancia del nuevo usuario
+            nuevoUsuario.id = id;
+            
+            // Agregar el nuevo usuario a la lista
+            this.listaUsuarios.push(nuevoUsuario);
+            
+            console.log(`Usuario registrado: ${nombre}`);
+        } catch (error) {
+            console.error('Error al registrar el usuario:', error.message);
+        }
     }
 
     // Método para iniciar sesión
