@@ -1,5 +1,5 @@
 import express from 'express';
-import { crearUsuarioYPerfil } from '../controllers/controladores.js';
+import { crearUsuario} from '../controllers/controladores.js';
 
 const userRouter = express.Router();
 

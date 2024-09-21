@@ -1,4 +1,4 @@
-import { getUsuarioByID, createUsuario } from '../database.js';
+// import { getUsuarioByID, createUsuario } from '../database.js';
 import Usuario from './Usuario.js';
 
 class GestionUsuario {

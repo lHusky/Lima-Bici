@@ -26,8 +26,8 @@ CREATE TABLE usuario (
     fotoPerfil VARCHAR(255),
     contrasena VARCHAR(50),
     email VARCHAR(100) NOT NULL UNIQUE,
-    peso DECIMAL(5,2);
-    estadoSesion BIT DEFAULT 0;
+    peso DECIMAL(5,2),
+    estadoSesion BIT DEFAULT 0,
     estadoRecorrido BIT DEFAULT 0
     
 );
