@@ -12,6 +12,7 @@ class GestionUsuario {
         const nuevoUsuario = new Usuario(nombre, email, contrasena, telefono);
         this.listaUsuarios.push(nuevoUsuario);
         console.log(`Usuario registrado: ${nombre}`);
+        return { id: nuevoUsuarioID };
     }
 
     // Método para iniciar sesión

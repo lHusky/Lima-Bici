@@ -16,9 +16,9 @@ const crearUsuario = async (req, res) => {
             usuarioID
         });
     } catch (error) {
-        console.error('Error al crear el usuario y perfil:', error.message); // Añadido para debug
+        console.error('Error al crear el usuario (controlador):', error.message); // Añadido para debug
         res.status(500).json({
-            message: 'Error al crear el usuario y perfil',
+            message: 'Error al crear el usuario (controlador):',
             error: error.message
         });
     }
