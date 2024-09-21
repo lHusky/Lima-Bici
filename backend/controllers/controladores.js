@@ -4,6 +4,7 @@ import Perfil_Login from '../modules/Perfil_Login.js';
 
 // Función para crear usuario y perfil
 const crearUsuarioYPerfil = async (req, res) => {
+    
     const { nombre, email, telefono, contrasena } = req.body;
 
     try {

@@ -1,5 +1,7 @@
 // Perfil_Login.js
-import { getUsuarioByID, createUsuario } from '../database.js';
+import pool from '../database.js';
+
+// import { getUsuarioByID, createUsuario } from '../database.js';
 
 class Perfil_Login {
     constructor(id, id_PerfilSesion, usuario, contrasena, intentosFallidos, id_usuario) {
