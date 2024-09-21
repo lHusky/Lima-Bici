@@ -1,6 +1,6 @@
 import base from './base.js'
 
-const endpoint = 'gestionUsuario'
+const endpoint = 'api/gestionUsuario'
 
 const findAll = async () => await base.get(endpoint)
 

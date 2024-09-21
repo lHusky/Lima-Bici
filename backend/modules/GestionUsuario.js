@@ -8,6 +8,7 @@ class GestionUsuario {
     }
     // Método para registrar un usuario (crea y agrega a la lista)
     registrarUsuario(nombre, email, contrasena, telefono) {
+        
         const nuevoUsuario = new Usuario(nombre, email, contrasena, telefono);
         this.listaUsuarios.push(nuevoUsuario);
         console.log(`Usuario registrado: ${nombre}`);

@@ -1,9 +1,11 @@
 import express from 'express';
 import userRouter from './routes/rutas.js'; // Asegúrate de que esta ruta es correcta
 import { getUsuarioByID } from './database.js'; // Ajusta la ruta según sea necesario
+import GestionUsuario from './modules/GestionUsuario.js';
 
 const app = express();
 app.use(express.json());
+export const gestor = new GestionUsuario();
 
 // Ruta existente para obtener un usuario por ID
 app.get("/usuario/:id", async (req, res) => {
