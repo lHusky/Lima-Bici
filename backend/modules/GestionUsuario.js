@@ -43,3 +43,5 @@ class GestionUsuario {
         });
     }
 }
+
+export default GestionUsuario;

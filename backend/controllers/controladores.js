@@ -1,18 +1,15 @@
 // Importa las clases utilizando `import` ya que estás en un entorno ES Module
 import Usuario from '../modules/Usuario.js';
-import Perfil_Login from '../modules/Perfil_Login.js';
+import GestionUsuario from './GestionUsuario.js';
 
 // Función para crear usuario y perfil
-const crearUsuarioYPerfil = async (req, res) => {
+const crearUsuario = async (req, res) => {
     
-    const { nombre, email, telefono, contrasena } = req.body;
+    const {nombre, email, telefono, password } = req.body;
 
     try {
         // Crear usuario y obtener id_usuario
-        const { id: usuarioID } = await Usuario.crearUsuario(nombre, email, telefono);
-
-        // Crear perfil asociado al id_usuario
-        await Perfil_Login.crearPerfil(usuarioID, contrasena, email);
+        const { id: usuarioID } = await GestionUsuario.registrarUsuario(nombre, email,password, telefono);
 
         // Éxito - aprobación de creación de objeto
         res.status(201).json({
@@ -28,5 +25,5 @@ const crearUsuarioYPerfil = async (req, res) => {
     }
 };
 
-// Exporta usando `export`
-export { crearUsuarioYPerfil };
+
+export { crearUsuario};

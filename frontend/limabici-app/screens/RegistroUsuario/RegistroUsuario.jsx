@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { KeyboardAvoidingView, ScrollView, TouchableOpacity, TextInput, View, Text, StyleSheet, Alert, Keyboard, TouchableWithoutFeedback, Platform } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import usuarioApi from '../../api/usuario';
+import gestionUsuarioApi from '../../api/gestionUsuario';
 
 const Signin = () => {
     const [nombre, setNombre] = useState('');
@@ -53,10 +54,11 @@ const Signin = () => {
             estado: 'Activo',
             nombre,
             telefono,
-        };
+        }; 
 
         try {
-            await usuarioApi.create(payloadUsuario);
+            await gestionUsuarioApi.create(payloadUsuario)
+            // await usuarioApi.create(payloadUsuario);
             navigation.navigate('Login'); // Asegúrate de que 'Login' sea el nombre correcto de tu pantalla de inicio de sesión
         } catch (error) {
             console.error('Error al registrar el usuario:', error);
