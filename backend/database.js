@@ -3,12 +3,6 @@ import dotenv from "dotenv";
 dotenv.config();
 
 
-//database
-// modelo  -- clases () 
-// rutas / controladores por clase (dividido) -- acceso a ese modelo   (comunicacion entre las clases)
-// view -- 
-
-
 export const pool = mysql
     .createPool({
         host: process.env.MYSQL_HOST,

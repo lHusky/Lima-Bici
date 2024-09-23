@@ -1,13 +1,17 @@
 import express from 'express';
-import { crearUsuario} from '../controllers/controladores.js';
+import { crearUsuario,cargarUsuarios} from '../controllers/controladores.js';
 
-const userRouter = express.Router();
+const gestionUserRouter = express.Router();
 
-userRouter.post('/gestionUsuario', crearUsuario);
+//RUTA: Registrar Usuario
+gestionUserRouter.post('/gestionUsuario', crearUsuario);
 
-userRouter.get('/test', (req, res) => {
-    res.status(200).send('Ruta de prueba funcionando correctamente');
-});
+
+gestionUserRouter.get('/gestionUsuario', cargarUsuarios);
+
+
+
+ 
 
 // Cambia `module.exports` a `export default`
-export default userRouter;
+export {gestionUserRouter};

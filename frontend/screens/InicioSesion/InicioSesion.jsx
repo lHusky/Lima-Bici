@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { KeyboardAvoidingView, ScrollView, TouchableOpacity, TextInput, View, Text, StyleSheet, ImageBackground } from 'react-native';
-import usuarioApi from '../../api/usuario';
+// import usuarioApi from '../../api/usuario';
 
 const styles = StyleSheet.create({
   fondo: {
@@ -88,32 +88,35 @@ const styles = StyleSheet.create({
   }
 });
 
-const Iniciosesion = ({ navigation }) => {
+ const Iniciosesion = ({ userAccounts, navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isSelected, setSelection] = useState(false);
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
-  const [userAccounts, setUserAccounts] = useState([]);
   
+  
+
   const handleLogin = async () => {
     try {
       setEmailError('');
       setPasswordError('');
-
-      const usuariosData = await usuarioApi.findAll();
-      setUserAccounts(usuariosData);
-
+      // const usuariosData = await usuarioApi.findAll();
+      // setUserAccounts(usuariosData);
+      
       const user = userAccounts.find(user => user.email === email);
+      
       if (!user) {
         setEmailError('*El correo no está registrado');
         return;
       }
 
-      if (user.password !== password) {
-        setPasswordError('*La contraseña es incorrecta');
-        return;
-      }
+        // Aquí puedes verificar la contraseña
+        if (user.contrasena !== password) {
+          setPasswordError('*La contraseña es incorrecta');
+          return;
+        }
+
 
       // se ingresa a home de la aplicacion
       console.log('Inicio de sesión exitoso');

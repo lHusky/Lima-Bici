@@ -1,11 +1,21 @@
 const URI = 'http://192.168.18.10:3000/';
 
 const get = async (endpoint) => {
-  return await fetch(URI + endpoint)
-            .then(response => response.json())
-            .then(data => {
-                return data
-            })
+    
+    const response = await fetch(URI + endpoint);
+    
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    // const text = await response.text(); // Captura la respuesta como texto
+    // console.log(text); // Imprime la respuesta para verificar su contenido
+    // return JSON.parse(text);
+
+    const data = await response.json(); 
+    return data;
+
+    
 }
 
 const post = async (endpoint, payload) => {
@@ -17,12 +27,17 @@ const post = async (endpoint, payload) => {
         },
         body: JSON.stringify(payload)
     }
+
+    const response = await fetch(URI + endpoint, postPayload);
     
-    return await fetch(URI + endpoint, postPayload)
-              .then(response => response.json())
-              .then(data => {
-                  return data
-              })
+    // Asegúrate de que la respuesta sea exitosa
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json(); // Extraer JSON del cuerpo de la respuesta
+    return { status: response.status, data };
+    
   }
 
   const put = async (endpoint, payload) => {

@@ -1,36 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { KeyboardAvoidingView, ScrollView, TouchableOpacity, TextInput, View, Text, StyleSheet, Alert, Keyboard, TouchableWithoutFeedback, Platform } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-
 import gestionUsuarioApi from '../../api/gestionUsuario.js';
-import { Alert } from 'react-native';
 
-const Signin = () => {
+const Signin = ({ userAccounts, navigation }) => {
     const [nombre, setNombre] = useState('');
     const [telefono, setTelefono] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confPassword, setConfPassword] = useState('');
-    const [userAccounts, setUserAccounts] = useState([]);
     const [error, setError] = useState('');
     const [passwordError, setPasswordError] = useState('');
-    const navigation = useNavigation();
-    useEffect(() => {
-        console.log("useEffect se ha ejecutado");
-        handleOnLoad();
-    }, []);
+    const [phoneError, setPhoneError] = useState('');
+    const [emailError, setEmailError] = useState('');
+
+    // const navigation = useNavigation();
     
 
-    // const handleOnLoad = async () => {
-    //     try {
-    //         const usuariosData = await usuarioApi.findAll();
-    //         setUserAccounts(usuariosData);
-    //     } catch (error) {
-    //         console.error('Error al cargar usuarios:', error);
-    //     }
-    // };
-
     const handleSubmit = async () => {
+        setEmailError('');
+        setPasswordError('');
+        setError('');
         if (password !== confPassword) {
             setError('*Las contraseñas no coinciden');
             return;
@@ -42,10 +32,16 @@ const Signin = () => {
         } else {
             setPasswordError('');
         }
-
-        const existingUser = userAccounts.find(user => user.email === email);
-        if (existingUser) {
-            setError('El correo electrónico ya está registrado');
+        const emailExists = userAccounts.some(user => user.email === email);
+        const phoneExists = userAccounts.some(user => user.telefono === telefono);
+    
+        if (emailExists) {
+            setEmailError('El correo electrónico ya está registrado');
+            return;
+        }
+        
+        if (phoneExists) {
+            setPhoneError('El número de celular ya está registrado');
             return;
         }
 
@@ -57,35 +53,25 @@ const Signin = () => {
             // estado: 'Activo',
             telefono,
         }; 
-        
-        console.log("Datosss...");
+
         try {
-            console.log("Intentando registrar usuario...");
+            
             const response = await gestionUsuarioApi.create(payloadUsuario)
-            console.log("Intentando registrar usuario2...");
-    
-            //console.log('Respuesta del servidor:', response.data.message); // Muestra el mensaje del servidor
-            //console.log('Estado de la respuesta:', response.status);
-            if (response.status === 201) {
-                // Limpiar los campos de entrada
-                setNombre('');
-                setTelefono('');
-                setEmail('');
-                setPassword('');
-                setConfPassword('');
-                
-                navigation.navigate('Iniciosesion'); 
-            //  console.error('Registro completado:', payloadUsuario.nombre);
-            } else {
-                console.error('Error en la creación del usuario:', response.data.message);
-                Alert.alert('Error', response.data.message);
-            }
-            setPasswordError('Intentando registrar usuario3');
+            
+            console.log(response.data.message); 
+            // Restablecer los campos de entrada
+            setNombre('');
+            setTelefono('');
+            setEmail('');
+            setPassword('');
+            setConfPassword('');
+            console.log('Funciona?3')
+            
+            navigation.navigate('Iniciosesion'); // Asegúrate de que 'Login' sea el nombre correcto de tu pantalla de inicio de sesión
         } catch (error) {
             console.error('Error al registrar el usuario:', error);
             Alert.alert('Error', 'Hubo un problema al registrar el usuario.');
         }
-
     };
 
     return (
@@ -116,6 +102,7 @@ const Signin = () => {
                                 }}
                                 keyboardType="numeric"
                             />
+                            {phoneError ? <Text style={styles.errorMessage}>{phoneError}</Text> : null}
                             <TextInput
                                 style={styles.input}
                                 placeholder="Email"
@@ -124,6 +111,7 @@ const Signin = () => {
                                 keyboardType="email-address"
                                 autoCapitalize="none"
                             />
+                            {emailError ? <Text style={styles.errorMessage}>{emailError}</Text> : null}
                             <TextInput
                                 style={styles.input}
                                 placeholder="Contraseña"

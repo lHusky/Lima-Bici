@@ -16,18 +16,19 @@ class Usuario {
     }
 
     // Métodos Usuario
-    static async crearUsuario(nombre, email, telefono, contrasena) {
+    async agregarUsuarioBD(nombre, email, telefono, contrasena) {
         try {
-            const [result] = await pool.query(
+            const [result] = await pool.execute(   
                 'INSERT INTO usuario (nombre, email, telefono, contrasena) VALUES (?, ?, ?, ?)',
                 [nombre, email, telefono, contrasena]
             );
             const usuarioID = result.insertId;
-            return { id: usuarioID };
+            nuevoUsuario.setId(usuarioID);
+            return nuevoUsuario;
         } catch (error) {
             console.error('Error en la creación del usuario:', error.message);
             throw error;
-        }
+        } 
     }
 
     // Usuario activo
@@ -40,6 +41,13 @@ class Usuario {
         this.estadoSesion = false;
     }
 
+    setId(id){
+        this.id=id;
+    }
+
+    getId(){
+        return this.id;
+    }
     // Getters y Setters  
     setPesoUsuario(peso) {
         this.peso = peso;

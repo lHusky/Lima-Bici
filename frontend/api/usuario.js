@@ -1,6 +1,6 @@
 import base from './base.js'
 
-const endpoint = 'perfil'
+const endpoint = 'usuario'
 
 const findAll = async () => await base.get(endpoint)
 
@@ -14,4 +14,4 @@ const findOne = async (id) => await base.get(`${endpoint}/${id}`)
 
 const api = { findAll, create, update, remove, findOne }
 
-export default api;
+export default api;  
