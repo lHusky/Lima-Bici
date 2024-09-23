@@ -57,17 +57,19 @@ const Signin = ({ userAccounts, navigation }) => {
         try {
             
             const response = await gestionUsuarioApi.create(payloadUsuario)
-            
-            console.log(response.data.message); 
-            // Restablecer los campos de entrada
-            setNombre('');
-            setTelefono('');
-            setEmail('');
-            setPassword('');
-            setConfPassword('');
-            console.log('Funciona?3')
-            
-            navigation.navigate('Iniciosesion'); // Asegúrate de que 'Login' sea el nombre correcto de tu pantalla de inicio de sesión
+            if (response.status === 201) {
+                setNombre('');
+                setTelefono('');
+                setEmail('');
+                setPassword('');
+                setConfPassword('');
+                console.log(response.data.message); 
+                navigation.navigate('Iniciosesion'); 
+                console.error('Registro completado:', payloadUsuario.nombre);
+            } else {
+                console.error('Error en la creación del usuario:', response.data.message);
+                Alert.alert('Error', response.data.message);
+            }      
         } catch (error) {
             console.error('Error al registrar el usuario:', error);
             Alert.alert('Error', 'Hubo un problema al registrar el usuario.');
