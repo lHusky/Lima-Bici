@@ -1,17 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, TouchableOpacity, Text, StyleSheet, Image } from 'react-native';
 
-const Footer = () => {
+const Footer = ({ navigation, currentScreen }) => {
   const [selectedButton, setSelectedButton] = useState(null);
 
   // Imágenes para cada botón
   const buttonData = [
-    { label: 'Principal', image: require('../../assets/FooterCasa.png') },
-    { label: 'Mapas', image: require('../../assets/FooterMapa.png') },
-    { label: 'Buscar', image: require('../../assets/FooterLupa.png') },
-    { label: 'Favoritos', image: require('../../assets/FooterEstrella.png') },
-    { label: 'Perfil', image: require('../../assets/FooterPerfil.png') },
+    { label: 'Inicio', image: require('../../assets/FooterCasa.png'), screen: 'PaginaInicio' },
+    { label: 'Mapas', image: require('../../assets/FooterMapa.png'), screen: 'Mapas' },
+    { label: 'Buscar', image: require('../../assets/FooterLupa.png'), screen: 'Buscar' },
+    { label: 'Favoritos', image: require('../../assets/FooterEstrella.png'), screen: 'PaginaFavoritos' },
+    { label: 'Cuenta', image: require('../../assets/FooterPerfil.png'), screen: 'Cuenta' },
   ];
+
+  // Efecto que establece el botón seleccionado según la pantalla actual
+  useEffect(() => {
+    const index = buttonData.findIndex(button => button.screen === currentScreen);
+    setSelectedButton(index);
+  }, [currentScreen]);
+
+  const handlePress = (index, screen) => {
+    setSelectedButton(index);
+    // Navegar a la pantalla seleccionada si existe
+    if (screen && navigation) {
+      navigation.navigate(screen);
+    }
+  };
 
   return (
     <View style={styles.footerContainer}>
@@ -22,9 +36,8 @@ const Footer = () => {
             styles.button,
             selectedButton === index && styles.selectedButton,
           ]}
-          onPress={() => setSelectedButton(index)}
+          onPress={() => handlePress(index, button.screen)}
         >
-          {/* Muestra la imagen del botón */}
           <Image source={button.image} style={styles.icon} />
           <Text
             style={[
@@ -48,13 +61,16 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderTopWidth: 1,
     borderColor: '#eaeaea',
-    borderRadius: 0,
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
   },
   button: {
     alignItems: 'center',
     justifyContent: 'center',
-    width: 70, // Establece un ancho fijo para cada botón
-    height: 70, // Establece una altura fija para cada botón
+    width: 70,
+    height: 70,
   },
   selectedButton: {
     backgroundColor: '#1C6C00',
@@ -62,8 +78,8 @@ const styles = StyleSheet.create({
     borderRadius: 40,
   },
   icon: {
-    width: 30, // Ancho fijo de la imagen
-    height: 30, // Altura fija de la imagen
+    width: 30,
+    height: 30,
     marginBottom: 2,
   },
   buttonText: {
