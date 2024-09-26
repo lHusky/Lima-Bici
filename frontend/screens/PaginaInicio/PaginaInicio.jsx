@@ -2,7 +2,7 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import HeaderInicio from '../../components/header/headerInicio.jsx'
 import Footer from '../../components/footer/footer.jsx';
-import Favoritos from '../../components/Favoritos/Favoritos.jsx';
+import RutasFavoritas from '../../components/RutasFavoritas/RutasFavoritas.jsx';
 import RutasRecientes from '../../components/RutasRecientes/RutasRecientes.jsx';
 
 const PaginaInicio = ({ navigation }) => {
@@ -10,7 +10,7 @@ const PaginaInicio = ({ navigation }) => {
         <View style={styles.container}>
             <HeaderInicio />
             <View style={styles.content}>
-                <Favoritos />
+                <RutasFavoritas />
                 <RutasRecientes />
             </View>
             {/* Pasamos la navegación y la pantalla actual al Footer */}
