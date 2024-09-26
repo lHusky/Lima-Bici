@@ -1,13 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { StatusBar } from 'react-native';
+
 import RegistroUsuario from './screens/RegistroUsuario/RegistroUsuario.jsx';
 import Iniciosesion from './screens/InicioSesion/InicioSesion.jsx';
+
 import PaginaInicio from './screens/PaginaInicio/PaginaInicio.jsx';
+import PaginaMapas from './screens/PaginaMapas/PaginaMapas.jsx';
+import PaginaBuscar from './screens/PaginaBuscar/PaginaBuscar.jsx';
 import PaginaFavoritos from './screens/PaginaFavoritos/PaginaFavoritos.jsx';
+import PaginaCuenta from './screens/PaginaCuenta/PaginaCuenta.jsx';
 
 import Footer from './components/footer/footer.jsx';
-
 
 const Stack = createStackNavigator();
 
@@ -30,6 +35,8 @@ const App = () => {
 // PROP: es un componente inmutable que se declara en app (padre) y se puede utilizar en cada pestaña (hijo)
   
   return (
+    <>
+    <StatusBar backgroundColor="black"/>
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Footer">
       <Stack.Screen name="Footer" component={Footer} />
@@ -40,9 +47,13 @@ const App = () => {
             {(props) => <RegistroUsuario {...props} userAccounts={userAccounts} />}
         </Stack.Screen>
         <Stack.Screen name="PaginaInicio" component={PaginaInicio} />
+        <Stack.Screen name="PaginaMapas" component={PaginaMapas} />
+        <Stack.Screen name="PaginaBuscar" component={PaginaBuscar} />
         <Stack.Screen name="PaginaFavoritos" component={PaginaFavoritos} />
+        <Stack.Screen name="PaginaCuenta" component={PaginaCuenta} />
       </Stack.Navigator>
     </NavigationContainer>
+    </>
   );
 };
 
