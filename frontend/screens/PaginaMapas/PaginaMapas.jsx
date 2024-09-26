@@ -1,21 +1,17 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import HeaderFavoritos from '../../components/header/headerFavoritos.jsx'
+import HeaderMapas from '../../components/header/headerMapas.jsx'
 import Footer from '../../components/footer/footer.jsx';
 
-import RutasFavoritas from '../../components/RutasFavoritas/RutasFavoritas.jsx';
-import PuntosDeInteres from '../../components/PuntosDeInteres/PuntosDeInteres.jsx';
-
-const PaginaFavoritos = ({ navigation }) => {
+const PaginaMapas = ({ navigation }) => {
     return (
         <View style={styles.container}>
-            <HeaderFavoritos />
+            <HeaderMapas />
             <View style={styles.content}>
-                <RutasFavoritas />
-                <PuntosDeInteres />
+
             </View>
             {/* Pasamos la navegación y la pantalla actual al Footer */}
-            <Footer navigation={navigation} currentScreen="PaginaFavoritos" />
+            <Footer navigation={navigation} currentScreen="PaginaMapas" />
         </View>
     );
 };
@@ -29,4 +25,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default PaginaFavoritos;
+export default PaginaMapas;
