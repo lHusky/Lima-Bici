@@ -1,6 +1,6 @@
-// pages/PaginaBuscar.jsx
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
+
 import Footer from '../../components/footer/footer.jsx';
 import Mapa from '../../components/Mapa/Mapa.jsx';
 import BarraBusqueda from '../../components/BarraBusqueda/BarraBusqueda.jsx';
@@ -8,14 +8,8 @@ import Carrousel from '../../components/Sugerencias/Carrousel.jsx';
 import BotonRecorrido from '../../components/BotonRecorrido/BotonRecorrido.jsx';
 
 const PaginaBuscar = ({ navigation }) => {
-    const [region, setRegion] = React.useState({
-        latitude: -12.0464,
-        longitude: -77.0428,
-        latitudeDelta: 0.0922,
-        longitudeDelta: 0.0421,
-    });
-
     const searchRef = useRef(null);
+    const [destination, setDestination] = useState(null);
 
     const handleSuggestionSelect = (suggestion) => {
         if (searchRef.current) {
@@ -23,10 +17,18 @@ const PaginaBuscar = ({ navigation }) => {
         }
     };
 
+    // Función para manejar el arrastre del marcador
+    const handleMarkerDragEnd = (latitude, longitude) => {
+        if (searchRef.current) {
+            searchRef.current.handleSearchFromCoords(latitude, longitude);
+        }
+    };
+
     return (
         <View style={styles.container}>
-            <Mapa region={region} setRegion={setRegion} />
-            <BarraBusqueda setRegion={setRegion} searchRef={searchRef} />
+            <Mapa destination={destination} setDestination={setDestination} onMarkerDragEnd={handleMarkerDragEnd}/>
+            <BarraBusqueda searchRef={searchRef} setDestination={setDestination} />
+            <BotonRecorrido />
             <Carrousel onSuggestionSelect={handleSuggestionSelect} />
             <Footer navigation={navigation} currentScreen="PaginaBuscar" />
         </View>
