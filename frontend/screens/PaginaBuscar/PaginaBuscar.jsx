@@ -8,6 +8,8 @@ import Carrousel from '../../components/Sugerencias/Carrousel.jsx';
 import BotonRecorrido from '../../components/BotonRecorrido/BotonRecorrido.jsx';
 
 const PaginaBuscar = ({ navigation }) => {
+    const barraBusquedaRef = useRef(null); // Creamos una referencia para la barra de búsqueda
+
     const searchRef = useRef(null);
     const [destination, setDestination] = useState(null);
 
@@ -19,6 +21,7 @@ const PaginaBuscar = ({ navigation }) => {
 
     // Función para manejar el arrastre del marcador
     const handleMarkerDragEnd = (latitude, longitude) => {
+        console.log('Marker dragged to:', latitude, longitude);  // Debug para verificar
         if (searchRef.current) {
             searchRef.current.handleSearchFromCoords(latitude, longitude);
         }
@@ -26,8 +29,8 @@ const PaginaBuscar = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-            <Mapa destination={destination} setDestination={setDestination} onMarkerDragEnd={handleMarkerDragEnd}/>
-            <BarraBusqueda searchRef={searchRef} setDestination={setDestination} />
+            <Mapa destination={destination} barraBusquedaRef={barraBusquedaRef} setDestination={setDestination} onMarkerDragEnd={handleMarkerDragEnd} />
+            <BarraBusqueda ref={searchRef} setDestination={setDestination} />
             <BotonRecorrido />
             <Carrousel onSuggestionSelect={handleSuggestionSelect} />
             <Footer navigation={navigation} currentScreen="PaginaBuscar" />
