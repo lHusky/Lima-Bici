@@ -7,8 +7,8 @@ import * as Location from 'expo-location';
 
 const { width, height } = Dimensions.get('window');
 
-const Mapa = ({ onMarkerDragEnd, destination, setDestination }) => {
-    const { apiKey } = useGooglePlaces();
+const Mapa = ({ onMarkerDragEnd }) => {
+    const { apiKey, destination, setDestination } = useGooglePlaces(); // Accedemos al estado de destino desde el contexto
     const mapRef = useRef(null);
 
     const [origin, setOrigin] = useState({
@@ -46,7 +46,7 @@ const Mapa = ({ onMarkerDragEnd, destination, setDestination }) => {
                 ref={mapRef}
                 style={styles.map}
                 initialRegion={origin}
-                region={destination || origin} // Cambiar la región según el destino
+                region={destination || origin} // Actualizamos la región según el destino
             >
                 <Marker coordinate={origin} />
                 {destination && (
