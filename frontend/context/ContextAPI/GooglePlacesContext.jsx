@@ -10,7 +10,7 @@ export const GooglePlacesProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const GOOGLE_MAPS_APIKEY = 'TU_CLAVE_DE_API';
+  const GOOGLE_MAPS_APIKEY = 'AIzaSyAOzTbIK8sF2OW_BQmSUuWJW9t98VQP5_U';
 
   // Función para obtener detalles del lugar usando fetch desde 'ruta.js'
   const fetchPlaceDetails = async (placeId) => {
