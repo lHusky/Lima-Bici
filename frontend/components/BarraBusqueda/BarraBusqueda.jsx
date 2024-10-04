@@ -7,30 +7,52 @@ const BarraBusqueda = forwardRef((_, ref) => {
     const { fetchPlaceDetails, apiKey, setDestination } = useGooglePlaces();
     const searchRef = useRef(null);
 
+    // Usamos useImperativeHandle para exponer funciones hacia el componente padre
     useImperativeHandle(ref, () => ({
         handleSearch(query) {
             if (searchRef.current) {
+                console.log('Searching with query:', query);  // Debug para verificar
                 searchRef.current.setAddressText(query);
             }
         },
-        handleSearchFromCoords(latitude, longitude) {
-            fetchAddressFromCoords(latitude, longitude);  // Convierte coordenadas a dirección y actualiza la barra de búsqueda
+        async handleSearchFromCoords(latitude, longitude) {
+            console.log('Searching from coords:', latitude, longitude);  // Debug para verificar
+            await fetchAddressFromCoords(latitude, longitude);  // Convierte coordenadas a dirección y actualiza la barra de búsqueda
         }
     }));
 
-    // Función para convertir coordenadas en una dirección usando la API de Google Places
+    // Función para convertir coordenadas en una dirección usando la API de Google Geocode
     const fetchAddressFromCoords = async (latitude, longitude) => {
         try {
+            console.log('Fetching address for coords:', latitude, longitude);  // Debug para verificar
             const response = await fetch(
                 `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${apiKey}`
             );
             const result = await response.json();
-            const address = result.results[0]?.formatted_address || '';
-            if (searchRef.current) {
-                searchRef.current.setAddressText(address);
+
+            // Aseguramos que obtenemos resultados válidos
+            if (result.status === "OK" && result.results.length > 0) {
+                const address = result.results[0].formatted_address;
+                console.log('Fetched address:', address);  // Debug para verificar
+
+                // Actualizamos la barra de búsqueda con la dirección si es válida
+                if (searchRef.current) {
+                    searchRef.current.setAddressText(address);
+                }
+            } else {
+                // Si no se encuentra una dirección, mantenemos el valor actual en lugar de borrar
+                console.warn('No address found for these coordinates.');
+                if (searchRef.current) {
+                    searchRef.current.setAddressText(''); // O muestra un valor predeterminado si prefieres
+                }
             }
         } catch (error) {
             console.error('Error fetching address from coordinates', error);
+
+            // En caso de error, mostramos un valor predeterminado en lugar de dejar la barra en blanco
+            if (searchRef.current) {
+                searchRef.current.setAddressText('Error al obtener dirección');
+            }
         }
     };
 
@@ -39,16 +61,17 @@ const BarraBusqueda = forwardRef((_, ref) => {
             <GooglePlacesAutocomplete
                 ref={searchRef}
                 placeholder="Buscar"
+                fetchDetails={true}
                 onPress={(data, details = null) => {
-                    // Utilizamos fetchPlaceDetails para obtener detalles del lugar y mover el marcador
-                    fetchPlaceDetails(data.place_id).then((location) => {
+                    if (details) {
+                        const { lat, lng } = details.geometry.location;
                         setDestination({
-                            latitude: location.lat,
-                            longitude: location.lng,
+                            latitude: lat,
+                            longitude: lng,
                             latitudeDelta: 0.0922,
                             longitudeDelta: 0.0421,
                         });
-                    });
+                    }
                 }}
                 query={{
                     key: apiKey,
