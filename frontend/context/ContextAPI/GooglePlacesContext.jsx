@@ -1,52 +1,58 @@
-import React, { createContext, useState, useContext } from 'react'; // Asegúrate de importar useState aquí
-import ruta from '../../api/ruta.js'; // Importamos la API desde el archivo base.js
+import React, { createContext, useState, useContext } from 'react';
 
 const GooglePlacesContext = createContext();
 
 export const useGooglePlaces = () => useContext(GooglePlacesContext);
 
 export const GooglePlacesProvider = ({ children }) => {
-  const [destination, setDestination] = useState(null); // Aquí es donde useState es necesario
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+    const [destination, setDestination] = useState(null); // Estado para el destino
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+    const [distance, setDistance] = useState(''); // Nueva variable para la distancia
+    const [duration, setDuration] = useState(''); // Nueva variable para el tiempo estimado
 
-  const GOOGLE_MAPS_APIKEY = 'AIzaSyAOzTbIK8sF2OW_BQmSUuWJW9t98VQP5_U';
+    const GOOGLE_MAPS_APIKEY = 'AIzaSyAOzTbIK8sF2OW_BQmSUuWJW9t98VQP5_U'; // Reemplaza con tu clave de API
 
-  // Función para obtener detalles del lugar usando fetch desde 'ruta.js'
-  const fetchPlaceDetails = async (placeId) => {
-    setLoading(true);
-    setError(null);
+    // Función para obtener detalles del lugar usando la API de Google Directions
+    const fetchRouteDetails = async (origin, destination) => {
+        setLoading(true);
+        setError(null);
 
-    try {
-      const response = await ruta.get(`https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&key=${GOOGLE_MAPS_APIKEY}`);
-      const location = response.result.geometry.location;  // Ajusta según la estructura real de la respuesta
-      const newDestination = {
-        latitude: location.lat,
-        longitude: location.lng,
-        latitudeDelta: 0.0922,
-        longitudeDelta: 0.0421,
-      };
-      setDestination(newDestination);
-    } catch (error) {
-      console.error('Error fetching place details', error);
-      setError('Error al obtener detalles del lugar');
-    } finally {
-      setLoading(false);
-    }
-  };
+        try {
+            const response = await fetch(
+                `https://maps.googleapis.com/maps/api/directions/json?origin=${origin.latitude},${origin.longitude}&destination=${destination.latitude},${destination.longitude}&mode=walking&key=${GOOGLE_MAPS_APIKEY}` // Modo bicicleta
+            );
+            const result = await response.json();
+            
+            if (result.routes.length > 0) {
+                const route = result.routes[0].legs[0];
+                setDistance(route.distance.text); // Guardamos la distancia
+                setDuration(route.duration.text); // Guardamos la duración
+            } else {
+                setError('No se pudo calcular la ruta');
+            }
+        } catch (error) {
+            console.error('Error al obtener la ruta', error);
+            setError('Error al obtener la ruta');
+        } finally {
+            setLoading(false);
+        }
+    };
 
-  return (
-    <GooglePlacesContext.Provider
-      value={{
-        destination,
-        setDestination,
-        fetchPlaceDetails,
-        apiKey: GOOGLE_MAPS_APIKEY,
-        loading,
-        error,
-      }}
-    >
-      {children}
-    </GooglePlacesContext.Provider>
-  );
+    return (
+        <GooglePlacesContext.Provider
+            value={{
+                destination,
+                setDestination,
+                fetchRouteDetails, // Nueva función para obtener los detalles de la ruta
+                distance,
+                duration,
+                apiKey: GOOGLE_MAPS_APIKEY,
+                loading,
+                error,
+            }}
+        >
+            {children}
+        </GooglePlacesContext.Provider>
+    );
 };
