@@ -13,6 +13,7 @@ import PaginaCuenta from './screens/PaginaCuenta/PaginaCuenta';
 
 import Footer from './components/footer/footer';
 import { GooglePlacesProvider } from './context/ContextAPI/GooglePlacesContext';
+import gestionUsuarioApi from './api/gestionUsuario.js';
 
 const Stack = createStackNavigator();
 
@@ -31,6 +32,12 @@ const App = () => {
     };
 
     cargaDeDatos();
+    // Ejecutar la carga cada 30 segundos
+    const intervalId = setInterval(cargaDeDatos, 30000); // 30000 milisegundos = 30 segundos
+
+    // Limpia el intervalo al terminar
+    return () => clearInterval(intervalId);
+
   }, []);
 
   return (
