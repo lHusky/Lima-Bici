@@ -120,6 +120,7 @@ const styles = StyleSheet.create({
 
       // se ingresa a home de la aplicacion
       console.log('Inicio de sesión exitoso');
+      navigation.navigate('PaginaInicio');
 
     } catch (error) {
       console.error('Error al cargar usuarios:', error);
