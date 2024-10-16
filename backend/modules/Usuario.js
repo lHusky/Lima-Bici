@@ -23,8 +23,8 @@ class Usuario {
                 [nombre, email, telefono, contrasena]
             );
             const usuarioID = result.insertId;
-            nuevoUsuario.setId(usuarioID);
-            return nuevoUsuario;
+            this.setId(usuarioID);
+            return this;
         } catch (error) {
             console.error('Error en la creación del usuario:', error.message);
             throw error;
