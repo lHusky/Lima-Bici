@@ -16,6 +16,7 @@ const PaginaBuscar = ({ navigation }) => {
     const [tracking, setTracking] = useState(false); // Estado de rastreo
     const [modalVisible, setModalVisible] = useState(false); // Control de visibilidad del modal de información
     const [origin, setOrigin] = useState(null); // Guardamos la ubicación actual del usuario
+    const [routeCoordinates, setRouteCoordinates] = useState([]); // Coordenadas del recorrido
 
     const { apiKey, fetchRouteDetails, distance, duration } = useGooglePlaces(); // Extraemos distancia y duración
 
@@ -61,19 +62,26 @@ const PaginaBuscar = ({ navigation }) => {
         setTracking((prevTracking) => !prevTracking); // Alternamos entre rastrear y detener rastreo
     };
 
-    //llamar a la API cada vez que el destino cambia
+    // Guardar la ruta y sus coordenadas en la base de datos
     useEffect(() => {
         const saveRoute = async () => {
-            //verificar si origen y destino son iguales
+            // Verificar si origen y destino son diferentes
             if (origin && destination && (origin.latitude !== destination.latitude || origin.longitude !== destination.longitude)) {
-                await fetchRouteDetails(origin, destination); //usar la ubicación actual como origen
-                
-                //enviar datos de la ruta a la API
+                await fetchRouteDetails(origin, destination); // Usar la ubicación actual como origen
+
+                // Enviar datos de la ruta a la API
                 const routeData = {
-                    origen: { lat: origin.latitude, lng: origin.longitude },
-                    destino: { lat: destination.latitude, lng: destination.longitude },
+                    userId: 1, // ID del usuario, reemplazar según el contexto de autenticación
+                    nombre: "Ruta personalizada",
+                    descripcion: "Recorrido desde el origen hasta el destino.",
                     distancia: distance,
                     duracion: duration,
+                    fechaInicio: new Date().toISOString(),
+                    fechaFin: new Date(new Date().getTime() + duration * 60 * 1000).toISOString(), // Duración estimada
+                    coordenadas: routeCoordinates.map((coord) => ({
+                        lat: coord.latitude,
+                        lng: coord.longitude,
+                    })),
                 };
 
                 try {
@@ -97,6 +105,8 @@ const PaginaBuscar = ({ navigation }) => {
                 trackUser={tracking}
                 onMarkerDragEnd={handleMarkerDragEnd}
                 apiKey={apiKey}
+                routeCoordinates={routeCoordinates}
+                setRouteCoordinates={setRouteCoordinates} // Actualiza las coordenadas de la ruta en tiempo real
             />
             <BarraBusqueda
                 ref={searchRef}
@@ -113,7 +123,7 @@ const PaginaBuscar = ({ navigation }) => {
                 duration={duration}
                 onClose={() => setModalVisible(false)}
                 onTrackingToggle={handleTrackingToggle}
-                tracking={tracking} //estado de rastreo para el botón
+                tracking={tracking} // Estado de rastreo para el botón
             />
 
             <Footer navigation={navigation} currentScreen="PaginaBuscar" />
