@@ -8,8 +8,7 @@ import BarraBusqueda from '../../components/BarraBusqueda/BarraBusqueda.jsx';
 import Carrousel from '../../components/Sugerencias/Carrousel.jsx';
 import InformacionLugar from '../../components/InformacionLugar/InformacionLugar.jsx';
 import { useGooglePlaces } from '../../context/ContextAPI/GooglePlacesContext';
-import 'react-native-get-random-values';
-import uuid from 'react-native-uuid';
+
 
 const PaginaBuscar = ({ navigation }) => {
     const searchRef = useRef(null);
@@ -73,30 +72,30 @@ const PaginaBuscar = ({ navigation }) => {
 
                 // Enviar datos de la ruta a la API
                 const routeData = {
-                    userId: 1, // ID del usuario, reemplazar según el contexto de autenticación
+                    // userId: 1, // ID del usuario, reemplazar según el contexto de autenticación
                     nombre: "Ruta personalizada",
                     descripcion: "Recorrido desde el origen hasta el destino.",
                     distancia: distance,
                     duracion: duration,
                     fechaInicio: new Date().toISOString(),
-                    fechaFin: new Date(new Date().getTime() + duration * 60 * 1000).toISOString(), // Duración estimada
+                    // fechaFin: new Date(new Date().getTime() + duration * 60 * 1000).toISOString(), // Duración estimada
                     coordenadas: routeCoordinates.map((coord) => ({
                         lat: coord.latitude,
                         lng: coord.longitude,
                     })),
                 };
 
-                try {
-                    await ruta.create(routeData);
-                    console.log("Ruta guardada exitosamente:", routeData);
-                } catch (error) {
-                    console.error("Error al guardar la ruta:", error);
-                    Alert.alert("Error", "No se pudo guardar la ruta.");
-                }
+                // try {
+                //     await ruta.create(routeData);
+                //     console.log("Ruta guardada exitosamente:", routeData);
+                // } catch (error) {
+                //     console.error("Error al guardar la ruta:", error);
+                //     Alert.alert("Error", "No se pudo guardar la ruta.");
+                // }
             }
         };
 
-    //     saveRoute();
+        saveRoute();
     }, [origin, destination]);
 
     return (
