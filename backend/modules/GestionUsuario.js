@@ -25,6 +25,8 @@ class GestionUsuario {
                     console.log("No se encontraron usuarios en la base de datos.");
                     return null; 
                 }
+                this.listaUsuarios = [];
+                
                 for (let usuarioPuntero of usuarios) {
                     const usuario = new Usuario(null, usuarioPuntero.nombre, usuarioPuntero.email, usuarioPuntero.telefono, null, null, usuarioPuntero.contrasena, null, null, null);
                     await this.agregarUsuarioGestion(usuario);
