@@ -45,7 +45,7 @@ const App = () => {
       <StatusBar backgroundColor="black" />
       <GooglePlacesProvider>
         <NavigationContainer>
-          <Stack.Navigator initialRouteName="Footer" screenOptions={{ headerShown: false }}>
+          <Stack.Navigator initialRouteName="Iniciosesion" screenOptions={{ headerShown: false }}>
             <Stack.Screen name="Footer" component={Footer} />
             <Stack.Screen name="Iniciosesion">
               {(props) => <Iniciosesion {...props} userAccounts={userAccounts} />}
