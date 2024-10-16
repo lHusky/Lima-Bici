@@ -96,7 +96,7 @@ const PaginaBuscar = ({ navigation }) => {
             }
         };
 
-        saveRoute();
+    //     saveRoute();
     }, [origin, destination]);
 
     return (
