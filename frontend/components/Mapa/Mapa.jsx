@@ -3,6 +3,8 @@ import { View, StyleSheet, Dimensions } from 'react-native';
 import MapView, { Marker, Polyline } from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
 import * as Location from 'expo-location';
+import 'react-native-get-random-values';
+import uuid from 'react-native-uuid';
 
 const { width, height } = Dimensions.get('window');
 

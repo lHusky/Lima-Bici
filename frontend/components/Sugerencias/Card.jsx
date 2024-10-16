@@ -1,6 +1,8 @@
 // components/Card.js
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import 'react-native-get-random-values';
+import uuid from 'react-native-uuid';
 
 const Card = ({ title, onPress }) => {
   return (

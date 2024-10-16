@@ -2,6 +2,8 @@
 import React from 'react';
 import { ScrollView, View, StyleSheet } from 'react-native';
 import Card from './Card';
+import 'react-native-get-random-values';
+import uuid from 'react-native-uuid';
 
 // Lista de datos de sugerencias
 const data = [

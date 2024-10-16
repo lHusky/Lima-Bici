@@ -1,5 +1,7 @@
 import React from 'react';
 import { View, TouchableOpacity, Text, StyleSheet, Image } from 'react-native';
+import 'react-native-get-random-values';
+import uuid from 'react-native-uuid';
 
 const Footer = ({ navigation, currentScreen }) => {
   // Imágenes para cada botón

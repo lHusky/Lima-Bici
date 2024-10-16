@@ -8,6 +8,8 @@ import BarraBusqueda from '../../components/BarraBusqueda/BarraBusqueda.jsx';
 import Carrousel from '../../components/Sugerencias/Carrousel.jsx';
 import InformacionLugar from '../../components/InformacionLugar/InformacionLugar.jsx';
 import { useGooglePlaces } from '../../context/ContextAPI/GooglePlacesContext';
+import 'react-native-get-random-values';
+import uuid from 'react-native-uuid';
 
 const PaginaBuscar = ({ navigation }) => {
     const searchRef = useRef(null);

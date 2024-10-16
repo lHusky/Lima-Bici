@@ -1,10 +1,12 @@
 import React from 'react';
 import { View, Text, Modal, StyleSheet } from 'react-native';
-import BotonIniciar from '../BotonIniciar/BotonIniciar';
-import BotonFavoritos from '../BotonFavoritos/BotonFavoritos';
+import BotonIniciar from '../BotonRecorrido/BotonInicio.jsx';
+import BotonFavoritos from '../BotonFavorito/BotonFavorito.jsx';
 import { PanGestureHandler } from 'react-native-gesture-handler';
 import PropTypes from 'prop-types';
 import Icon from 'react-native-vector-icons/FontAwesome'; // Importamos los íconos de FontAwesome
+import 'react-native-get-random-values';
+import uuid from 'react-native-uuid';
 
 const InformacionLugar = ({ visible, address, distance, duration, onClose, onTrackingToggle, tracking }) => {
     const handleGesture = ({ nativeEvent }) => {

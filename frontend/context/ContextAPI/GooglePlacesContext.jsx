@@ -1,5 +1,6 @@
 import React, { createContext, useState, useContext } from 'react';
-
+import 'react-native-get-random-values';
+import uuid from 'react-native-uuid';
 const GooglePlacesContext = createContext();
 
 export const useGooglePlaces = () => useContext(GooglePlacesContext);
