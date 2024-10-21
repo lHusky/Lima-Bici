@@ -1,16 +1,20 @@
+// src/screens/PaginaMapas/PaginaMapas.jsx
+
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import HeaderMapas from '../../components/header/headerMapas.jsx'
+import Header from '../../components/header/header.jsx';
 import Footer from '../../components/footer/footer.jsx';
+import Mapa from '../../components/Mapa/Mapa.jsx';
 
 const PaginaMapas = ({ navigation }) => {
+    const routeId = '123'; // Reemplaza '123' con el ID de la ruta específica si es necesario.
+
     return (
         <View style={styles.container}>
-            <HeaderMapas />
+            <Header title="Mapas" />
             <View style={styles.content}>
-
+                <Mapa routeId={routeId} showFixedRoutes={true} />
             </View>
-            {/* Pasamos la navegación y la pantalla actual al Footer */}
             <Footer navigation={navigation} currentScreen="PaginaMapas" />
         </View>
     );
