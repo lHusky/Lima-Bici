@@ -7,20 +7,34 @@ import Mapa from '../../components/Mapa/Mapa.jsx';
 import BarraBusqueda from '../../components/BarraBusqueda/BarraBusqueda.jsx';
 import Carrousel from '../../components/Sugerencias/Carrousel.jsx';
 import InformacionLugar from '../../components/InformacionLugar/InformacionLugar.jsx';
+import BotonInformacion from '../../components/BotonInformacion/BotonInformacion.jsx';
 import { useGooglePlaces } from '../../context/ContextAPI/GooglePlacesContext';
 
 const PaginaBuscar = ({ navigation }) => {
     const searchRef = useRef(null);
-    const [destination, setDestination] = useState(null); // Lugar destino seleccionado
-    const [direccion, setDireccion] = useState(''); // Dirección como texto
-    const [tracking, setTracking] = useState(false); // Estado de rastreo
-    const [modalVisible, setModalVisible] = useState(false); // Control de visibilidad del modal de información
-    const [origin, setOrigin] = useState(null); // Guardamos la ubicación actual del usuario
-    const [routeCoordinates, setRouteCoordinates] = useState([]); // Coordenadas del recorrido
+    const [destination, setDestination] = useState(null);
+    const [direccion, setDireccion] = useState('');
+    const [tracking, setTracking] = useState(false);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [origin, setOrigin] = useState(null);
+    const [routeCoordinates, setRouteCoordinates] = useState([]);
 
-    const { apiKey, fetchRouteDetails, distance, duration } = useGooglePlaces(); // Extraemos distancia y duración
+    const { apiKey, fetchRouteDetails, distance, duration } = useGooglePlaces();
+    const fixedRoutes = [
+        {
+            coordinates: [
+                { latitude: -12.046374, longitude: -77.042793 },
+                { latitude: -12.045874, longitude: -77.033793 },
+            ],
+        },
+        {
+            coordinates: [
+                { latitude: -12.046374, longitude: -77.032793 },
+                { latitude: -12.043874, longitude: -77.022793 },
+            ],
+        },
+    ];
 
-    // Obtener la ubicación actual del usuario
     useEffect(() => {
         const getCurrentLocation = async () => {
             const { status } = await Location.requestForegroundPermissionsAsync();
@@ -33,51 +47,73 @@ const PaginaBuscar = ({ navigation }) => {
                 latitude: location.coords.latitude,
                 longitude: location.coords.longitude,
             };
-            setOrigin(currentLocation); // Guardamos la ubicación actual
-            setDestination(currentLocation); // Inicializamos el destino en la misma ubicación que el origen
+            setOrigin(currentLocation);
+            setDestination(currentLocation);
         };
 
-        getCurrentLocation(); // Obtenemos la ubicación al montar el componente
+        getCurrentLocation();
     }, []);
 
-    // Al seleccionar una sugerencia del carrusel, actualizamos el destino y la barra de búsqueda
     const handleSuggestionSelect = (suggestion) => {
         if (searchRef.current) {
             searchRef.current.handleSearch(suggestion);
-            setModalVisible(true);  // Mostrar el modal al seleccionar una sugerencia
+            setModalVisible(true);
         }
     };
 
-    // Cuando el marcador se mueve manualmente, actualizamos la barra de búsqueda y mostramos el modal
-    const handleMarkerDragEnd = (latitude, longitude) => {
+    const handleMarkerDragEnd = async (latitude, longitude) => {
+        const newDestination = { latitude, longitude };
+        setDestination(newDestination);
+
         if (searchRef.current) {
             searchRef.current.handleSearchFromCoords(latitude, longitude);
-            setModalVisible(true);  // Mostrar el modal al mover el marcador
+        }
+
+        if (origin) {
+            await fetchRouteDetails(origin, newDestination);
+        }
+
+        setModalVisible(true);
+    };
+
+    const handleDestinationSelect = async (data, details) => {
+        if (details) {
+            const { lat, lng } = details.geometry.location;
+            const address = data.description;
+            const newDestination = {
+                latitude: lat,
+                longitude: lng,
+                latitudeDelta: 0.005,
+                longitudeDelta: 0.005,
+            };
+            setDestination(newDestination);
+            setDireccion(address);
+
+            if (origin) {
+                await fetchRouteDetails(origin, newDestination);
+            }
+
+            setModalVisible(true);
         }
     };
 
-    // Alternar el estado de rastreo
     const handleTrackingToggle = () => {
-        console.log('Toggling tracking:', !tracking);
-        setTracking((prevTracking) => !prevTracking); // Alternamos entre rastrear y detener rastreo
+        setTracking((prevTracking) => !prevTracking);
     };
 
-    // Guardar la ruta y sus coordenadas en la base de datos
     useEffect(() => {
         const saveRoute = async () => {
-            // Verificar si origen y destino son diferentes
             if (origin && destination && (origin.latitude !== destination.latitude || origin.longitude !== destination.longitude)) {
-                await fetchRouteDetails(origin, destination); // Usar la ubicación actual como origen
+                await fetchRouteDetails(origin, destination);
 
-                // Enviar datos de la ruta a la API
                 const routeData = {
-                    userId: 1, // ID del usuario, reemplazar según el contexto de autenticación
+                    userId: 1,
                     nombre: "Ruta personalizada",
                     descripcion: "Recorrido desde el origen hasta el destino.",
                     distancia: distance,
                     duracion: duration,
                     fechaInicio: new Date().toISOString(),
-                    fechaFin: new Date(new Date().getTime() + duration * 60 * 1000).toISOString(), // Duración estimada
+                    fechaFin: new Date(new Date().getTime() + duration * 60).toISOString(),
                     coordenadas: routeCoordinates.map((coord) => ({
                         lat: coord.latitude,
                         lng: coord.longitude,
@@ -101,20 +137,23 @@ const PaginaBuscar = ({ navigation }) => {
         <View style={styles.container}>
             <Mapa
                 destination={destination}
-                setDestination={setDestination} // Actualiza el destino desde el marcador
+                setDestination={setDestination}
                 trackUser={tracking}
-                onMarkerDragEnd={handleMarkerDragEnd}
                 apiKey={apiKey}
-                routeCoordinates={routeCoordinates}
-                setRouteCoordinates={setRouteCoordinates} // Actualiza las coordenadas de la ruta en tiempo real
+                fixedRoutes={fixedRoutes}
+                onMarkerDragEnd={handleMarkerDragEnd}
+                showFixedRoutes={false} // No mostrar rutas fijas en esta pantalla
             />
             <BarraBusqueda
                 ref={searchRef}
-                setDestination={setDestination} // Actualiza el destino desde la barra de búsqueda
+                setDestination={setDestination}
                 setDireccion={setDireccion}
                 apiKey={apiKey}
+                onDestinationSelect={handleDestinationSelect}
             />
             <Carrousel onSuggestionSelect={handleSuggestionSelect} />
+
+            <BotonInformacion onPress={() => setModalVisible(true)} />
 
             <InformacionLugar
                 visible={modalVisible}
@@ -123,7 +162,7 @@ const PaginaBuscar = ({ navigation }) => {
                 duration={duration}
                 onClose={() => setModalVisible(false)}
                 onTrackingToggle={handleTrackingToggle}
-                tracking={tracking} // Estado de rastreo para el botón
+                tracking={tracking}
             />
 
             <Footer navigation={navigation} currentScreen="PaginaBuscar" />
