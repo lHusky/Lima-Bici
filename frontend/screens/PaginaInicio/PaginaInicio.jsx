@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import HeaderInicio from '../../components/header/headerInicio.jsx'
+import Header from '../../components/header/header.jsx';
 import Footer from '../../components/footer/footer.jsx';
 import RutasFavoritas from '../../components/RutasFavoritas/RutasFavoritas.jsx';
 import RutasRecientes from '../../components/RutasRecientes/RutasRecientes.jsx';
@@ -8,7 +8,7 @@ import RutasRecientes from '../../components/RutasRecientes/RutasRecientes.jsx';
 const PaginaInicio = ({ navigation }) => {
     return (
         <View style={styles.container}>
-            <HeaderInicio />
+            <Header title="Inicio" />
             <View style={styles.content}>
                 <RutasFavoritas />
                 <RutasRecientes />
