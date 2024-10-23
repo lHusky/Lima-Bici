@@ -5,7 +5,7 @@ const Footer = ({ navigation, currentScreen }) => {
   // Imágenes para cada botón
   const buttonData = [
     { label: 'Inicio', image: require('../../assets/FooterCasa.png'), screen: 'PaginaInicio' },
-    { label: 'Mapas', image: require('../../assets/FooterMapa.png'), screen: 'PaginaMapas' },
+    { label: 'Ciclovías', image: require('../../assets/FooterCiclovia.png'), screen: 'PaginaCiclovias' },
     { label: 'Buscar', image: require('../../assets/FooterLupa.png'), screen: 'PaginaBuscar' },
     { label: 'Favoritos', image: require('../../assets/FooterEstrella.png'), screen: 'PaginaFavoritos' },
     { label: 'Cuenta', image: require('../../assets/FooterPerfil.png'), screen: 'PaginaCuenta' },
