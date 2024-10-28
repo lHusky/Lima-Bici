@@ -13,33 +13,10 @@ import PaginaCuenta from './screens/PaginaCuenta/PaginaCuenta';
 
 import Footer from './components/footer/footer';
 import { GooglePlacesProvider } from './context/ContextAPI/GooglePlacesContext';
-import gestionUsuarioApi from './api/gestionUsuario.js';
 
 const Stack = createStackNavigator();
 
 const App = () => {
-  const [userAccounts, setUserAccounts] = useState([]);
-
-  useEffect(() => {
-    const cargaDeDatos = async () => {
-      try {
-        const response = await gestionUsuarioApi.findAll();  // Asegúrate de que este método existe
-        const usuariosData = response.usuarios; // Accede a la propiedad 'usuarios'
-        setUserAccounts(usuariosData);
-      } catch (error) {
-        console.error('Error al cargar usuarios:', error);
-      }
-    };
-
-    cargaDeDatos();
-    // Ejecutar la carga cada 30 segundos
-    const intervalId = setInterval(cargaDeDatos, 30000); // 30000 milisegundos = 30 segundos
-
-    // Limpia el intervalo al terminar
-    return () => clearInterval(intervalId);
-
-  }, []);
-
   return (
     <>
       <StatusBar backgroundColor="black" />
@@ -48,10 +25,10 @@ const App = () => {
           <Stack.Navigator initialRouteName="Iniciosesion" screenOptions={{ headerShown: false }}>
             <Stack.Screen name="Footer" component={Footer} />
             <Stack.Screen name="Iniciosesion">
-              {(props) => <Iniciosesion {...props} userAccounts={userAccounts} />}
+              {(props) => <Iniciosesion {...props} />}
             </Stack.Screen>
             <Stack.Screen name="RegistroUsuario">
-              {(props) => <RegistroUsuario {...props} userAccounts={userAccounts} />}
+              {(props) => <RegistroUsuario {...props} />}
             </Stack.Screen>
             <Stack.Screen name="PaginaInicio" component={PaginaInicio} />
             <Stack.Screen name="PaginaMapas" component={PaginaMapas} />
@@ -64,7 +41,5 @@ const App = () => {
     </>
   );
 };
-
-export default App;
 
 
