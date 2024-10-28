@@ -13,15 +13,15 @@ export const pool = mysql
     .promise();
 export default pool;
 
-export async function getUsuarioByID(id) {
-    const [rows] = await pool.query('SELECT * FROM usuario WHERE id = ?', [id]);
-    return rows[0];
-}
+// export async function getUsuarioByID(id) {
+//     const [rows] = await pool.query('SELECT * FROM usuario WHERE id = ?', [id]);
+//     return rows[0];
+// }
 
-export async function getObjetivoByID(id) {
-    const [row]= await pool.query('SELECT * FROM objetivo WHERE id= ?',[id] )
-    return row[0];
-}
+// export async function getObjetivoByID(id) {
+//     const [row]= await pool.query('SELECT * FROM objetivo WHERE id= ?',[id] )
+//     return row[0];
+// }
 
 // export async function getRutaByID(id) {
 //     const [row]= await pool.query('SELECT * FROM ruta WHERE id= ?',[id] )

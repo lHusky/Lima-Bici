@@ -64,6 +64,13 @@ class Usuario {
     setNombre(nombre) {
         this.nombre = nombre;
     }
+    getEmail() {
+        return this.email;
+    }
+
+    setEmail(email) {
+        this.email = email;
+    }
 
     getTelefono() {
         return this.telefono;

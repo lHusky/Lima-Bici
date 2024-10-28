@@ -13,9 +13,7 @@ class GestionUsuario {
             throw new Error('Elemento debe ser un objeto de tipo Usuario.'); 
         }
         this.listaUsuarios.push(usuario);
-        console.log(`Usuario agregado: ${usuario.getNombre()}`);
     }
-
 
     async obtenerUsuariosBD() {
       
@@ -23,14 +21,21 @@ class GestionUsuario {
                 const [usuarios] = await pool.execute('SELECT id, nombre, email,telefono, contrasena FROM usuario');
                 if (usuarios.length === 0) {
                     console.log("No se encontraron usuarios en la base de datos.");
-                    return null; 
+                return this.listaUsuarios;
                 }
+
                 for (let usuarioPuntero of usuarios) {
-                    const usuario = new Usuario(null, usuarioPuntero.nombre, usuarioPuntero.email, usuarioPuntero.telefono, null, null, usuarioPuntero.contrasena, null, null, null);
-                    await this.agregarUsuarioGestion(usuario);
-            }
-            console.log("Todos los usuarios de la base de datos han sido agregados a la lista.");
-            return this.listaUsuarios; 
+                    //si al menos uno cumple (existe)
+                    const existeEnLista = this.listaUsuarios.some(usuario => usuario.getEmail() === usuarioPuntero.email);
+                    
+                    // Si el usuario no está en la lista, se agrega
+                    if (!existeEnLista) {
+                        const nuevoUsuario = new Usuario(null, usuarioPuntero.nombre, usuarioPuntero.email, usuarioPuntero.telefono, null, null, usuarioPuntero.contrasena, null, null, null);
+                        await this.agregarUsuarioGestion(nuevoUsuario);
+                    }
+                }
+                return this.listaUsuarios; 
+        
         } catch (error) {
 
             if (error.code === 'ER_BAD_DB_ERROR') {
@@ -48,42 +53,65 @@ class GestionUsuario {
     };
 
 
-    
-    
-    
     // Método para registrar un usuario (crea y agrega a la lista)
     async registrarUsuario(nombre, email, contrasena, telefono) {
-        const nuevoUsuario = new Usuario(null, nombre, email, telefono, null, null, contrasena, null, null, null);
-        const usuarioBD =  await nuevoUsuario.agregarUsuarioBD(nombre, email, telefono, contrasena)
-        await this.agregarUsuarioGestion(usuarioBD);
-        console.log(`Usuario registrado: ${nuevoUsuario.getNombre()}`);
-        return { id: usuarioBD.getId() };
+
+        try{
+            await this.obtenerUsuariosBD();
+            
+            // Verificar si el correo existe
+            const usuarioEmail = this.listaUsuarios.find(usuario => usuario.getEmail() === email);
+            if (usuarioEmail) {
+                return { status: 401, message: 'El correo ya está registrado' };
+            }
+            // Verificar si el telefono existe
+            const usuarioTelefono = this.listaUsuarios.find(usuario => usuario.getEmail() === email);
+            if(usuarioTelefono){
+                return { status: 401, message: 'El número de celular ya está registrado.' };
+            }
+
+            const nuevoUsuario = new Usuario(null, nombre, email, telefono, null, null, contrasena, null, null, null);
+            const usuarioBD =  await nuevoUsuario.agregarUsuarioBD(nombre, email, telefono, contrasena)
+            await this.agregarUsuarioGestion(usuarioBD);
+            
+            console.log(`Registro exitoso: ${usuario.getNombre()}`);
+            return { status:200, usuario: nuevoUsuario };
+           
+        }catch (error) {
+            console.log('Error al registrar usuario', error);
+            return { status: 500, message: 'Error en el servidor.' }; // Manejo de error
+        }
     } 
     
 
-    async consultarUsuariosBD(){
-        
-
-    }
-    
-
-    
-
-
-    //1. Obtener de la BD - Tabla Usuario, todos los usuarios y almacenarlos en el gestor como objetos tipo Usuario
-    //2. Recorren todos los usuarios y se verifica si coincide el correo y contraseña
-
     async iniciarSesion(email, contrasena) {
-        const usuario = this.listaUsuarios.find(u => u.email === email && u.contrasena === contrasena);
-        if (usuario) {
-            usuario.estaLogueado = true;
-            this.usuarioLogueado = usuario;
-            console.log(`Inicio de sesión exitoso: Bienvenido', ${usuario.nombre}`);
-        } else {
-            console.log('Error: Email o contraseña incorrectos.');
+        try {
+            await this.obtenerUsuariosBD();
+            
+            // Verificar si el correo existe
+            const usuario = this.listaUsuarios.find(usuario => usuario.getEmail() === email);
+    
+            // Si el correo no existe
+            if (!usuario) {
+                return { status: 401, message: 'Correo no registrado.' };
+            }
+    
+            // Si el correo es correcto, verificar la contraseña
+            if (usuario.getContrasena() !== contrasena) {
+                console.log('Contraseña incorrecta');
+                return { status: 401, message: 'Contraseña incorrecta.' };
+            }
+    
+            // Si el correo y la contraseña son correctos
+            console.log(`Inicio de sesión exitoso: Bienvenido ${usuario.getNombre()}`);
+            return { status: 200, user: usuario }; // Retorna el usuario si se encuentra y coincide la contraseña
+        } catch (error) {
+            console.log('Error al iniciar sesión:', error);
+            return { status: 500, message: 'Error en el servidor.' }; // Manejo de error
         }
     }
-
+    
+    
     // Método para cerrar sesión
     cerrarSesion() {
         if (this.usuarioLogueado) {

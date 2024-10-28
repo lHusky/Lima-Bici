@@ -12,6 +12,21 @@ const remove = async (id) => await base.remove(`${endpoint}/${id}`)
 
 const findOne = async (id) => await base.get(`${endpoint}/${id}`)
 
-const api = { findAll, create, update, remove, findOne }
 
-export default api;
+const iniciarSesion = async (email, password) => {
+
+    const payload = {
+        email: email,
+        contrasena: password
+    };
+
+    return await base.post(endpoint+'/iniciarSesion', payload);
+  };
+
+
+const registrarUsuario = async (payload) => await base.post(endpoint+'/registrarUsuario', payload)
+
+
+const api = { findAll, create, update, remove, findOne, iniciarSesion,registrarUsuario }
+
+export default api;                 

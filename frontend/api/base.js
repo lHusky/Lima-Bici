@@ -1,4 +1,4 @@
-const URI = 'http://ec2-3-142-246-223.us-east-2.compute.amazonaws.com:3000/';
+const URI = 'http://192.168.18.10:3000/';//'http://ec2-3-142-246-223.us-east-2.compute.amazonaws.com:3000/';
 
 const get = async (endpoint) => {
     
@@ -30,12 +30,18 @@ const post = async (endpoint, payload) => {
 
     const response = await fetch(URI + endpoint, postPayload);
     
-    // Asegúrate de que la respuesta sea exitosa
+
+
+    // Respuesta sea exitosa
     if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
     }
 
     const data = await response.json(); // Extraer JSON del cuerpo de la respuesta
+
+
+    // Imprimir el estado y cuerpo de la respuesta juntos
+    // await console.log('Estado y cuerpo:', { status: response.status, data });
     return { status: response.status, data };
     
   }
