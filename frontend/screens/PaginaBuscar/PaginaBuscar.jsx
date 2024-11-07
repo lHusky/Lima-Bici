@@ -1,7 +1,8 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { View, StyleSheet, Alert } from 'react-native';
+import { View, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import * as Location from 'expo-location';
 import ruta from '../../api/ruta';
+import { fetchBikePaths } from '../../services/fetchBikePaths.jsx';
 import Footer from '../../components/footer/footer.jsx';
 import Mapa from '../../components/Mapa/Mapa.jsx';
 import BarraBusqueda from '../../components/BarraBusqueda/BarraBusqueda.jsx';
@@ -17,42 +18,56 @@ const PaginaBuscar = ({ navigation }) => {
     const [tracking, setTracking] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
     const [origin, setOrigin] = useState(null);
-    const [routeCoordinates, setRouteCoordinates] = useState([]);
+    const [bikePaths, setBikePaths] = useState([]);
+    const [loadingBikePaths, setLoadingBikePaths] = useState(true);
 
     const { apiKey, fetchRouteDetails, distance, duration } = useGooglePlaces();
-    const fixedRoutes = [
-        {
-            coordinates: [
-                { latitude: -12.046374, longitude: -77.042793 },
-                { latitude: -12.045874, longitude: -77.033793 },
-            ],
-        },
-        {
-            coordinates: [
-                { latitude: -12.046374, longitude: -77.032793 },
-                { latitude: -12.043874, longitude: -77.022793 },
-            ],
-        },
-    ];
 
     useEffect(() => {
         const getCurrentLocation = async () => {
-            const { status } = await Location.requestForegroundPermissionsAsync();
-            if (status !== 'granted') {
-                alert('Permiso de localización denegado');
-                return;
+            try {
+                const { status } = await Location.requestForegroundPermissionsAsync();
+                if (status !== 'granted') {
+                    Alert.alert('Permiso de localización denegado');
+                    return;
+                }
+                const location = await Location.getCurrentPositionAsync({});
+                const currentLocation = {
+                    latitude: location.coords.latitude,
+                    longitude: location.coords.longitude,
+                };
+                setOrigin(currentLocation);
+                setDestination(currentLocation);
+            } catch (error) {
+                Alert.alert('Error', 'No se pudo obtener la ubicación actual.');
+                console.error('Error al obtener la ubicación:', error);
             }
-            const location = await Location.getCurrentPositionAsync({});
-            const currentLocation = {
-                latitude: location.coords.latitude,
-                longitude: location.coords.longitude,
-            };
-            setOrigin(currentLocation);
-            setDestination(currentLocation);
         };
 
         getCurrentLocation();
     }, []);
+
+    useEffect(() => {
+        const loadBikePaths = async () => {
+            if (!origin) return;
+            setLoadingBikePaths(true);
+            try {
+                const paths = await fetchBikePaths({
+                    latitude: origin.latitude,
+                    longitude: origin.longitude,
+                    radius: 5000, // Cargar ciclovías dentro de un radio de 5 km
+                });
+                setBikePaths(paths);
+            } catch (error) {
+                Alert.alert('Error', 'No se pudieron cargar las ciclovías. Intenta nuevamente.');
+                console.error('Error al cargar ciclovías:', error);
+            } finally {
+                setLoadingBikePaths(false);
+            }
+        };
+
+        loadBikePaths();
+    }, [origin]);
 
     const handleSuggestionSelect = (suggestion) => {
         if (searchRef.current) {
@@ -101,38 +116,6 @@ const PaginaBuscar = ({ navigation }) => {
         setTracking((prevTracking) => !prevTracking);
     };
 
-    useEffect(() => {
-        const saveRoute = async () => {
-            if (origin && destination && (origin.latitude !== destination.latitude || origin.longitude !== destination.longitude)) {
-                await fetchRouteDetails(origin, destination);
-
-                const routeData = {
-                    userId: 1,
-                    nombre: "Ruta personalizada",
-                    descripcion: "Recorrido desde el origen hasta el destino.",
-                    distancia: distance,
-                    duracion: duration,
-                    fechaInicio: new Date().toISOString(),
-                    fechaFin: new Date(new Date().getTime() + duration * 60).toISOString(),
-                    coordenadas: routeCoordinates.map((coord) => ({
-                        lat: coord.latitude,
-                        lng: coord.longitude,
-                    })),
-                };
-
-                try {
-                    await ruta.create(routeData);
-                    console.log("Ruta guardada exitosamente:", routeData);
-                } catch (error) {
-                    console.error("Error al guardar la ruta:", error);
-                    Alert.alert("Error", "No se pudo guardar la ruta.");
-                }
-            }
-        };
-
-        saveRoute();
-    }, [origin, destination]);
-
     return (
         <View style={styles.container}>
             <Mapa
@@ -140,9 +123,8 @@ const PaginaBuscar = ({ navigation }) => {
                 setDestination={setDestination}
                 trackUser={tracking}
                 apiKey={apiKey}
-                fixedRoutes={fixedRoutes}
                 onMarkerDragEnd={handleMarkerDragEnd}
-                showFixedRoutes={false} // No mostrar rutas fijas en esta pantalla
+
             />
             <BarraBusqueda
                 ref={searchRef}
@@ -151,10 +133,9 @@ const PaginaBuscar = ({ navigation }) => {
                 apiKey={apiKey}
                 onDestinationSelect={handleDestinationSelect}
             />
+            {loadingBikePaths && <ActivityIndicator size="large" color="#00aaff" />}
             <Carrousel onSuggestionSelect={handleSuggestionSelect} />
-
             <BotonInformacion onPress={() => setModalVisible(true)} />
-
             <InformacionLugar
                 visible={modalVisible}
                 address={direccion}
@@ -164,7 +145,6 @@ const PaginaBuscar = ({ navigation }) => {
                 onTrackingToggle={handleTrackingToggle}
                 tracking={tracking}
             />
-
             <Footer navigation={navigation} currentScreen="PaginaBuscar" />
         </View>
     );
