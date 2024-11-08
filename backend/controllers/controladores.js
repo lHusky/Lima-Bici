@@ -2,6 +2,8 @@
 // import GestionUsuario from '../modules/GestionUsuario.js'
 import { gestor } from '../app.js'; 
 // CONTROLADOR: Registrar Usuario
+import nodemailer from 'nodemailer';
+
 const crearUsuario = async (req, res) => {
     
     const {nombre, email, telefono, password } = req.body;
@@ -112,6 +114,117 @@ const registrarUsuario = async (req, res) => {
 }
 
 
+async function enviarCorreo(destinatario, codigo) {
+    const transporter = nodemailer.createTransport({
+      service: 'gmail', 
+      auth: {
+        user: 'lima.bicis@gmail.com',
+        pass: 'olmt oyox kbjw ehwx',
+      },
+    });
+  
+    const mailOptions = {
+      from: 'lima.bicis@gmail.com',
+      to: destinatario,
+      subject: 'Lima Bici - Código de verificación',
+      text: `Tu código de verificación es: ${codigo}`,
+    };
+  
+    try {
+      const info = await transporter.sendMail(mailOptions);
+      console.log('Correo enviado: ' + info.response);
+    } catch (error) {
+      console.error('Error al enviar el correo:', error);
+    }
+  }
 
-export { crearUsuario,cargarUsuarios,iniciarSesion,registrarUsuario};
+const crearCodVerificacion = async (req,res) => {
+    const {email} = req.body;
+
+    try {
+        const resultado = await gestor.asignarCodVerificacion(email);
+        
+        if (!resultado) {
+            return res.status(404).json({
+                message: 'no se encuentra usuario', 
+            });
+        }
+
+        enviarCorreo(email, resultado.codigo);
+
+        res.status(201).json({
+            message: 'Código creado',
+            codigo: resultado.codigo,
+        });
+
+
+
+    } catch (error) { 
+        console.error('Error asignar codigo a usuario (controlador):', error.message); 
+        res.status(500).json({
+            message: 'Error asignar codigo a usuario (controlador):',
+            error: error.message
+        });
+    }
+}
+
+const cargarCodVerificacion = async(req,res) => {
+    const {email} = req.body;
+    try {
+        const resultado = await gestor.obtenerCodVerificacion(email);
+
+        console.log(resultado)
+
+        if (resultado.status === 410) {
+            return res.status(410).json({
+                message: resultado.message,
+            });
+        }
+
+        if (resultado.status === 404) {
+            return res.status(404).json({
+                message: resultado.message,
+            });
+        }
+
+        res.status(200).json({
+            message: 'Enviando código',
+            codigo: resultado.codigo,
+        });
+
+    } catch (error) {
+        console.error('Error recuperar codigo a usuario (controlador):', error.message); 
+        res.status(500).json({
+            message: 'Error recuperar codigo a usuario (controlador):',
+            error: error.message
+        });
+    }
+}
+
+const actualizarContraseña = async (req, res) => {
+    const { email, newPassword } = req.body;
+
+    try {
+        const resultado = await gestor.actContraseña(email, newPassword);
+        
+        if (!resultado) {
+            return res.status(404).json({
+                message: 'Usuario no encontrado o contraseña no actualizada', 
+            });
+        }
+
+        res.status(200).json({
+            message: resultado.message,
+        });
+
+    } catch (error) { 
+        console.error('Error al actualizar contraseña (controlador):', error.message); 
+        res.status(500).json({
+            message: 'Error al actualizar contraseña (controlador):',
+            error: error.message
+        });
+    }
+}
+
+export { crearUsuario,cargarUsuarios,iniciarSesion,registrarUsuario,crearCodVerificacion,cargarCodVerificacion,actualizarContraseña};
 

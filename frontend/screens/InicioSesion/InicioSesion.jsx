@@ -4,7 +4,7 @@ import { KeyboardAvoidingView, ScrollView, TouchableOpacity, TextInput, View, Te
 import { useNavigation } from '@react-navigation/native';
 
 //ESTILOS
-import styles from './InicioSesionStyles.jsx'; 
+import styles from './InicioSesionStyle.jsx'; 
 
 //SERVICES
 import {handleLogin} from '../../services/validacion_credenciales/handleLogin.jsx'
@@ -18,9 +18,9 @@ import {handleLogin} from '../../services/validacion_credenciales/handleLogin.js
  const [emailError, setEmailError] = useState('');
  const [passwordError, setPasswordError] = useState(''); 
 
-  if(handleLogin(email, password, setEmailError, setPasswordError)){
-    navigation.navigate('Footer');
-  }
+ // if(handleLogin(email, password, setEmailError, setPasswordError)){
+ //  navigation.navigate('Footer');
+ // }
 
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior="height">
@@ -33,6 +33,7 @@ import {handleLogin} from '../../services/validacion_credenciales/handleLogin.js
               placeholderTextColor={styles.placeholderText.color} 
               onChangeText={setEmail} 
               value={email}
+              keyboardType="email-address"
             />
             {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
 
@@ -57,7 +58,7 @@ import {handleLogin} from '../../services/validacion_credenciales/handleLogin.js
                 <Text style={styles.checkboxText}>Recordar</Text>
               </View>
 
-              <TouchableOpacity>
+              <TouchableOpacity onPress={() => navigation.navigate('InicioRecuperarContraseña')}>
                 <Text style={styles.textContraseña}>Olvidé mi contraseña</Text>
               </TouchableOpacity>
             </View>
@@ -68,7 +69,7 @@ import {handleLogin} from '../../services/validacion_credenciales/handleLogin.js
               </View>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={handleCreateAccount}>
+            <TouchableOpacity onPress={() => navigation.navigate('RegistroUsuario')}>
               <View style={[styles.containerBoton]}>
                 <Text style={styles.textoCrear}>Crear cuenta</Text>
               </View>

@@ -2,7 +2,7 @@
 import { pool } from '../database.js';
 
 class Usuario {
-    constructor(id, nombre, email, telefono, fechaCumple, fotoPerfil, contrasena, peso, estadoSesion, estadoRecorrido) {
+    constructor(id, nombre, email, telefono, fechaCumple, fotoPerfil, contrasena, peso, estadoSesion, estadoRecorrido, verificationCode, verificationCodeExpires) {
         this.id = id;
         this.nombre = nombre;
         this.email = email;
@@ -13,6 +13,8 @@ class Usuario {
         this.peso = peso;
         this.estadoSesion = estadoSesion;
         this.estadoRecorrido = estadoRecorrido;
+        this.verificationCode = verificationCode;
+        this.verificationCodeExpires = verificationCodeExpires;
     }
 
     // Métodos Usuario

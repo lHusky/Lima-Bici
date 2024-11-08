@@ -1,4 +1,4 @@
-const URI = 'http://192.168.18.10:3000/';//'http://ec2-3-142-246-223.us-east-2.compute.amazonaws.com:3000/';
+const URI = 'http://192.168.:3000/';//'http://ec2-3-142-246-223.us-east-2.compute.amazonaws.com:3000/';
 
 const get = async (endpoint) => {
     
@@ -58,10 +58,10 @@ const post = async (endpoint, payload) => {
     }
 
     return await fetch(URI + endpoint, postPayload)
-              .then(response => response.json())
-              .then(data => {
-                  return data
-              })
+        .then(response => response.json().then(data => ({
+            status: response.status,
+            data: data
+        })));
   }
 
   const remove = async (endpoint) => {

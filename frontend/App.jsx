@@ -5,6 +5,9 @@ import { StatusBar } from 'react-native';
 
 import RegistroUsuario from './screens/RegistroUsuario/RegistroUsuario';
 import Iniciosesion from './screens/InicioSesion/InicioSesion';
+import InicioRecuperarContraseña from './screens/InicioRecuperarContraseña/InicioRecuperarContraseña.jsx';
+import InicioIngresarCodigo from './screens/InicioRecupContraIngCod/InicioIngresarCodigo.jsx';
+import InicioNuevaContraseña from './screens/InicioColocaNuevaContra/InicioColocarNuevaContra.jsx';
 import PaginaInicio from './screens/PaginaInicio/PaginaInicio';
 import PaginaMapas from './screens/PaginaMapas/PaginaMapas';
 import PaginaBuscar from './screens/PaginaBuscar/PaginaBuscar';
@@ -27,6 +30,9 @@ const App = () => {
             <Stack.Screen name="Iniciosesion">
               {(props) => <Iniciosesion {...props} />}
             </Stack.Screen>
+            <Stack.Screen name="InicioRecuperarContraseña" component={InicioRecuperarContraseña} />
+            <Stack.Screen name="InicioIngresarCodigo" component={InicioIngresarCodigo} />
+            <Stack.Screen name="InicioNuevaContraseña" component={InicioNuevaContraseña} />
             <Stack.Screen name="RegistroUsuario">
               {(props) => <RegistroUsuario {...props} />}
             </Stack.Screen>

@@ -28,8 +28,9 @@ CREATE TABLE usuario (
     email VARCHAR(100) NOT NULL UNIQUE,
     peso DECIMAL(5,2),
     estadoSesion BIT DEFAULT 0,
-    estadoRecorrido BIT DEFAULT 0
-    
+    estadoRecorrido BIT DEFAULT ,
+    verificationCode VARCHAR(10),
+    verificationCodeExpires TIMESTAMP;  
 );
 ------------------------------------
 --ENTIDADES DEBILES
