@@ -232,6 +232,31 @@ class GestionUsuario {
         }
     }
 
+    async editarUsuario(id, usuario) {
+        try {
+            const { nombre, telefono, fechaCumple, fotoPerfil, contrasena, email, peso, estadoSesion, estadoRecorrido, verificationCode, verificationCodeExpires } = usuario;
+    
+            const [result] = await pool.execute(
+                `UPDATE usuario SET nombre = ?, telefono = ?, fechaCumple = ?, fotoPerfil = ?, contrasena = ?, email = ?, peso = ?, estadoSesion = ?, estadoRecorrido = ?, verificationCode = ?, verificationCodeExpires = ?
+                 WHERE id = ?`,
+                [nombre, telefono, fechaCumple, fotoPerfil, contrasena, email, peso, estadoSesion, estadoRecorrido, verificationCode, verificationCodeExpires, id]
+            );
+    
+            if (result.affectedRows === 0) {
+                console.log(`No se encontró un usuario con el ID: ${id}`);
+                return { status: 404, message: 'Usuario no encontrado' };
+            }
+    
+            console.log(`Usuario actualizado con ID: ${id}`);
+            return { status: 200, message: 'Usuario actualizado correctamente' };
+    
+        } catch (error) {
+            console.error('Error al actualizar el usuario en la base de datos:', error);
+            throw error; // Lanza el error para ser manejado en el controlador
+        }
+    }
+    
+
     // Método para cerrar sesión
     cerrarSesion() {
         if (this.usuarioLogueado) {

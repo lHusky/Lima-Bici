@@ -226,5 +226,25 @@ const actualizarContraseña = async (req, res) => {
     }
 }
 
-export { crearUsuario,cargarUsuarios,iniciarSesion,registrarUsuario,crearCodVerificacion,cargarCodVerificacion,actualizarContraseña};
+
+const editarUsuario = async (req, res) => {
+    const usuario = req.body; 
+
+    try {
+        const result = await gestor.editarUsuario(usuario);
+
+        if (result) {
+            // Si el usuario fue actualizado con éxito
+            return res.status(200).json({ success: true, message: "Usuario actualizado con éxito." });
+        } else {
+            // Si no se encontró el usuario con el ID proporcionado
+            return res.status(404).json({ success: false, message: "Usuario no encontrado." });
+        }
+    } catch (error) {
+        // Manejo de errores del servidor
+        return res.status(500).json({ success: false, message: "Error al actualizar el usuario.", error: error.message });
+    }
+};
+
+export { crearUsuario,cargarUsuarios,iniciarSesion,registrarUsuario,crearCodVerificacion,cargarCodVerificacion,actualizarContraseña,editarUsuario};
 

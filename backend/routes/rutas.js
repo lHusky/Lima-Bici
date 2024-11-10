@@ -1,5 +1,5 @@
 import express from 'express';
-import { crearUsuario,cargarUsuarios,iniciarSesion,registrarUsuario, crearCodVerificacion, cargarCodVerificacion, actualizarContraseña} from '../controllers/controladores.js';
+import { crearUsuario,cargarUsuarios,iniciarSesion,registrarUsuario, crearCodVerificacion, cargarCodVerificacion, actualizarContraseña, editarUsuario} from '../controllers/controladores.js';
 
 const gestionUserRouter = express.Router();
 
@@ -22,4 +22,8 @@ gestionUserRouter.post('/gestionUsuario/findVerCodigo', cargarCodVerificacion);
 gestionUserRouter.put('/gestionUsuario/updateContrasena', actualizarContraseña);
 
 // Cambia `module.exports` a `export default`
+
+gestionUserRouter.put('/gestionUsuario/editarUsuario',  editarUsuario);
+
+
 export {gestionUserRouter};
