@@ -1,86 +1,119 @@
-// src/components/FormularioUsuario.jsx
 import React, { useState, useEffect } from 'react';
-import { View, Alert, StyleSheet } from 'react-native';
-import EditableField from './EditableField';
-import PasswordVerification from './PasswordVerification';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import api from '../../api/gestionUsuario';
 
-const FormularioUsuario = ({ userId }) => {
-  const [nombre, setNombre] = useState('');
-  const [email, setEmail] = useState('');
-  const [telefono, setTelefono] = useState('');
-  const [password, setPassword] = useState('');
-
-  useEffect(() => {
-    const cargarDatosUsuario = async () => {
-      try {
-        const response = await api.findOne(userId);
-        const { nombre, email, telefono } = response.data;
-        setNombre(nombre);
-        setEmail(email);
-        setTelefono(telefono);
-      } catch (error) {
-        Alert.alert('Error', 'No se pudieron cargar los datos del usuario.');
-      }
+const FormularioUsuario = ({ id, onUsuarioGuardado }) => {
+    const usuarioDefault = {
+        nombre: '',
+        telefono: '',
+        fechaCumple: '',
+        fotoPerfil: '',
+        contrasena: '',
+        email: '',
+        peso: '',
     };
 
-    cargarDatosUsuario();
-  }, [userId]);
+    const [usuario, setUsuario] = useState(usuarioDefault);
+    const [isEditing, setIsEditing] = useState(false);
 
-  const handleGuardarNombre = async (nuevoNombre) => {
-    try {
-      await api.update({ userId, nombre: nuevoNombre });
-      setNombre(nuevoNombre);
-      Alert.alert('Éxito', 'Nombre actualizado correctamente.');
-    } catch (error) {
-      Alert.alert('Error', 'No se pudo actualizar el nombre.');
-    }
-  };
+    useEffect(() => {
+        if (id) {
+            api.findOne(id).then((data) => setUsuario(data));
+            setIsEditing(true);
+        }
+    }, [id]);
 
-  const handleGuardarEmail = async (nuevoEmail) => {
-    try {
-      await api.update({ userId, email: nuevoEmail });
-      setEmail(nuevoEmail);
-      Alert.alert('Éxito', 'Email actualizado correctamente.');
-    } catch (error) {
-      Alert.alert('Error', 'No se pudo actualizar el email.');
-    }
-  };
+    const handleSave = async () => {
+        try {
+            if (isEditing) {
+                await api.editarUsuario(id, usuario);
+                Alert.alert('Éxito', 'Usuario actualizado correctamente');
+            } else {
+                await api.create(usuario);
+                Alert.alert('Éxito', 'Usuario agregado correctamente');
+            }
+            setIsEditing(false);
+            onUsuarioGuardado(); // Recargar lista de usuarios
+        } catch (error) {
+            Alert.alert('Error', 'Hubo un problema al guardar el usuario');
+        }
+    };
 
-  const handleGuardarTelefono = async (nuevoTelefono) => {
-    try {
-      await api.update({ userId, telefono: nuevoTelefono });
-      setTelefono(nuevoTelefono);
-      Alert.alert('Éxito', 'Teléfono actualizado correctamente.');
-    } catch (error) {
-      Alert.alert('Error', 'No se pudo actualizar el teléfono.');
-    }
-  };
-
-  const handleGuardarPassword = async (nuevaPassword) => {
-    try {
-      await api.update({ userId, password: nuevaPassword });
-      setPassword(nuevaPassword);
-      Alert.alert('Éxito', 'Contraseña actualizada correctamente.');
-    } catch (error) {
-      Alert.alert('Error', 'No se pudo actualizar la contraseña.');
-    }
-  };
-
-  return (
-    <View style={styles.formContainer}>
-      <EditableField label="Nombre" value={nombre} onSave={handleGuardarNombre} />
-      <EditableField label="Email" value={email} onSave={handleGuardarEmail} />
-      <EditableField label="Teléfono" value={telefono} onSave={handleGuardarTelefono} />
-      <PasswordVerification onVerified={handleGuardarPassword} />
-    </View>
-  );
+    return (
+        <View style={styles.container}>
+            <Text style={styles.header}>{isEditing ? 'Editar Usuario' : 'Agregar Usuario'}</Text>
+            <TextInput
+                style={styles.input}
+                placeholder="Nombre"
+                value={usuario.nombre}
+                onChangeText={(text) => setUsuario({ ...usuario, nombre: text })}
+            />
+            <TextInput
+                style={styles.input}
+                placeholder="Teléfono"
+                value={usuario.telefono}
+                onChangeText={(text) => setUsuario({ ...usuario, telefono: text })}
+            />
+            <TextInput
+                style={styles.input}
+                placeholder="Fecha de Nacimiento"
+                value={usuario.fechaCumple}
+                onChangeText={(text) => setUsuario({ ...usuario, fechaCumple: text })}
+            />
+            <TextInput
+                style={styles.input}
+                placeholder="Correo Electrónico"
+                value={usuario.email}
+                onChangeText={(text) => setUsuario({ ...usuario, email: text })}
+            />
+            <TextInput
+                style={styles.input}
+                placeholder="Contraseña"
+                secureTextEntry
+                value={usuario.contrasena}
+                onChangeText={(text) => setUsuario({ ...usuario, contrasena: text })}
+            />
+            <TextInput
+                style={styles.input}
+                placeholder="Peso"
+                value={usuario.peso}
+                onChangeText={(text) => setUsuario({ ...usuario, peso: text })}
+            />
+            <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+                <Text style={styles.buttonText}>{isEditing ? 'Guardar Cambios' : 'Agregar Usuario'}</Text>
+            </TouchableOpacity>
+        </View>
+    );
 };
 
 const styles = StyleSheet.create({
-  formContainer: {
-    padding: 20,
-  },
+    container: {
+        padding: 20,
+    },
+    header: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        marginBottom: 20,
+        textAlign: 'center',
+    },
+    input: {
+        borderBottomWidth: 1,
+        borderBottomColor: '#ccc',
+        marginBottom: 15,
+        paddingHorizontal: 10,
+        paddingVertical: 8,
+    },
+    saveButton: {
+        backgroundColor: '#77dd77',
+        padding: 15,
+        borderRadius: 8,
+        alignItems: 'center',
+    },
+    buttonText: {
+        color: '#fff',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
 });
 
 export default FormularioUsuario;
