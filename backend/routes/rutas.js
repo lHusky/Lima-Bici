@@ -9,6 +9,8 @@ gestionUserRouter.post('/gestionUsuario', crearUsuario);
 
 gestionUserRouter.get('/gestionUsuario', cargarUsuarios);
 
+// gestionUserRouter.get('/gestionUsuario/:id', obtenerUsuarioPorID);
+
 
 gestionUserRouter.post('/gestionUsuario/iniciarSesion',iniciarSesion);
 

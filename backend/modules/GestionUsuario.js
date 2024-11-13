@@ -121,7 +121,7 @@ class GestionUsuario {
     
             if (usuarios.length === 0) {
                 console.log(`No se encontró un usuario con el email: ${email}`);
-                return null; 
+                return null;  //???
             }
     
             const usuarioPuntero = usuarios[0];
@@ -231,6 +231,25 @@ class GestionUsuario {
             throw error;
         }
     }
+
+    // async obtenerUsuarioPorID(id) {
+    //     try {
+    //         const [rows] = await pool.execute(
+    //             'SELECT id, nombre, email, telefono, fechaCumple, fotoPerfil, contrasena, peso FROM usuario WHERE id = ?',
+    //             [id]
+    //         );
+    //         if (rows.length === 0) {
+    //             console.log(`No se encontró un usuario con el ID: ${id}`);
+    //             return null; // Usuario no encontrado
+    //         }
+    //         console.log(`Usuario encontrado con ID: ${id}`);
+    //         return rows[0]; // Devuelve el primer (y único) resultado
+    //     } catch (error) {
+    //         console.error('Error al obtener el usuario en la base de datos:', error);
+    //         throw error; // Lanza el error para ser manejado en el controlador
+    //     }
+    // }
+    
 
     async editarUsuario(id, usuario) {
         try {

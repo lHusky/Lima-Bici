@@ -150,9 +150,9 @@ const crearCodVerificacion = async (req,res) => {
             });
         }
 
-        enviarCorreo(email, resultado.codigo);
+        await enviarCorreo(email, resultado.codigo);
 
-        res.status(201).json({
+        return res.status(201).json({
             message: 'Código creado',
             codigo: resultado.codigo,
         });
@@ -161,7 +161,7 @@ const crearCodVerificacion = async (req,res) => {
 
     } catch (error) { 
         console.error('Error asignar codigo a usuario (controlador):', error.message); 
-        res.status(500).json({
+        return res.status(500).json({
             message: 'Error asignar codigo a usuario (controlador):',
             error: error.message
         });
@@ -227,6 +227,23 @@ const actualizarContraseña = async (req, res) => {
 }
 
 
+// const obtenerUsuarioPorID = async (req, res) => {
+//     const { id } = req.params;
+//     try {
+//         const usuario = await gestor.obtenerUsuarioPorID(id);
+//         if (usuario) {
+//             return res.status(200).json({ 
+//                 success: true, usuario });
+//         } else {
+//             return res.status(404).json({ 
+//                 success: false, message: "Usuario no encontrado." });
+//         }
+//     } catch (error) {
+//         return res.status(500).json({ success: false, message: "Error al obtener el usuario.", error: error.message });
+//     }
+// };
+
+
 const editarUsuario = async (req, res) => {
     const usuario = req.body; 
 
@@ -235,14 +252,17 @@ const editarUsuario = async (req, res) => {
 
         if (result) {
             // Si el usuario fue actualizado con éxito
-            return res.status(200).json({ success: true, message: "Usuario actualizado con éxito." });
+            return res.status(200).json({ 
+                success: true, message: "Usuario actualizado con éxito." });
         } else {
             // Si no se encontró el usuario con el ID proporcionado
-            return res.status(404).json({ success: false, message: "Usuario no encontrado." });
+            return res.status(404).json({ 
+                success: false, message: "Usuario no encontrado." });
         }
     } catch (error) {
         // Manejo de errores del servidor
-        return res.status(500).json({ success: false, message: "Error al actualizar el usuario.", error: error.message });
+        return res.status(500).json({ 
+            success: false, message: "Error al actualizar el usuario.", error: error.message });
     }
 };
 

@@ -10,8 +10,8 @@ const update = async (payload) => await base.put(endpoint, payload)
 
 const remove = async (id) => await base.remove(`${endpoint}/${id}`)
 
-const findOne = async (id) => await base.get(`${endpoint}/${id}`)
-
+const findOne = async (id) => await base.get(`${endpoint}/${id}`) 
+// usar para encontrar el usuario que inicio sesion en ese dispositivo
 
 const iniciarSesion = async (email, password) => {
 
@@ -23,16 +23,17 @@ const iniciarSesion = async (email, password) => {
     return await base.post(endpoint+'/iniciarSesion', payload);
   };
 
-const editarUsuario = async (id, usuarioData) => {
-  const payload = {
-      nombre: usuarioData.nombre,
-      telefono: usuarioData.telefono,
-      email: usuarioData.email,
-      peso: usuarioData.peso,
-      contrasena: usuarioData.contrasena,
-  };
-  return await base.put(`${endpoint}/${id}`, payload);
-};  
+  const editarUsuario = async (id, usuarioData) => {
+    const payload = {
+        nombre: usuarioData.nombre,
+        telefono: usuarioData.telefono,
+        email: usuarioData.email,
+        contrasena: usuarioData.contrasena,
+        fechaCumple: usuarioData.fechaCumple, 
+    };
+    return await base.put(`${endpoint}/${id}`, payload);
+};
+
 
 
 const registrarUsuario = async (payload) => await base.post(endpoint+'/registrarUsuario', payload)

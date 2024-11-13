@@ -2,6 +2,8 @@
 import React, { useState } from 'react';
 import { KeyboardAvoidingView, ScrollView, TouchableOpacity, TextInput, View, Text, ImageBackground } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 //ESTILOS
 import styles from './InicioSesionStyle.jsx'; 
@@ -18,9 +20,19 @@ import {handleLogin} from '../../services/validacion_credenciales/handleLogin.js
  const [emailError, setEmailError] = useState('');
  const [passwordError, setPasswordError] = useState(''); 
 
+
+//  const saveUserId = async (userId) => {
+//   try {
+//       await AsyncStorage.setItem('userId', userId.toString());
+//   } catch (error) {
+//       console.error("Error al guardar el ID de usuario", error);
+//   }
+// };
+
  const handleLoginPress = async () => {
   const validado = await handleLogin(email, password, setEmailError, setPasswordError);
   if (validado) {
+    // await saveUserId(validado.usuario.id);
     navigation.navigate('Footer');
   }
 };

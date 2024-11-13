@@ -6,6 +6,7 @@ import { Card, Paragraph, Button } from 'react-native-paper';
 import * as Location from 'expo-location';
 import 'react-native-get-random-values';
 import uuid from 'react-native-uuid';
+import FormPuntoInteres from './FormPuntoInteres/FormPuntoInteres.jsx'
 
 const { width, height } = Dimensions.get('window');
 
@@ -18,6 +19,7 @@ const Mapa = ({ apiKey }) => {
     const [modalVisible, setModalVisible] = useState(false);
     const [placeDetails, setPlaceDetails] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [showFormPuntoInteres, setShowFormPuntoInteres] = useState(false);
 
     useEffect(() => {
         const getCurrentLocation = async () => {
@@ -91,6 +93,21 @@ const Mapa = ({ apiKey }) => {
         setDestination(null);
         setRouteCoordinates([]);
     };
+
+
+    const handleGuardarPunto = () => {
+        setModalVisible(false);
+        // setShowFormPuntoInteres(false);
+        setTimeout(() => setShowFormPuntoInteres(true), 300); // Volver a abrir el segundo modal
+    };
+    
+
+    useEffect(() => {
+        console.log("Estado del modal principal:", modalVisible);
+        console.log("Estado del formulario de punto de interés:", showFormPuntoInteres);
+    }, [modalVisible, showFormPuntoInteres]);
+    
+    
 
     return (
         <View style={styles.container}>
@@ -204,6 +221,9 @@ const Mapa = ({ apiKey }) => {
                                             <Button mode="contained" style={[styles.button, { backgroundColor: 'green' }]}>
                                                 <Text style={styles.buttonText}>Agregar a Favoritos</Text>
                                             </Button>
+                                            <Button mode="contained" onPress={handleGuardarPunto} style={[styles.button, { backgroundColor: 'green' }]}>
+                                                <Text style={styles.buttonText}>Guardar Punto</Text>
+                                            </Button>
                                             <Button mode="outlined" onPress={closeModal} style={[styles.button, { borderColor: 'green' }]}>
                                                 <Text style={[styles.buttonText, { color: 'green' }]}>Cerrar</Text>
                                             </Button>
@@ -215,11 +235,27 @@ const Mapa = ({ apiKey }) => {
                     </View>
                 </View>
             </Modal>
+            {showFormPuntoInteres && (
+            <Modal visible={showFormPuntoInteres} transparent={true} animationType="slide" onRequestClose={() => setShowFormPuntoInteres(false)}>
+                <View style={styles.formContainer}>
+                    <FormPuntoInteres />
+                    <TouchableOpacity style={styles.cancelButton} onPress={() => setShowFormPuntoInteres(false)}>
+                         <Text style={styles.cancelButtonText}>Cerrar</Text>
+                     </TouchableOpacity>
+                </View>
+            </Modal>
+)}
+
         </View>
     );
 };
 
 const styles = StyleSheet.create({
+    formContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
     container: {
         flex: 1,
     },
