@@ -6,19 +6,22 @@ export const borrarErrores = (...setsErrores) => {
             setError('');
         }
       });
-
   };
 
 //En caso se quiera validar el largo de la contraseña
 //PARAMETROS: contraseña, setErrorContraseña
 export const largoPassword = ( password,setPasswordError) => {
     let esValido = true;
-
-    if (password.length  < 6 && password != '') {
-      esValido = false;
+  
+   if (password === undefined || password === '' || setPasswordError === undefined || setPasswordError === '' ) {
+     setPasswordError('*La contraseña no puede estar vacía');
+      return false;
+   }
+   if (password.length  < 6 && password != '') {
+     esValido = false;
       setPasswordError('*La contraseña debe tener al menos 6 caracteres');    
     }
-  
+
     return esValido;
   };
 
@@ -26,10 +29,10 @@ export const largoPassword = ( password,setPasswordError) => {
 //PARAMETROS: [lista de setErrors], varError1,varError2 ... etc
 //(las variables deben coincidir con el orden de los setErros)
 export const validarInputVacio = (setErrorFunctions, ...values) => {
-    let esVacio = falso;
+    let esVacio = false;
   
     values.forEach((value, index) => {
-      if (value === '') {
+      if (value == '') { 
         if (typeof setErrorFunctions[index] === 'function') {
           setErrorFunctions[index]('*Este campo no puede estar vacío');
         }
@@ -37,7 +40,7 @@ export const validarInputVacio = (setErrorFunctions, ...values) => {
       }
     });
   
-    return isValid;
+    return esVacio;
   };
 
   

@@ -28,10 +28,7 @@ const FormularioUsuario = ({ id, onUsuarioGuardado }) => {
             if (isEditing) {
                 await api.editarUsuario(id, usuario);
                 Alert.alert('Éxito', 'Usuario actualizado correctamente');
-            } else {
-                await api.create(usuario);
-                Alert.alert('Éxito', 'Usuario agregado correctamente');
-            }
+            } 
             setIsEditing(false);
             onUsuarioGuardado(); // Recargar lista de usuarios
         } catch (error) {

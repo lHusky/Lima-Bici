@@ -2,16 +2,19 @@ import gestionUsuarioApi from '../../api/gestionUsuario.js';
 import {borrarErrores,validarInputVacio,largoPassword} from '../manejo_campos/manejoInputLabel.jsx';
 
 export const handleLogin = async (email, password, setEmailError, setPasswordError) => {
+    let credencialesvalidas=false;
     try {
-        borrarErrores(setEmailError, setPasswordError);
+        await borrarErrores(setEmailError, setPasswordError);
 
-        let validarCamposVacios=validarInputVacio([setEmailError, setPasswordError], email, password);
-        let largoContrasena = largoPassword( password,setPasswordError);
-
-        if (!validarCamposVacios || !largoContrasena) {
-            return false;
+        let validarCamposVacios=await validarInputVacio ([setEmailError, setPasswordError], email, password);
+        if (validarCamposVacios) {
+            return credencialesvalidas;
         }
-        let credencialesvalidas=false;
+        let largoContrasena = await largoPassword( password,setPasswordError);
+
+        if (!largoContrasena) {
+            return credencialesvalidas;
+        }
 
         const {status, data } = await gestionUsuarioApi.iniciarSesion(email, password);
 

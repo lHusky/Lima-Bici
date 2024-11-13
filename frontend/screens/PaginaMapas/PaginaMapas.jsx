@@ -1,12 +1,10 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import HeaderMapas from '../../components/header/headerMapas.jsx'
 import Footer from '../../components/footer/footer.jsx';
 
 const PaginaMapas = ({ navigation }) => {
     return (
         <View style={styles.container}>
-            <HeaderMapas />
             <View style={styles.content}>
 
             </View>

@@ -8,13 +8,13 @@ const Usuarios = () => {
     const [verFormulario, setVerFormulario] = useState(false);
     const [idEditar, setIdEditar] = useState(null);
 
-    const cargarUsuarios = async () => {
+    const cargarUsuario = async () => {
         const data = await api.findAll();
         setUsuarios(data);
     };
 
     useEffect(() => {
-        cargarUsuarios();
+        cargarUsuario();
     }, []);
 
     const handleEdit = (id) => {

@@ -33,10 +33,12 @@ const RegistroUsuario = () => { //{ userAccounts, navigation }
         telefono,
     }; 
 
-
-    if(handleSubmit(payloadUsuario, confPassword,setEmailError,setPasswordError,setPhoneError,setConfPasswordError)){
-        navigation.navigate('Iniciosesion');
-    }
+    const handleSubmitPress = async () => {
+        const validado = await handleSubmit(payloadUsuario, confPassword,setEmailError,setPasswordError,setPhoneError,setConfPasswordError);
+        if (validado) {
+            navigation.navigate('Iniciosesion');
+        }
+      };
 
     return (
         // Envuelve todo en TouchableWithoutFeedback para cerrar el teclado al hacer clic fuera de los inputs
@@ -92,7 +94,7 @@ const RegistroUsuario = () => { //{ userAccounts, navigation }
                                 onChangeText={setConfPassword}
                             />
                             {confPasswordError ? <Text style={styles.errorMessage}>{confPasswordError}</Text> : null}
-                            <TouchableOpacity style={styles.boton} onPress={handleSubmit}>
+                            <TouchableOpacity style={styles.boton} onPress={handleSubmitPress}>
                                 <Text style={styles.botonText}>Crear cuenta</Text>
                             </TouchableOpacity>
                         </View>

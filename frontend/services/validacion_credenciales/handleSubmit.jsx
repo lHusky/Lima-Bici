@@ -2,19 +2,23 @@
 import gestionUsuarioApi from '../../api/gestionUsuario.js';
 import {borrarErrores,validarInputVacio,largoPassword} from '../manejo_campos/manejoInputLabel.jsx';
 
-
+//cuando una celda esta vacia, si se ejecuta o da respuesta RegistrarUsuario (backend)
 export const handleSubmit = async (user,confPassword,setEmailError,setPasswordError,setPhoneError,setConfPasswordError) => {
+    let credencialesvalidas=false;
     try{
-        let credencialesvalidas=false;
-        borrarErrores(setEmailError,setPasswordError,setPhoneError,setConfPasswordError);
+        await borrarErrores(setEmailError,setPasswordError,setPhoneError,setConfPasswordError);
 
-        let validarCamposVacios=validarInputVacio(
+        let validarCamposVacios= await validarInputVacio(
                         [setEmailError, setPasswordError,setPhoneError,setConfPasswordError], 
                         user.email, user.contrasena,user.telefono,confPassword);
-
-        let largoContrasena = largoPassword( user.contrasena,setPasswordError);
+        //cuando una celda esta vacia,
+        if (validarCamposVacios) {
+            return credencialesvalidas;
+        }
+                      
+        let largoContrasena = await largoPassword( user.contrasena,setPasswordError);
         
-        if (!validarCamposVacios || !largoContrasena) {
+        if (!largoContrasena) {
             return credencialesvalidas;
         }
     
@@ -32,11 +36,11 @@ export const handleSubmit = async (user,confPassword,setEmailError,setPasswordEr
             } else if (data.message === 'El número de celular ya está registrado.') { 
                 setPasswordError(data.message);
             }
-            return credencialesvalidas;
         }
         return credencialesvalidas;
     } catch (error) {
         console.error('Error al registrar el usuario:', error);
         Alert.alert('Error', 'Hubo un problema al registrar el usuario.');
     }
+    return credencialesvalidas;
 };

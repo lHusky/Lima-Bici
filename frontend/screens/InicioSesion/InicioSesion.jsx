@@ -18,9 +18,12 @@ import {handleLogin} from '../../services/validacion_credenciales/handleLogin.js
  const [emailError, setEmailError] = useState('');
  const [passwordError, setPasswordError] = useState(''); 
 
- // if(handleLogin(email, password, setEmailError, setPasswordError)){
- //  navigation.navigate('Footer');
- // }
+ const handleLoginPress = async () => {
+  const validado = await handleLogin(email, password, setEmailError, setPasswordError);
+  if (validado) {
+    navigation.navigate('Footer');
+  }
+};
 
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior="height">
@@ -63,7 +66,7 @@ import {handleLogin} from '../../services/validacion_credenciales/handleLogin.js
               </TouchableOpacity>
             </View>
 
-            <TouchableOpacity onPress={handleLogin}>
+            <TouchableOpacity onPress={handleLoginPress}>
               <View style={[styles.containerBoton, styles.botonLogin]}>
                 <Text style={styles.textoLogin}>Iniciar sesión</Text>
               </View>

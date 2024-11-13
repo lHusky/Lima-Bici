@@ -74,7 +74,7 @@ class GestionUsuario {
             const usuarioBD =  await nuevoUsuario.agregarUsuarioBD(nombre, email, telefono, contrasena)
             await this.agregarUsuarioGestion(usuarioBD);
             
-            console.log(`Registro exitoso: ${usuario.getNombre()}`);
+            console.log(`Registro exitoso: ${nuevoUsuario.getNombre()}`);
             return { status:200, usuario: nuevoUsuario };
            
         }catch (error) {
@@ -97,7 +97,7 @@ class GestionUsuario {
             }
     
             // Si el correo es correcto, verificar la contraseña
-            if (usuario.getContrasena() !== contrasena) {
+            if (usuario.getContrasena() != contrasena) {
                 console.log('Contraseña incorrecta');
                 return { status: 401, message: 'Contraseña incorrecta.' };
             }
@@ -234,12 +234,11 @@ class GestionUsuario {
 
     async editarUsuario(id, usuario) {
         try {
-            const { nombre, telefono, fechaCumple, fotoPerfil, contrasena, email, peso, estadoSesion, estadoRecorrido, verificationCode, verificationCodeExpires } = usuario;
+            const { nombre, telefono, fechaCumple, fotoPerfil, contrasena, email, peso} = usuario;
     
             const [result] = await pool.execute(
-                `UPDATE usuario SET nombre = ?, telefono = ?, fechaCumple = ?, fotoPerfil = ?, contrasena = ?, email = ?, peso = ?, estadoSesion = ?, estadoRecorrido = ?, verificationCode = ?, verificationCodeExpires = ?
-                 WHERE id = ?`,
-                [nombre, telefono, fechaCumple, fotoPerfil, contrasena, email, peso, estadoSesion, estadoRecorrido, verificationCode, verificationCodeExpires, id]
+                `UPDATE usuario SET nombre = ?, telefono = ?, fechaCumple = ?, fotoPerfil = ?, contrasena = ?, email = ?, peso = ?`,
+                [nombre, telefono, fechaCumple, fotoPerfil, contrasena, email, peso]
             );
     
             if (result.affectedRows === 0) {
