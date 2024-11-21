@@ -9,17 +9,23 @@ import Carrousel from '../../components/Sugerencias/Carrousel.jsx';
 import InformacionLugar from '../../components/InformacionLugar/InformacionLugar.jsx';
 import { useGooglePlaces } from '../../context/ContextAPI/GooglePlacesContext';
 
-
 const PaginaBuscar = ({ navigation }) => {
     const searchRef = useRef(null);
-    const [destination, setDestination] = useState(null); // Lugar destino seleccionado
-    const [direccion, setDireccion] = useState(''); // Dirección como texto
-    const [tracking, setTracking] = useState(false); // Estado de rastreo
-    const [modalVisible, setModalVisible] = useState(false); // Control de visibilidad del modal de información
-    const [origin, setOrigin] = useState(null); // Guardamos la ubicación actual del usuario
-    const [routeCoordinates, setRouteCoordinates] = useState([]); // Coordenadas del recorrido
 
-    const { apiKey, fetchRouteDetails, distance, duration } = useGooglePlaces(); // Extraemos distancia y duración
+    // Estados existentes
+    const [destination, setDestination] = useState(null);
+    const [direccion, setDireccion] = useState('');
+    const [tracking, setTracking] = useState(false);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [origin, setOrigin] = useState(null);
+    const [routeCoordinates, setRouteCoordinates] = useState([]);
+
+    // NUEVOS ESTADOS
+    const [selectedMarker, setSelectedMarker] = useState(null); // Estado para el marcador seleccionado
+    const [newPlaceDetails, setNewPlaceDetails] = useState(null); // Detalles del nuevo lugar
+    const [newModalVisible, setNewModalVisible] = useState(false); // Visibilidad del nuevo modal
+
+    const { apiKey, fetchRouteDetails, distance, duration } = useGooglePlaces();
 
     // Obtener la ubicación actual del usuario
     useEffect(() => {
@@ -34,97 +40,91 @@ const PaginaBuscar = ({ navigation }) => {
                 latitude: location.coords.latitude,
                 longitude: location.coords.longitude,
             };
-            setOrigin(currentLocation); // Guardamos la ubicación actual
-            setDestination(currentLocation); // Inicializamos el destino en la misma ubicación que el origen
+            setOrigin(currentLocation);
+            setDestination(currentLocation);
         };
 
-        getCurrentLocation(); // Obtenemos la ubicación al montar el componente
+        getCurrentLocation();
     }, []);
 
-    // Al seleccionar una sugerencia del carrusel, actualizamos el destino y la barra de búsqueda
-    const handleSuggestionSelect = (suggestion) => {
-        if (searchRef.current) {
-            searchRef.current.handleSearch(suggestion);
-            setModalVisible(true);  // Mostrar el modal al seleccionar una sugerencia
-        }
+    // Manejo de selección desde la barra de búsqueda (Nueva Funcionalidad)
+    const handleNewPlaceSelected = (placeInfo) => {
+        const {
+            name = "No disponible",
+            address = "No disponible",
+            phoneNumber = "No disponible",
+            rating = "No disponible",
+            types = ["No disponible"],
+            photos = [],
+            coordinates,
+        } = placeInfo;
+    
+        // Actualizamos el marcador en el mapa
+        setSelectedMarker(coordinates);
+    
+        // Configuramos los detalles del nuevo lugar
+        setNewPlaceDetails({
+            name,
+            address,
+            phoneNumber,
+            rating,
+            types,
+            photos,
+        });
+    
+        // Mostramos el modal con los datos del lugar seleccionado
+        setNewModalVisible(true);
     };
 
-    // Cuando el marcador se mueve manualmente, actualizamos la barra de búsqueda y mostramos el modal
-    const handleMarkerDragEnd = (latitude, longitude) => {
-        if (searchRef.current) {
-            searchRef.current.handleSearchFromCoords(latitude, longitude);
-            setModalVisible(true);  // Mostrar el modal al mover el marcador
-        }
-    };
-
-    // Alternar el estado de rastreo
-    const handleTrackingToggle = () => {
-        console.log('Toggling tracking:', !tracking);
-        setTracking((prevTracking) => !prevTracking); // Alternamos entre rastrear y detener rastreo
-    };
-
-    // Guardar la ruta y sus coordenadas en la base de datos
+    // Manejo del marcador al buscar un lugar
     useEffect(() => {
-        const saveRoute = async () => {
-            // Verificar si origen y destino son diferentes
-            if (origin && destination && (origin.latitude !== destination.latitude || origin.longitude !== destination.longitude)) {
-                await fetchRouteDetails(origin, destination); // Usar la ubicación actual como origen
-
-                // Enviar datos de la ruta a la API
-                const routeData = {
-                    // userId: 1, // ID del usuario, reemplazar según el contexto de autenticación
-                    nombre: "Ruta personalizada",
-                    descripcion: "Recorrido desde el origen hasta el destino.",
-                    distancia: distance,
-                    duracion: duration,
-                    fechaInicio: new Date().toISOString(),
-                    // fechaFin: new Date(new Date().getTime() + duration * 60 * 1000).toISOString(), // Duración estimada
-                    coordenadas: routeCoordinates.map((coord) => ({
-                        lat: coord.latitude,
-                        lng: coord.longitude,
-                    })),
-                };
-
-                // try {
-                //     await ruta.create(routeData);
-                //     console.log("Ruta guardada exitosamente:", routeData);
-                // } catch (error) {
-                //     console.error("Error al guardar la ruta:", error);
-                //     Alert.alert("Error", "No se pudo guardar la ruta.");
-                // }
-            }
-        };
-
-        saveRoute();
-    }, [origin, destination]);
+        if (
+            selectedMarker &&
+            typeof selectedMarker.latitude === "number" &&
+            typeof selectedMarker.longitude === "number"
+        ) {
+            setDestination(selectedMarker);
+        }
+    }, [selectedMarker]);
 
     return (
         <View style={styles.container}>
             <Mapa
                 destination={destination}
-                setDestination={setDestination} // Actualiza el destino desde el marcador
+                setDestination={setDestination} // No interfiere con lo nuevo
                 trackUser={tracking}
-                onMarkerDragEnd={handleMarkerDragEnd}
                 apiKey={apiKey}
                 routeCoordinates={routeCoordinates}
-                setRouteCoordinates={setRouteCoordinates} // Actualiza las coordenadas de la ruta en tiempo real
+                setRouteCoordinates={setRouteCoordinates}
+                selectedMarker={selectedMarker} // NUEVO: Sincronizamos el marcador con el mapa
             />
             <BarraBusqueda
                 ref={searchRef}
-                setDestination={setDestination} // Actualiza el destino desde la barra de búsqueda
-                setDireccion={setDireccion}
                 apiKey={apiKey}
+                setNewDestination={setSelectedMarker} // Pasamos la función para actualizar el marcador
+                onNewPlaceSelected={handleNewPlaceSelected}
             />
-            <Carrousel onSuggestionSelect={handleSuggestionSelect} />
+            <Carrousel onSuggestionSelect={(suggestion) => searchRef.current?.handleSearch(suggestion)} />
 
+            {/* Modal para detalles básicos */}
             <InformacionLugar
                 visible={modalVisible}
                 address={direccion}
                 distance={distance}
                 duration={duration}
                 onClose={() => setModalVisible(false)}
-                onTrackingToggle={handleTrackingToggle}
-                tracking={tracking} // Estado de rastreo para el botón
+                onTrackingToggle={() => setTracking((prev) => !prev)}
+                tracking={tracking}
+            />
+
+            {/* Modal para nuevos detalles del lugar */}
+            <InformacionLugar
+                visible={newModalVisible}
+                newPlaceDetails={newPlaceDetails} // Pasa el objeto completo
+                newSelectedLocation={selectedMarker} // Pasa la ubicación seleccionada
+                onClose={() => setNewModalVisible(false)}
+                loadingDetails={false} // Si es necesario, ajusta este valor
+                setNewDestination={setDestination} // Si aplicable
             />
 
             <Footer navigation={navigation} currentScreen="PaginaBuscar" />
@@ -139,3 +139,9 @@ const styles = StyleSheet.create({
 });
 
 export default PaginaBuscar;
+
+
+
+
+
+
