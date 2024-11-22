@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { View, StyleSheet, Dimensions, Alert } from 'react-native';
+import { View, StyleSheet, Dimensions, Alert, ActivityIndicator  } from 'react-native';
 import { useGooglePlaces } from '../../context/ContextAPI/GooglePlacesContext';
 import MapView from 'react-native-maps';
 import * as Location from 'expo-location';
@@ -130,6 +130,7 @@ const Mapa = ({ destination, setDestination, trackUser, apiKey, onMarkerDragEnd 
 
     return (
         <View style={styles.container}>
+            {initialOrigin ? (
             <MapView
                 ref={mapRef}
                 style={styles.map}
@@ -157,11 +158,15 @@ const Mapa = ({ destination, setDestination, trackUser, apiKey, onMarkerDragEnd 
                 )}
                 {blueRouteCoords && <BlueRoute coordinates={blueRouteCoords} />}
                 {adjustedRouteCoords && <YellowRoute coordinates={adjustedRouteCoords} />}
+                
                 <RoutePlanner route={blueRouteCoords} bikePaths={bikePaths} onRouteCalculated={setAdjustedRouteCoords} />
                 <FixedRoutes onRoutesLoaded={(data) => setBikePaths(data)} />
                 <RedRoute coordinates={routeCoordinates} />
-            </MapView>
-
+            </MapView>): (
+            <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color="#0000ff" />
+            </View>
+        )}
             <PlaceDetailsModal
                 visible={modalVisible}
                 placeDetails={placeDetails}

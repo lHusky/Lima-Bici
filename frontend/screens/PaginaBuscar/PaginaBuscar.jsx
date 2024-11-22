@@ -1,5 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { View, StyleSheet, Alert } from 'react-native';
+import { View, StyleSheet, Alert, ActivityIndicator 
+
+ } from 'react-native';
 import * as Location from 'expo-location';
 import ruta from '../../api/ruta';
 import Footer from '../../components/footer/footer.jsx';
@@ -30,18 +32,23 @@ const PaginaBuscar = ({ navigation }) => {
     // Obtener la ubicación actual del usuario
     useEffect(() => {
         const getCurrentLocation = async () => {
-            const { status } = await Location.requestForegroundPermissionsAsync();
-            if (status !== 'granted') {
-                alert('Permiso de localización denegado');
-                return;
+            try {
+                const { status } = await Location.requestForegroundPermissionsAsync();
+                if (status !== 'granted') {
+                    alert('Permiso de localización denegado');
+                    return;
+                }
+                const location = await Location.getCurrentPositionAsync({});
+                const currentLocation = {
+                    latitude: location.coords.latitude,
+                    longitude: location.coords.longitude,
+                };
+                setOrigin(currentLocation);
+                setDestination(currentLocation);
+            } catch (error) {
+                console.error("Error obteniendo la ubicación:", error);
+                Alert.alert('Error', 'No se pudo obtener la ubicación.');
             }
-            const location = await Location.getCurrentPositionAsync({});
-            const currentLocation = {
-                latitude: location.coords.latitude,
-                longitude: location.coords.longitude,
-            };
-            setOrigin(currentLocation);
-            setDestination(currentLocation);
         };
 
         getCurrentLocation();
@@ -88,7 +95,9 @@ const PaginaBuscar = ({ navigation }) => {
     }, [selectedMarker]);
 
     return (
+        
         <View style={styles.container}>
+            {origin?(
             <Mapa
                 destination={destination}
                 setDestination={setDestination} // No interfiere con lo nuevo
@@ -98,6 +107,11 @@ const PaginaBuscar = ({ navigation }) => {
                 setRouteCoordinates={setRouteCoordinates}
                 selectedMarker={selectedMarker} // NUEVO: Sincronizamos el marcador con el mapa
             />
+            ) : (
+                <View style={styles.loadingContainer}>
+                    <ActivityIndicator size="large" color="#0000ff" />
+                </View>
+            )}
             <BarraBusqueda
                 ref={searchRef}
                 apiKey={apiKey}
@@ -105,7 +119,7 @@ const PaginaBuscar = ({ navigation }) => {
                 onNewPlaceSelected={handleNewPlaceSelected}
             />
             <Carrousel onSuggestionSelect={(suggestion) => searchRef.current?.handleSearch(suggestion)} />
-
+            
             {/* Modal para detalles básicos */}
             <InformacionLugar
                 visible={modalVisible}
@@ -115,6 +129,8 @@ const PaginaBuscar = ({ navigation }) => {
                 onClose={() => setModalVisible(false)}
                 onTrackingToggle={() => setTracking((prev) => !prev)}
                 tracking={tracking}
+                loadingDetails={false} // Si es necesario, ajusta este valor
+                setNewDestination={setDestination} // Si aplicable
             />
 
             {/* Modal para nuevos detalles del lugar */}
@@ -128,7 +144,8 @@ const PaginaBuscar = ({ navigation }) => {
             />
 
             <Footer navigation={navigation} currentScreen="PaginaBuscar" />
-        </View>
+        
+            </View>
     );
 };
 

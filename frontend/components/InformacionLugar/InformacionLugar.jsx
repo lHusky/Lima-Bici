@@ -18,8 +18,8 @@ const InformacionLugar = ({
   onClose,
   newPlaceDetails,
   newSelectedLocation,
-  loadingDetails,
-  setNewDestination,
+  loadingDetails = false,
+  setNewDestination = ()=>{},
 }) => {
   // Log de entrada para depuración
   console.log("Props recibidos en InformacionLugar:", {
