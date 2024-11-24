@@ -26,11 +26,11 @@ class GestionUsuario {
 
                 for (let usuarioPuntero of usuarios) {
                     //si al menos uno cumple (existe)
-                    const existeEnLista = this.listaUsuarios.some(usuario => usuario.getEmail() === usuarioPuntero.email);
+                    const existeEnLista = await this.listaUsuarios.some(usuario => usuario.getEmail() === usuarioPuntero.email);
                     
                     // Si el usuario no está en la lista, se agrega
                     if (!existeEnLista) {
-                        const nuevoUsuario = new Usuario(null, usuarioPuntero.nombre, usuarioPuntero.email, usuarioPuntero.telefono, null, null, usuarioPuntero.contrasena, null, null, null);
+                        const nuevoUsuario = await new Usuario(usuarioPuntero.id, usuarioPuntero.nombre, usuarioPuntero.email, usuarioPuntero.telefono, null, null, usuarioPuntero.contrasena, null, null, null);
                         await this.agregarUsuarioGestion(nuevoUsuario);
                     }
                 }
@@ -86,11 +86,11 @@ class GestionUsuario {
 
     async iniciarSesion(email, contrasena) {
         try {
-            await this.obtenerUsuariosBD();
+            this.listaUsuarios= await this.obtenerUsuariosBD();
             
             // Verificar si el correo existe
             const usuario = this.listaUsuarios.find(usuario => usuario.getEmail() === email);
-    
+            
             // Si el correo no existe
             if (!usuario) {
                 return { status: 401, message: 'Correo no registrado.' };
@@ -104,6 +104,7 @@ class GestionUsuario {
     
             // Si el correo y la contraseña son correctos
             console.log(`Inicio de sesión exitoso: Bienvenido ${usuario.getNombre()}`);
+            console.log(usuario);
             return { status: 200, user: usuario }; // Retorna el usuario si se encuentra y coincide la contraseña
         } catch (error) {
             console.log('Error al iniciar sesión:', error);
@@ -232,23 +233,23 @@ class GestionUsuario {
         }
     }
 
-    // async obtenerUsuarioPorID(id) {
-    //     try {
-    //         const [rows] = await pool.execute(
-    //             'SELECT id, nombre, email, telefono, fechaCumple, fotoPerfil, contrasena, peso FROM usuario WHERE id = ?',
-    //             [id]
-    //         );
-    //         if (rows.length === 0) {
-    //             console.log(`No se encontró un usuario con el ID: ${id}`);
-    //             return null; // Usuario no encontrado
-    //         }
-    //         console.log(`Usuario encontrado con ID: ${id}`);
-    //         return rows[0]; // Devuelve el primer (y único) resultado
-    //     } catch (error) {
-    //         console.error('Error al obtener el usuario en la base de datos:', error);
-    //         throw error; // Lanza el error para ser manejado en el controlador
-    //     }
-    // }
+    async obtenerUsuarioPorID(id) {
+        try {
+            const [rows] = await pool.execute(
+                'SELECT id, nombre, email, telefono, fechaCumple, fotoPerfil, contrasena, peso FROM usuario WHERE id = ?',
+                [id]
+            );
+            if (rows.length === 0) {
+                console.log(`No se encontró un usuario con el ID: ${id}`);
+                return null; // Usuario no encontrado
+            }
+            console.log(`Usuario encontrado con ID: ${id}`, rows[0]);
+            return rows[0]; // Devuelve el primer (y único) resultado
+        } catch (error) {
+            console.error('Error al obtener el usuario en la base de datos:', error);
+            throw error; // Lanza el error para ser manejado en el controlador
+        }
+    }
     
 
     async editarUsuario(id, usuario) {
@@ -292,6 +293,15 @@ class GestionUsuario {
             console.log(`ID: ${usuario.id}, Nombre: ${usuario.nombre}, Email: ${usuario.email}, Logueado: ${usuario.estaLogueado}`);
         });
     }
-}
+    
+    setListaUsuarios(listaUsuarios){
+        this.listaUsuarios=listaUsuarios;
+    }
+
+    getListaUsuarios(){
+        return this.listaUsuarios;
+    }
+};
+
 
 export default GestionUsuario;

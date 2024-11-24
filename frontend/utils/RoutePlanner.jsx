@@ -10,7 +10,7 @@ const RoutePlanner = ({ route, bikePaths, onRouteCalculated }) => {
   useEffect(() => {
     const adjustRoute = async () => {
       if (!route || route.length === 0) {
-        console.warn('No hay coordenadas para la ruta.');
+        // console.warn('No hay coordenadas para la ruta.');
         onRouteCalculated([]);
         return;
       }

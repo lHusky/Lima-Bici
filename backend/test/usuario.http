@@ -1,0 +1,7 @@
+GET http://localhost:4001/carrera
+
+####
+
+GET http://localhost:4001/curso/4
+
+####

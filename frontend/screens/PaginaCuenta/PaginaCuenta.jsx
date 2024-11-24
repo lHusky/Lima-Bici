@@ -1,13 +1,13 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import Footer from '../../components/footer/footer';
-import Usuarios from '../../components/FormularioUsuario/Usuario';
+import Usuario from '../../components/FormularioUsuario/Usuario';
 
 const PaginaCuenta = ({ navigation }) => {
     return (
         <View style={styles.container}>
             <View style={styles.content}>
-                <Usuarios />
+                <Usuario/>
             </View>
             <Footer navigation={navigation} currentScreen="PaginaCuenta" />
         </View>

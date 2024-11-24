@@ -7,7 +7,7 @@ import ruta from '../../api/ruta';
 import Footer from '../../components/footer/footer.jsx';
 import Mapa from '../../components/Mapa/Mapa.jsx';
 import BarraBusqueda from '../../components/BarraBusqueda/BarraBusqueda.jsx';
-import Carrousel from '../../components/Sugerencias/Carrousel.jsx';
+import Carrousel from '../../components/Sugerencias/CarruselGeneral.jsx';
 import InformacionLugar from '../../components/InformacionLugar/InformacionLugar.jsx';
 import { useGooglePlaces } from '../../context/ContextAPI/GooglePlacesContext';
 
@@ -29,7 +29,14 @@ const PaginaBuscar = ({ navigation }) => {
 
     const { apiKey, fetchRouteDetails, distance, duration } = useGooglePlaces();
 
-    // Obtener la ubicación actual del usuario
+
+    const datos = [
+        { id: '1', title: '🚲 Ciclovías' },
+        { id: '2', title: '🏪 Tiendas' },
+        { id: '3', title: '🧑‍🔧 Talleres' },
+        { id: '4', title: '🏯 Restaurantes' },
+    ];
+
     useEffect(() => {
         const getCurrentLocation = async () => {
             try {
@@ -118,8 +125,14 @@ const PaginaBuscar = ({ navigation }) => {
                 setNewDestination={setSelectedMarker} // Pasamos la función para actualizar el marcador
                 onNewPlaceSelected={handleNewPlaceSelected}
             />
-            <Carrousel onSuggestionSelect={(suggestion) => searchRef.current?.handleSearch(suggestion)} />
-            
+            <Carrousel 
+                data={datos} 
+                onItemPress={(item) => console.log('Seleccionaste:', item)}
+                tamanoLetra={16}
+                altura={40}
+                colorLetra="black"
+                />
+          
             {/* Modal para detalles básicos */}
             <InformacionLugar
                 visible={modalVisible}
@@ -139,6 +152,7 @@ const PaginaBuscar = ({ navigation }) => {
                 newPlaceDetails={newPlaceDetails} // Pasa el objeto completo
                 newSelectedLocation={selectedMarker} // Pasa la ubicación seleccionada
                 onClose={() => setNewModalVisible(false)}
+                onOpen={() => setNewModalVisible(true)}
                 loadingDetails={false} // Si es necesario, ajusta este valor
                 setNewDestination={setDestination} // Si aplicable
             />

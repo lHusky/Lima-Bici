@@ -1,5 +1,13 @@
 import express from 'express';
-import { crearUsuario,cargarUsuarios,iniciarSesion,registrarUsuario, crearCodVerificacion, cargarCodVerificacion, actualizarContraseña, editarUsuario} from '../controllers/controladores.js';
+import { crearUsuario,
+    cargarUsuarios,
+    iniciarSesion,
+    registrarUsuario, 
+    crearCodVerificacion, 
+    cargarCodVerificacion, 
+    actualizarContraseña, 
+    editarUsuario,
+    obtenerUsuarioPorID} from '../controllers/controladores.js';
 
 const gestionUserRouter = express.Router();
 
@@ -9,7 +17,7 @@ gestionUserRouter.post('/gestionUsuario', crearUsuario);
 
 gestionUserRouter.get('/gestionUsuario', cargarUsuarios);
 
-// gestionUserRouter.get('/gestionUsuario/:id', obtenerUsuarioPorID);
+gestionUserRouter.get('/gestionUsuario/:id', obtenerUsuarioPorID);
 
 
 gestionUserRouter.post('/gestionUsuario/iniciarSesion',iniciarSesion);
@@ -25,7 +33,7 @@ gestionUserRouter.put('/gestionUsuario/updateContrasena', actualizarContraseña)
 
 // Cambia `module.exports` a `export default`
 
-gestionUserRouter.put('/gestionUsuario/editarUsuario',  editarUsuario);
+gestionUserRouter.put('/gestionUsuario/:id',  editarUsuario);
 
 
 export {gestionUserRouter};

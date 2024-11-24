@@ -4,11 +4,29 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import 'react-native-get-random-values';
 import uuid from 'react-native-uuid';
 
-const Card = ({ title, onPress }) => {
+const Card = ({ 
+      title,
+      // imagen,
+      onPress,
+      tamanoLetra=14,
+      altura = 35,
+      colorLetra='black'
+}) => {
   return (
     <TouchableOpacity onPress={onPress}>
-      <View style={styles.card}>
-        <Text style={styles.title}>{title}</Text>
+      <View style={[
+        styles.card,
+        {
+          height:altura
+        }
+        ]}>
+        <Text 
+          style={[styles.title,
+            {color:colorLetra,
+            fontSize:tamanoLetra,
+            }]}
+        >{title}
+        </Text>
       </View>
     </TouchableOpacity>
   );
@@ -16,8 +34,7 @@ const Card = ({ title, onPress }) => {
 
 const styles = StyleSheet.create({
   card: {
-    width: 140, // Ajusta el ancho de las tarjetas
-    height: 35, // Ajusta el alto de las tarjetas
+    maxWidth: 150, // Ajusta el ancho de las tarjetas
     marginHorizontal: 7,
     backgroundColor: 'white',
     borderRadius: 100,
@@ -26,17 +43,14 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2, // Opacidad de la sombra
     shadowRadius: 2, // Difusión de la sombra
     elevation: 2, // Sombra en Android
-
+    marginBottom:2,
     alignItems: 'center',
     justifyContent: 'center',
 
   },
   title: {
     textAlign: 'center',
-    fontSize: 14,
-    color: 'black', // Color del texto
     fontWeight: 'bold',
-
     paddingHorizontal: 10, // Padding interno
 
   },

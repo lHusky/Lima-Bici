@@ -9,7 +9,7 @@ const Footer = ({ navigation, currentScreen }) => {
     { label: 'Inicio', image: require('../../assets/FooterCasa.png'), screen: 'PaginaInicio' },
     { label: 'Mapas', image: require('../../assets/FooterMapa.png'), screen: 'PaginaMapas' },
     { label: 'Buscar', image: require('../../assets/FooterLupa.png'), screen: 'PaginaBuscar' },
-    { label: 'Favoritos', image: require('../../assets/FooterEstrella.png'), screen: 'PaginaFavoritos' },
+    { label: 'Guardados', image: require('../../assets/FooterEstrella.png'), screen: 'PaginaFavoritos' },
     { label: 'Cuenta', image: require('../../assets/FooterPerfil.png'), screen: 'PaginaCuenta' },
   ];
 

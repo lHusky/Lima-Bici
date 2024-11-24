@@ -227,44 +227,53 @@ const actualizarContraseña = async (req, res) => {
 }
 
 
-// const obtenerUsuarioPorID = async (req, res) => {
-//     const { id } = req.params;
-//     try {
-//         const usuario = await gestor.obtenerUsuarioPorID(id);
-//         if (usuario) {
-//             return res.status(200).json({ 
-//                 success: true, usuario });
-//         } else {
-//             return res.status(404).json({ 
-//                 success: false, message: "Usuario no encontrado." });
-//         }
-//     } catch (error) {
-//         return res.status(500).json({ success: false, message: "Error al obtener el usuario.", error: error.message });
-//     }
-// };
+const obtenerUsuarioPorID = async (req, res) => {
+
+    const { id } = req.params; // id del usuario a buscar
+    try {
+        const usuario = await gestor.obtenerUsuarioPorID(id);
+        if (usuario) {
+            return res.status(200).json({ 
+                success: true, usuario });
+        } else {
+            return res.status(404).json({ 
+                success: false, message: "Usuario no encontrado." });
+        }
+    } catch (error) {
+        return res.status(500).json({ success: false, message: "Error al obtener el usuario.", error: error.message });
+    }
+};
 
 
 const editarUsuario = async (req, res) => {
-    const usuario = req.body; 
+    const{id} = req.params; // id del usuario a editar
+    const usuario = req.body;  //lista de datos editados
 
     try {
         const result = await gestor.editarUsuario(usuario);
 
         if (result) {
-            // Si el usuario fue actualizado con éxito
             return res.status(200).json({ 
                 success: true, message: "Usuario actualizado con éxito." });
         } else {
-            // Si no se encontró el usuario con el ID proporcionado
             return res.status(404).json({ 
                 success: false, message: "Usuario no encontrado." });
         }
     } catch (error) {
-        // Manejo de errores del servidor
         return res.status(500).json({ 
             success: false, message: "Error al actualizar el usuario.", error: error.message });
     }
 };
 
-export { crearUsuario,cargarUsuarios,iniciarSesion,registrarUsuario,crearCodVerificacion,cargarCodVerificacion,actualizarContraseña,editarUsuario};
+export { 
+    crearUsuario,
+    cargarUsuarios,
+    iniciarSesion,
+    registrarUsuario,
+    crearCodVerificacion,
+    cargarCodVerificacion,
+    actualizarContraseña,
+    editarUsuario,
+    obtenerUsuarioPorID
+};
 

@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import {
   Modal,
   View,
@@ -12,22 +12,19 @@ import {
 } from "react-native";
 import { Button } from "react-native-paper";
 import PropTypes from "prop-types";
+import FormPuntoInteres from "../Mapa/FormPuntoInteres/FormPuntoInteres.jsx"
 
 const InformacionLugar = ({
   visible,
-  onClose,
+  onClose = ()=>{},
+  onOpen = ()=>{},
   newPlaceDetails,
   newSelectedLocation,
   loadingDetails = false,
   setNewDestination = ()=>{},
 }) => {
-  // Log de entrada para depuración
-  console.log("Props recibidos en InformacionLugar:", {
-    visible,
-    newPlaceDetails,
-    newSelectedLocation,
-    loadingDetails,
-  });
+
+  const [showFormPuntoInteres, setShowFormPuntoInteres] = useState(false);
 
   // Verificar si los datos del lugar y las coordenadas son válidos
   const isValidPlaceDetails =
@@ -54,48 +51,65 @@ const InformacionLugar = ({
     }
   };
 
+
+  const handleGuardarPunto = () => {
+    onClose();
+    setShowFormPuntoInteres(true); // Volver a abrir el segundo modal
+
+  };
+  const volverAInformacion = () => {
+    setShowFormPuntoInteres(false);
+    onOpen(); // Volver a abrir el segundo modal
+  };
+
   return (
+    <>
+    {visible && 
     <Modal
       visible={visible}
-      transparent={true}
-      animationType="slide"
+      transparent={true} //fondo bloqueado
+      // animationType="slide" //
       onRequestClose={onClose}
     >
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
           <ScrollView contentContainerStyle={styles.scrollViewContent}>
-            <View style={styles.card}>
-              {/* Título del Modal */}
+            
+              
               <Text style={styles.title}>
                 {loadingDetails
                   ? "Cargando información..."
                   : newPlaceDetails?.name || "Ubicación Seleccionada"}
               </Text>
 
-              {/* Indicador de carga o detalles */}
+              
               {loadingDetails ? (
                 <ActivityIndicator animating={true} color="#0000ff" />
               ) : (
                 <>
-                  {/* Información del lugar */}
+                  
                   <View style={styles.cardContent}>
-                    <Text style={styles.text}>
-                      Dirección: {newPlaceDetails?.address || "No disponible"}
-                    </Text>
-                    <Text style={styles.text}>
-                      Teléfono: {newPlaceDetails?.phoneNumber || "No disponible"}
-                    </Text>
-                    <Text style={styles.text}>
-                      Calificación:{" "}
-                      {newPlaceDetails?.rating || "No disponible"} ⭐
-                    </Text>
-                    <Text style={styles.text}>
-                      Tipos:{" "}
-                      {newPlaceDetails?.types?.join(", ") || "No disponible"}
-                    </Text>
+                  {newPlaceDetails && (
+                    <>
+                      <Text style={styles.text}>
+                        Dirección: {newPlaceDetails?.address || "No disponible"}
+                      </Text>
+                      <Text style={styles.text}>
+                        Teléfono: {newPlaceDetails?.phoneNumber || "No disponible"}
+                      </Text>
+                      <Text style={styles.text}>
+                        Calificación:{" "}
+                        {newPlaceDetails?.rating || "No disponible"} ⭐
+                      </Text>
+                      <Text style={styles.text}>
+                        Tipos:{" "}
+                        {newPlaceDetails?.types?.join(", ") || "No disponible"}
+                      </Text>
+                    </>
+                  )}
                   </View>
 
-                  {/* Imagen del lugar si está disponible */}
+                
                   {newPlaceDetails?.photos &&
                     newPlaceDetails.photos.length > 0 && (
                       <Image
@@ -104,7 +118,7 @@ const InformacionLugar = ({
                       />
                     )}
 
-                  {/* Botones */}
+                 
                   <ScrollView
                     horizontal
                     contentContainerStyle={styles.buttonContainer}
@@ -143,6 +157,14 @@ const InformacionLugar = ({
                       mode="contained"
                       style={styles.button}
                       labelStyle={styles.buttonText}
+                      onPress={handleGuardarPunto}
+                    >
+                      Guardar punto
+                    </Button>
+                    <Button
+                      mode="contained"
+                      style={styles.button}
+                      labelStyle={styles.buttonText}
                     >
                       Agregar a Favoritos
                     </Button>
@@ -157,13 +179,26 @@ const InformacionLugar = ({
                   </ScrollView>
                 </>
               )}
-            </View>
+            
           </ScrollView>
         </View>
       </View>
     </Modal>
-  );
-};
+    }
+      {showFormPuntoInteres && 
+        
+        <FormPuntoInteres 
+          visible={showFormPuntoInteres}  
+          transparent={true} 
+          animationType="slide" 
+          volver ={() => volverAInformacion()}
+          onClose={() => setShowFormPuntoInteres(false)}
+        />
+      }
+    </>
+    );
+  }
+
 
 InformacionLugar.propTypes = {
   visible: PropTypes.bool.isRequired,
@@ -200,9 +235,6 @@ const styles = StyleSheet.create({
   },
   scrollViewContent: {
     flexGrow: 1,
-  },
-  card: {
-    backgroundColor: "white",
   },
   cardContent: {
     marginBottom: 15,

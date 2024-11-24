@@ -20,19 +20,20 @@ import {handleLogin} from '../../services/validacion_credenciales/handleLogin.js
  const [emailError, setEmailError] = useState('');
  const [passwordError, setPasswordError] = useState(''); 
 
-
-//  const saveUserId = async (userId) => {
-//   try {
-//       await AsyncStorage.setItem('userId', userId.toString());
-//   } catch (error) {
-//       console.error("Error al guardar el ID de usuario", error);
-//   }
-// };
+ const saveUserId = async (userId) => {
+  try {
+    console.log(userId);
+      await AsyncStorage.setItem('userId', String(userId));  //Almacena el id obtenido del login en AsyncStorage
+  } catch (error) {
+      console.error("Error al guardar el ID de usuario", error);
+  }
+};
 
  const handleLoginPress = async () => {
   const validado = await handleLogin(email, password, setEmailError, setPasswordError);
-  if (validado) {
-    // await saveUserId(validado.usuario.id);
+  if (validado.success) {
+    console.log(validado.usuario);
+    await saveUserId(validado.usuario.id); // id nulo
     navigation.navigate('Footer');
   }
 };
