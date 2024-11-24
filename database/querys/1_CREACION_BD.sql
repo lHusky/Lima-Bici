@@ -1,8 +1,8 @@
-CREATE DATABASE lima_bici;
+DROP DATABASE lima_bici;
+CREATE DATABASE lima_bici CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 
 USE lima_bici;
 
---ENTIDADES FUERTES
 CREATE TABLE tipo_Objetivo (
     id INT AUTO_INCREMENT PRIMARY KEY,
     titulo VARCHAR(100)
@@ -15,7 +15,7 @@ CREATE TABLE estado_objetivo (
 
 CREATE TABLE tipo_PuntoInteres (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    titulo VARCHAR(100)
+    titulo VARCHAR(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci
 );
 
 CREATE TABLE usuario (
@@ -30,13 +30,13 @@ CREATE TABLE usuario (
     estadoSesion BIT DEFAULT 0,
     estadoRecorrido BIT DEFAULT 0,
     verificationCode VARCHAR(10),
-    verificationCodeExpires TIMESTAMP  
+    verificationCodeExpires TIMESTAMP,
+    tipo_usuario VARCHAR(10)
 );
-------------------------------------
---ENTIDADES DEBILES
+
 CREATE TABLE objetivo (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    titulo VARCHAR(100) NOT NULL,
+    titulo VARCHAR(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
     id_tipo INT,
     FOREIGN KEY (id_tipo) REFERENCES tipo_Objetivo(id) ON DELETE CASCADE
 );
@@ -46,7 +46,7 @@ CREATE TABLE sesion (
     velocidad_promedio DECIMAL(10, 2) DEFAULT 0,
     calorias_quemadas DECIMAL(10, 2) DEFAULT 0,
     km_recorridos DECIMAL(10, 2) DEFAULT 0,   
-    fechaInicio DATE,
+    fechaInicio DATE,  
     fechaFin DATE,
     id_usuario INT,
     FOREIGN KEY (id_usuario) REFERENCES usuario(id) ON DELETE CASCADE
@@ -76,18 +76,18 @@ CREATE TABLE coordenada (
 
 CREATE TABLE punto_interes (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    titulo VARCHAR(100) NOT NULL,
+    titulo VARCHAR(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
     horario VARCHAR(100),
     img_referencial VARCHAR(255),
     direccion VARCHAR(255),
-    descripcion VARCHAR(300),
+    descripcion VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
     id_coordenada INT,
     id_tipo INT,
+    id_creador INT,
     FOREIGN KEY (id_coordenada) REFERENCES coordenada(id) ON DELETE CASCADE,
+    FOREIGN KEY (id_creador) REFERENCES usuario(id) ON DELETE CASCADE,
     FOREIGN KEY (id_tipo) REFERENCES tipo_PuntoInteres(id) ON DELETE CASCADE
 );
-
---ASOCIATIVAS
 
 CREATE TABLE usuario_objetivo (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -117,7 +117,7 @@ CREATE TABLE usuario_ruta (
 CREATE TABLE favoritos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     fecha_agregado DATE NOT NULL,
-    descripcion VARCHAR(350),
+    descripcion VARCHAR(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
     icon_favorito VARCHAR(300),
     id_usuario INT,
     id_ruta INT,
@@ -127,3 +127,18 @@ CREATE TABLE favoritos (
     FOREIGN KEY (id_punto_interes) REFERENCES punto_interes(id) ON DELETE CASCADE
 );
 
+INSERT INTO tipo_PuntoInteres (titulo) VALUES ('🏠 Casa');
+INSERT INTO tipo_PuntoInteres (titulo) VALUES ('📚 Universidad');
+INSERT INTO tipo_PuntoInteres (titulo) VALUES ('💼 Trabajo');
+INSERT INTO tipo_PuntoInteres (titulo) VALUES ('🌳 Parque');
+INSERT INTO tipo_PuntoInteres (titulo) VALUES ('🍽️ Restaurante');
+INSERT INTO tipo_PuntoInteres (titulo) VALUES ('☕ Cafeteria');
+INSERT INTO tipo_PuntoInteres (titulo) VALUES ('🛒 Supermercado');
+INSERT INTO tipo_PuntoInteres (titulo) VALUES ('🛍️ Tienda');
+INSERT INTO tipo_PuntoInteres (titulo) VALUES ('🚲 Tienda de Bicicletas');
+INSERT INTO tipo_PuntoInteres (titulo) VALUES ('🅿️ Estacionamiento de Bicicletas');
+INSERT INTO tipo_PuntoInteres (titulo) VALUES ('🤝 Alquiler de Bicicletas');
+INSERT INTO tipo_PuntoInteres (titulo) VALUES ('🏋️‍♀️ Gimnasio');
+INSERT INTO tipo_PuntoInteres (titulo) VALUES ('Otro');
+
+INSERT INTO usuario (nombre, email, telefono, contrasena,tipo_usuario) VALUES ("admin", "admin@", "123456", "123456","admin");

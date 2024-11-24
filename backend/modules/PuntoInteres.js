@@ -1,12 +1,11 @@
 import Coordenada from './Coordenada.js';
+import { pool } from '../database.js';
 
 class PuntoInteres {
-                                                     //manejo de campos opcionales
-    constructor(id, id_creador , titulo, img_referencial='', direccion, descripcion, id_tipo,latitud,longitud) {
-        //manejo de campos obligatorios
-        if (!id || !id_creador || !titulo || !direccion || !descripcion || !id_tipo || !latitud || !longitud) {
-            throw new Error("Falta completar los campos obligatorios.");
-        }
+    constructor(id, id_creador , titulo, img_referencial='', horario,direccion, descripcion, id_tipo,latitud,longitud) {
+        // if (!id || !id_creador || !titulo || !direccion || !descripcion || !id_tipo || !latitud || !longitud) {
+        //     throw new Error("Falta completar los campos obligatorios.");
+        // }
         
         this.id = id;
         this.id_creador = id_creador;
@@ -19,17 +18,19 @@ class PuntoInteres {
         this.ubicacion=new Coordenada(latitud, longitud);
     }
 
-    async agregarPuntoInteresBD(nombre, email, telefono, contrasena) {
+    async agregarPuntoInteresBD(id_creador, titulo, img_referencial='', horario='',direccion='', descripcion='', id_tipo,latitud,longitud) {
         try {
             const [result] = await pool.execute(   
-                'INSERT INTO punto_interes (nombre, email, telefono, contrasena) VALUES (?, ?, ?, ?)',
-                [nombre, email, telefono, contrasena]
+                'INSERT INTO punto_interes (titulo, horario, img_referencial, direccion,descripcion,id_coordenada,id_tipo) VALUES (?, ?, ?, ?, ?, ?, ?)',
+                [titulo, horario, img_referencial, direccion,descripcion,id_coordenada,id_tipo]
             );
-            const usuarioID = result.insertId;
-            this.setId(usuarioID);
+    
+                
+            const itemID = result.insertId;
+            this.setId(itemID);
             return this;
         } catch (error) {
-            console.error('Error en la creación del usuario:', error.message);
+            console.error('Error en la creación del punto interes (modulo):', error.message);
             throw error;
         } 
     }
@@ -49,7 +50,7 @@ class PuntoInteres {
         } 
     }
     
-    async eliminarPuntoInteresBD(nombre, email, telefono, contrasena) {
+    async eliminarPuntoInteresBD(id) {
         try {
 
             //buscar para obtener id
@@ -57,8 +58,8 @@ class PuntoInteres {
                 'DELETE FROM punto_interes WHERE id = ?',
                 [id]
             );
-            const usuarioID = result.insertId;
-            this.setId(usuarioID);
+            const itemID = result.insertId;
+            this.setId(itemID);
             return this;
         } catch (error) {
             console.error('Error al eliminar del usuario:', error.message);
@@ -140,3 +141,5 @@ class PuntoInteres {
         this.ubicacion = new Coordenada(latitud, longitud);
     }
 }
+
+export default PuntoInteres;

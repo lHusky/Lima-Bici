@@ -34,7 +34,7 @@ const InformacionLugar = ({
     typeof newSelectedLocation.longitude === "number";
 
   // Log para verificar si los datos son válidos
-  console.log("isValidPlaceDetails:", isValidPlaceDetails);
+  // console.log("isValidPlaceDetails:", isValidPlaceDetails);
 
   // Función para abrir Google Maps
   const handleOpenGoogleMaps = () => {

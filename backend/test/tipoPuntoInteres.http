@@ -1,0 +1,22 @@
+GET http://localhost:3000/tipoPuntoInteres/
+
+####
+
+POST http://localhost:3000/tipoPuntoInteres/
+Content-Type: application/json
+
+{
+      "titulo": "Casa"
+}
+
+####
+PUT http://localhost:3000/tipoPuntoInteres/8
+Content-Type: application/json
+
+{
+      "id": 8,
+      "titulo": "Tienda de Bicicletas"
+}
+
+####
+DELETE http://localhost:3000/tipoPuntoInteres/17

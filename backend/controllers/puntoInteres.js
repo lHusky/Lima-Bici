@@ -1,33 +1,40 @@
-// Importa las clases utilizando `import` ya que estás en un entorno ES Module
-// import GestionUsuario from '../modules/GestionUsuario.js'
-import { gestor } from '../app.js'; 
-// CONTROLADOR: Registrar Usuario
-import nodemailer from 'nodemailer';
 
-const crearUsuario = async (req, res) => {
+
+import PuntoInteres from '../modules/PuntoInteres.js';
+
+const crearUno = async (req, res) => {
     
-    const {nombre, email, telefono, password } = req.body;
+    const {
+        id_creador , 
+        titulo, 
+        img_referencial, 
+        horario, 
+        direccion, 
+        descripcion,
+        id_tipo,latitud,
+        longitud} = req.body;
 
     try {
+        const item = new PuntoInteres(id_creador , titulo, img_referencial, horario, direccion, descripcion,id_tipo,latitud,longitud);
         // Crear usuario y obtener id_usuario
-        const { id: usuarioID } = await gestor.registrarUsuario(nombre, email,password, telefono);
-        console.log(`USUARIO CONTROLADOR`);
+        const { id: itemID } = await item.agregaagregarPuntoInteresBD( id_creador , titulo, img_referencial, horario, direccion, descripcion,id_tipo,latitud,longitud);
+      
         // Éxito - aprobación de creación de objeto
         res.status(201).json({
-            message: 'Usuario creados exitosamente',
-            usuarioID
+            message: 'Punto Guardado creados exitosamente',
+            itemID
         });
         console.log(`MENSAJE DE EXITO ENVIADO`);
     } catch (error) { 
-        console.error('Error al crear el usuario (controlador):', error.message); // Añadido para debug
+        console.error('Error al crear el punto de interes (controlador):', error.message); // Añadido para debug
         res.status(500).json({
-            message: 'Error al crear el usuario (controlador):',
+            message: 'Error al crear el punto de interes (controlador):',
             error: error.message
         });
     }
 };
 
-const cargarUsuarios = async (req, res) => {
+const obtenerTodos = async (req, res) => {
     try{
         const usuariosAgregados = await gestor.obtenerUsuariosBD();
 

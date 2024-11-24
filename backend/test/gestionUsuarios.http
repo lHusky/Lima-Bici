@@ -1,0 +1,18 @@
+GET http://localhost:3000/gestionUsuario/
+####
+GET http://localhost:3000/gestionUsuario/1
+####
+
+PUT http://localhost:3000/gestionUsuario/2
+Content-Type: application/json
+
+{
+    "nombre": "Diana Villalva Gomez",
+    "email": "villalv.diana7368@gmail.com",
+    "telefono": "942191390",
+    "fechaCumple": null,
+    "fotoPerfil": null,
+    "contrasena": "123456",
+    "peso": null
+}
+

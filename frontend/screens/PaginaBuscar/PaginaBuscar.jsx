@@ -7,7 +7,7 @@ import ruta from '../../api/ruta';
 import Footer from '../../components/footer/footer.jsx';
 import Mapa from '../../components/Mapa/Mapa.jsx';
 import BarraBusqueda from '../../components/BarraBusqueda/BarraBusqueda.jsx';
-import Carrousel from '../../components/Sugerencias/CarruselGeneral.jsx';
+import Carrusel from '../../components/Sugerencias/CarruselGeneral.jsx';
 import InformacionLugar from '../../components/InformacionLugar/InformacionLugar.jsx';
 import { useGooglePlaces } from '../../context/ContextAPI/GooglePlacesContext';
 
@@ -31,10 +31,10 @@ const PaginaBuscar = ({ navigation }) => {
 
 
     const datos = [
-        { id: '1', title: '🚲 Ciclovías' },
-        { id: '2', title: '🏪 Tiendas' },
-        { id: '3', title: '🧑‍🔧 Talleres' },
-        { id: '4', title: '🏯 Restaurantes' },
+        { id: '1', titulo: '🚲 Ciclovías' },
+        { id: '2', titulo: '🏪 Tiendas' },
+        { id: '3', titulo: '🧑‍🔧 Talleres' },
+        { id: '4', titulo: '🏯 Restaurantes' },
     ];
 
     useEffect(() => {
@@ -125,12 +125,19 @@ const PaginaBuscar = ({ navigation }) => {
                 setNewDestination={setSelectedMarker} // Pasamos la función para actualizar el marcador
                 onNewPlaceSelected={handleNewPlaceSelected}
             />
-            <Carrousel 
+            <Carrusel 
                 data={datos} 
                 onItemPress={(item) => console.log('Seleccionaste:', item)}
                 tamanoLetra={16}
                 altura={40}
                 colorLetra="black"
+                otrosEstilos={{
+                    position: "absolute",
+                    bottom: 95,
+                    left: 0,
+                    right: 0,
+                    paddingVertical: 10,
+                  }}
                 />
           
             {/* Modal para detalles básicos */}

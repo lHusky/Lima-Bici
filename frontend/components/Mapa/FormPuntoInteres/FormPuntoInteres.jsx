@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState} from "react";
 import {
   Modal,
   View,
@@ -11,6 +11,13 @@ import {
 } from "react-native";
 import PropTypes from "prop-types";
 import InputConContador from "./InputConContador.jsx"
+import Carrusel from "../../Sugerencias/CarruselGeneral.jsx"
+import tipoPuntoInteresApi from '../../../api/tipoPuntoInteres.js';
+
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import gestionUsuarioApi from '../../../api/gestionUsuario.js';
+
+// import SubidaImagen from '../../SubidaImagen/SubidaImagen.jsx';
 
 const FormPuntoInteres = ({ 
     visible = false,  
@@ -23,10 +30,50 @@ const FormPuntoInteres = ({
   const [nombre, setNombre] = useState("");
   const [descripcion, setDescripcion] = useState("");
 
+  const [datosTipoPunto, setDatosTipoPunto] = useState(null);
+  const [cargando, setCargando] = useState(true);
+  
   const handleGuardar = () => {
     console.log("Datos guardados:", { tipoMarcador, nombre, descripcion });
     onClose();
   };
+  
+  const obtenerTiposPuntos = async ()=>{
+    try {
+      const data  = await tipoPuntoInteresApi.findAll();
+      // console.log("Respuesta completa de la API:", data.items);
+      setDatosTipoPunto(data.items); 
+    } catch (error) {
+      console.error("Error al obtener datos de tipo de punto de interés:", error);
+    } finally {
+      setCargando(false); 
+    }
+  }
+
+  const cargarCreador = async () => {
+    try {
+      const userId = await AsyncStorage.getItem("userId");
+      if (userId) {
+        const { usuario } = await gestionUsuarioApi.findOne(userId);
+        console.log("USUARIO RECIBIDO", usuario)
+        setNombre(usuario.nombre); 
+      }
+    } catch (error) {
+      console.error("Error al cargar el nombre del usuario:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (visible) {
+      cargarCreador();
+      obtenerTiposPuntos();
+      setCargando(true);
+    }
+  }, [visible]);
+
+  useEffect(() => {
+      console.log("TIPOS DE PUNTO ",datosTipoPunto);
+  }, [datosTipoPunto]);
 
   return (
     <Modal
@@ -35,76 +82,41 @@ const FormPuntoInteres = ({
       animationType={animationType}
       onRequestClose={volver}
     >
+      
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
+        {cargando ?
+        <Text style={styles.label}>Cargando información...</Text>
+        :
           <ScrollView>
             <Text style={styles.title}>Centro Comercial La Rambla</Text>
             <Text style={styles.subtitle}>
               Av. Javier Prado Este 2010, Lima 15036
             </Text>
 
-            {/* Selector de tipo de marcador */}
             <Text style={styles.label}>Tipo de marcador</Text>
-            <View style={styles.tipoMarcadorContainer}>
-              <TouchableOpacity
-                style={[
-                  styles.tipoMarcadorButton,
-                  tipoMarcador === "Ciclovías" && styles.tipoMarcadorSelected,
-                ]}
-                onPress={() => setTipoMarcador("Ciclovías")}
-              >
-                <Text
-                  style={[
-                    styles.tipoMarcadorText,
-                    tipoMarcador === "Ciclovías" && styles.tipoMarcadorTextSelected,
-                  ]}
-                >
-                  🚴 Ciclovías
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[
-                  styles.tipoMarcadorButton,
-                  tipoMarcador === "Tiendas" && styles.tipoMarcadorSelected,
-                ]}
-                onPress={() => setTipoMarcador("Tiendas")}
-              >
-                <Text
-                  style={[
-                    styles.tipoMarcadorText,
-                    tipoMarcador === "Tiendas" && styles.tipoMarcadorTextSelected,
-                  ]}
-                >
-                  🏬 Tiendas
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[
-                  styles.tipoMarcadorButton,
-                  tipoMarcador === "Puntos Aparcado" &&
-                    styles.tipoMarcadorSelected,
-                ]}
-                onPress={() => setTipoMarcador("Puntos Aparcado")}
-              >
-                <Text
-                  style={[
-                    styles.tipoMarcadorText,
-                    tipoMarcador === "Puntos Aparcado" &&
-                      styles.tipoMarcadorTextSelected,
-                  ]}
-                >
-                  🅿️ Puntos Aparcado
-                </Text>
-              </TouchableOpacity>
-            </View>
-
-            {/* Campos de texto */}
+            {datosTipoPunto && 
+                <Carrusel 
+                    data={datosTipoPunto} 
+                    onItemPress={(item) => console.log('Seleccionaste:', item)}
+                    tamanoLetra={15}
+                    altura={40}
+                    colorLetraDefecto="black"
+                    colorLetraSelected="black"
+                    colorOpcionDefecto="white"
+                    colorOpcionSelected="#cef5b0"
+                    otrosEstilos={{
+                      paddingVertical: 10,
+                      flexDirection: 'row',
+                    }}
+                />
+              }
             <Text style={styles.label}>Creador</Text>
             <TextInput
-              style={styles.input}
-              placeholder="Nombre de Usuario"
-              value={nombre}
+              style={styles.inputCreador}
+              value={nombre} 
               onChangeText={setNombre}
+              editable={false}
             />
             <Text style={styles.label}>Descripción</Text>
             
@@ -117,13 +129,18 @@ const FormPuntoInteres = ({
                 alto={80}
                 alineaTexto = "top"
             />
-            {/* Botón para subir imagen */}
+¿
             <Text style={styles.label}>Imagen de Referencia</Text>
             <TouchableOpacity style={styles.uploadButton}>
               <Text style={styles.uploadButtonText}>📤 Subir Imagen</Text>
             </TouchableOpacity>
+{/* 
+            <SubidaImagen
+              onImageSelect={(image) => {
+                console.log("Imagen seleccionada:", image);
+              }}
+            /> */}
 
-            {/* Botones de acción */}
             <View style={styles.buttonContainer}>
               <TouchableOpacity style={styles.button} onPress={handleGuardar}>
                 <Text style={styles.buttonText}>Guardar</Text>
@@ -138,6 +155,7 @@ const FormPuntoInteres = ({
               </TouchableOpacity>
             </View>
           </ScrollView>
+          }
         </View>
       </View>
     </Modal>
@@ -202,12 +220,15 @@ const styles = StyleSheet.create({
   tipoMarcadorTextSelected: {
     color: "white",
   },
-  input: {
+  inputCreador:{
     borderWidth: 1,
     borderColor: "#ccc",
+    backgroundColor:"#f6f6f6",
     borderRadius: 5,
     padding: 10,
     marginBottom: 12,
+    fontWeight:500,
+    color: 'grey',
   },
   textArea: {
     height: 80,
@@ -220,6 +241,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#f0f0f0",
     borderRadius: 10,
     alignItems: "left",
+
     marginBottom: 30,
     width: 145,
     height:45

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { FlatList, ScrollView, View, StyleSheet } from 'react-native';
 import Card from './Card';
 
@@ -6,23 +6,42 @@ const Carrousel = ({
   data,
   tamanoLetra=14,
   altura = 150, 
-  colorLetra="black",
+  colorLetraDefecto="black",
+  colorLetraSelected="black",
+  colorOpcionDefecto="white",
+  colorOpcionSelected="grey",
   onItemPress = () => {}, 
+  otrosEstilos
 }) => {
 
+  const [selectedId, setSelectedId] = useState(null); 
     return (
-      <View style={
-                [styles.container]}>
+      <View style={[otrosEstilos]}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           {data.map((item) => (
-            
             <Card
               key={item.id}
-              title={item.title || "titulo vacio"}
-              onPress={() => onItemPress(item.title)} 
-              tamanoLetra={tamanoLetra}
+              title={item.titulo || "titulo vacio"}
+              onPress={() => {if (item.id === selectedId) {
+                                setSelectedId(null);
+                              } else {
+                                setSelectedId(item.id);
+                              }
+                                onItemPress(item);
+                              }}
               altura={altura}
-              colorLetra={colorLetra}
+              letraDefecto={{
+                          color:colorLetraDefecto,
+                          fontSize:tamanoLetra}}
+              cardDefecto={{
+                          backgroundColor: colorOpcionDefecto}}
+              letraSelected={{
+                          color:colorLetraSelected,
+                          fontSize:tamanoLetra}}
+              cardSelected={{
+                          backgroundColor: colorOpcionSelected}}          
+              isSelected={item.id === selectedId}
+
             />
           ))}
         </ScrollView>
@@ -51,14 +70,6 @@ const Carrousel = ({
 //   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    paddingVertical: 10,
-    position: 'absolute',
-    bottom: 95,
-    left: 0,
-    right: 0,
-  },
-});
+
 
 export default Carrousel;

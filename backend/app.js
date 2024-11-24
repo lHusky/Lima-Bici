@@ -1,5 +1,8 @@
 import express from 'express';
-import {gestionUserRouter} from './routes/rutas.js'; // Asegúrate de que esta ruta es correcta
+import {gestionUserRouter} from './routes/gestionUsuario.js'; // Asegúrate de que esta ruta es correcta
+import {puntoInteresRouter} from './routes/puntoInteres.js';
+import {tipoPuntoInteresRouter} from './routes/tipoPuntoInteres.js';
+
 import GestionUsuario from './modules/GestionUsuario.js';
 import cors from 'cors';
 
@@ -12,21 +15,12 @@ app.use(cors({
 export const gestor = new GestionUsuario();
 
 // Usar las rutas del router importado
-app.use("/api", gestionUserRouter);
+app.use("/gestionUsuario", gestionUserRouter);
+
+app.use("/puntoInteres", puntoInteresRouter);
+
+app.use("/tipoPuntoInteres", tipoPuntoInteresRouter);
 
 app.listen(3000, '0.0.0.0', () => {
     console.log("Server running on port 3000");
 });
-
-
-
-
-
-
-
-
-// Ruta existente para obtener un usuario por ID
-// app.get("/usuario/:id", async (req, res) => {
-//     const usuario = await getUsuarioByID(req.params.id);
-//     res.status(200).send(usuario);
-// });

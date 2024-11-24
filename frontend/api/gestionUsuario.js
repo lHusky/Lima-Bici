@@ -1,6 +1,6 @@
 import base from './base.js'
 
-const endpoint = 'api/gestionUsuario'
+const endpoint = 'gestionUsuario/'
 
 const findAll = async () => await base.get(endpoint)
 
@@ -20,7 +20,7 @@ const iniciarSesion = async (email, password) => {
         contrasena: password
     };
 
-    return await base.post(endpoint+'/iniciarSesion', payload);
+    return await base.post(endpoint+'iniciarSesion', payload);
   };
 
   const editarUsuario = async (id, usuarioData) => {
@@ -36,13 +36,13 @@ const iniciarSesion = async (email, password) => {
 
 
 
-const registrarUsuario = async (payload) => await base.post(endpoint+'/registrarUsuario', payload)
+const registrarUsuario = async (payload) => await base.post(endpoint+'registrarUsuario', payload)
 
-const createVerfCode = async(email) => await base.post(`${endpoint}/crearVerCodigo`, email)
+const createVerfCode = async(email) => await base.post(`${endpoint}crearVerCodigo`, email)
 
-const findVerfCode = async(email) => await base.post(`${endpoint}/findVerCodigo`, email)
+const findVerfCode = async(email) => await base.post(`${endpoint}findVerCodigo`, email)
 
-const updatePass = async(payload) => await base.put(`${endpoint}/updateContrasena`, payload)
+const updatePass = async(payload) => await base.put(`${endpoint}updateContrasena`, payload)
 
 const api = { findAll, create, update, remove, findOne, iniciarSesion,registrarUsuario, createVerfCode, findVerfCode, updatePass, editarUsuario}
 

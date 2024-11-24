@@ -257,8 +257,10 @@ class GestionUsuario {
             const { nombre, telefono, fechaCumple, fotoPerfil, contrasena, email, peso} = usuario;
     
             const [result] = await pool.execute(
-                `UPDATE usuario SET nombre = ?, telefono = ?, fechaCumple = ?, fotoPerfil = ?, contrasena = ?, email = ?, peso = ?`,
-                [nombre, telefono, fechaCumple, fotoPerfil, contrasena, email, peso]
+                `UPDATE usuario 
+                    SET nombre = ?, telefono = ?, fechaCumple = ?, fotoPerfil = ?, contrasena = ?, email = ?, peso = ? 
+                    WHERE id = ?`,
+                [nombre, telefono, fechaCumple, fotoPerfil, contrasena, email, peso,id]
             );
     
             if (result.affectedRows === 0) {
