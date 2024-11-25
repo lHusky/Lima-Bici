@@ -29,6 +29,7 @@ class GestionRuta {
         `, [userId]);
         return rows;
     }
+    
 
     static async obtenerRutaPorId(id_ruta) {
         const [rows] = await db.query(`
@@ -36,6 +37,7 @@ class GestionRuta {
         `, [id_ruta]);
         return rows[0];
     }
+    
 }
 
 export default GestionRuta;
