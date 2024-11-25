@@ -1,85 +1,83 @@
-const URI = 'http://192.168.18.10:3000/';//'http://ec2-3-142-246-223.us-east-2.compute.amazonaws.com:3000/';
-//  192.168.18.79
+const URI = 'http://192.168.68.60:3000/';//'http://ec2-3-142-246-223.us-east-2.compute.amazonaws.com:3000/';
+
 const get = async (endpoint) => {
-    
-    const response = await fetch(URI + endpoint);
-    
-    if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+    try {
+        console.log(`GET request to: ${URI + endpoint}`);
+        const response = await fetch(URI + endpoint);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        console.log('GET response data:', data);
+        return data;
+    } catch (error) {
+        console.error('Error en GET:', error);
+        throw error;
     }
-
-    // const text = await response.text(); // Captura la respuesta como texto
-    // console.log(text); // Imprime la respuesta para verificar su contenido
-    // return JSON.parse(text);
-
-    const data = await response.json(); 
-    return data;
-
-    
-}
+};
 
 const post = async (endpoint, payload) => {
-
-    const postPayload = {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(payload)
-    }
-
-    const response = await fetch(URI + endpoint, postPayload);
-    
-
-
-    // Respuesta sea exitosa
-    if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const data = await response.json(); // Extraer JSON del cuerpo de la respuesta
-
-
-    // Imprimir el estado y cuerpo de la respuesta juntos
-    // await console.log('Estado y cuerpo:', { status: response.status, data });
-    return { status: response.status, data };
-    
-  }
-
-  const put = async (endpoint, payload) => {
-
-    const postPayload = {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(payload)
-    
-    }
-
-    return await fetch(URI + endpoint, postPayload)
-        .then(response => response.json().then(data => ({
-            status: response.status,
-            data: data
-        })));
-  }
-
-  const remove = async (endpoint) => {
-
-    const postPayload = {
-        method: 'DELETE',
-        headers: {
-            'Content-Type': 'application/json'
+    try {
+        console.log(`Enviando solicitud POST a ${URI + endpoint} con payload:`, payload);
+        const response = await fetch(URI + endpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
+        const data = await response.json();
+        console.log('Respuesta recibida del backend:', data);
+        return { status: response.status, data };
+    } catch (error) {
+        console.error('Error en la solicitud POST:', error);
+        throw error;
     }
+};
 
-    return await fetch(URI + endpoint, postPayload)
-              .then(response => response.json())
-              .then(data => {
-                  return data
-              })
-  }
 
-const base = { get, post, put, remove }
+const put = async (endpoint, payload) => {
+    try {
+        const response = await fetch(URI + endpoint, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error en PUT:', error);
+        throw error;
+    }
+};
+
+const remove = async (endpoint) => {
+    try {
+        const response = await fetch(URI + endpoint, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error en DELETE:', error);
+        throw error;
+    }
+};
+
+const base = { get, post, put, remove };
 
 export default base;

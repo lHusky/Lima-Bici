@@ -1,6 +1,6 @@
 import base from './base.js';
 
-const endpoint = 'ruta';
+const endpoint = 'api/ruta';
 
 const findAll = async (limite, id_usuario) => {
     const queryParams = [];
