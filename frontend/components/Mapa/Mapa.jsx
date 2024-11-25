@@ -11,16 +11,18 @@ import YellowRoute from './YellowRoute';
 import RedRoute from './RedRoute';
 import RoutePlanner from '../../utils/RoutePlanner';
 import PlaceDetailsModal from './PlaceDetailsModal';
-
 import useUserLocation from '../../hooks/useUserLocation';
 import useLocationTracker from '../../hooks/useLocationTracker';
+
+import api from '../../api/ruta';
 
 const { width, height } = Dimensions.get('window');
 
 const Mapa = ({ destination, setDestination, trackUser, apiKey, onMarkerDragEnd }) => {
     const mapRef = useRef(null);
     const { location: origin, error } = useUserLocation();
-    const { routeCoordinates, startTracking, stopTracking, distance, duration } = useLocationTracker();
+    const { routeCoordinates, startTracking, stopTracking, distance, duration, startTime } = useLocationTracker();
+    
     const [initialOrigin, setInitialOrigin] = useState(null);
     const [isMapReady, setIsMapReady] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
@@ -85,7 +87,11 @@ const Mapa = ({ destination, setDestination, trackUser, apiKey, onMarkerDragEnd 
             setDestination(origin);
         }
     }, [origin, error, initialOrigin]);
-
+    useEffect(() => {
+        if (origin && destination) {
+            fetchRouteDetails(origin, destination);
+        }
+    }, [origin, destination]);
     useEffect(() => {
         if (trackUser) {
             startTracking((newCoordinate) => {
@@ -95,36 +101,55 @@ const Mapa = ({ destination, setDestination, trackUser, apiKey, onMarkerDragEnd 
             });
         } else {
             stopTracking();
-            if (routeCoordinates.length > 0) {
-                saveTrackedRoute();
-            }
+            // Removed saveTrackedRoute() from here
         }
+
         return () => {
             stopTracking();
         };
     }, [trackUser]);
 
+    // New useEffect to watch for changes in duration
+    useEffect(() => {
+        if (duration > 0 && routeCoordinates.length > 0) {
+            saveTrackedRoute();
+        }
+    }, [duration]);
+
+
     const saveTrackedRoute = async () => {
-        if (initialOrigin && destination && distance && duration) {
+        if (initialOrigin && destination && distance >= 0 && duration >= 0 && startTime) {
+            const fechaInicio = startTime;
+            const fechaFin = new Date(startTime.getTime() + duration * 60000);
+
             const routeData = {
                 userId: 1,
-                nombre: "Ruta recorrida",
-                descripcion: "Ruta desde el origen hasta el destino.",
-                distancia: distance,
-                duracion: duration,
-                fechaInicio: new Date().toISOString(),
-                fechaFin: new Date(new Date().getTime() + duration * 60).toISOString(),
+                nombre: `Ruta sin nombre asignado`,
+                descripcion: `Ruta sin descripcion`,
+                distancia: distance, // En metros
+                duracion: duration, // En minutos
+                fechaInicio: fechaInicio.toISOString().slice(0, 19).replace('T', ' '),
+                fechaFin: fechaFin.toISOString().slice(0, 19).replace('T', ' '),
+                horaInicio: fechaInicio.toTimeString().slice(0, 8),
+                horaFin: fechaFin.toTimeString().slice(0, 8),
                 coordenadas: routeCoordinates.map(coord => ({
-                    lat: coord.latitude,
-                    lng: coord.longitude,
+                    latitud: coord.latitude,
+                    longitud: coord.longitude,
                 })),
             };
+
             try {
-                await api.create(routeData);
-                Alert.alert('Ruta Guardada', 'La ruta recorrida ha sido guardada exitosamente.');
+                const response = await api.create(routeData);
+                if (response.status === 201) {
+                    Alert.alert('Ruta Guardada', 'La ruta recorrida ha sido guardada exitosamente.');
+                } else {
+                    Alert.alert('Error', 'No se pudo guardar la ruta recorrida.');
+                }
             } catch (error) {
                 Alert.alert('Error', 'No se pudo guardar la ruta recorrida.');
             }
+        } else {
+            Alert.alert('Error', 'Datos insuficientes para guardar la ruta.');
         }
     };
 
@@ -156,12 +181,28 @@ const Mapa = ({ destination, setDestination, trackUser, apiKey, onMarkerDragEnd 
                         }}
                     />
                 )}
-                {blueRouteCoords && <BlueRoute coordinates={blueRouteCoords} />}
-                {adjustedRouteCoords && <YellowRoute coordinates={adjustedRouteCoords} />}
-                
-                <RoutePlanner route={blueRouteCoords} bikePaths={bikePaths} onRouteCalculated={setAdjustedRouteCoords} />
-                <FixedRoutes onRoutesLoaded={(data) => setBikePaths(data)} />
+
+                {blueRouteCoords && blueRouteCoords.length > 0 && (
+                    <BlueRoute coordinates={blueRouteCoords} />
+                )}
+
+                {adjustedRouteCoords && adjustedRouteCoords.length > 0 && (
+                    <YellowRoute coordinates={adjustedRouteCoords} />
+                )}
+
+                {blueRouteCoords && blueRouteCoords.length > 0 && bikePaths.length > 0 && (
+                    <RoutePlanner
+                        route={blueRouteCoords}
+                        bikePaths={bikePaths}
+                        onRouteCalculated={setAdjustedRouteCoords}
+                    />
+                )}
+
+                <FixedRoutes
+                    onRoutesLoaded={(data) => setBikePaths(data)}
+                />
                 <RedRoute coordinates={routeCoordinates} />
+
             </MapView>): (
             <View style={styles.loadingContainer}>
                 <ActivityIndicator size="large" color="#0000ff" />
@@ -190,17 +231,3 @@ const styles = StyleSheet.create({
 });
 
 export default Mapa;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
