@@ -1,4 +1,4 @@
-DROP DATABASE lima_bici;
+DROP DATABASE IF EXISTS lima_bici;
 CREATE DATABASE lima_bici CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 
 USE lima_bici;
@@ -56,12 +56,13 @@ CREATE TABLE ruta (
     id INT AUTO_INCREMENT PRIMARY KEY,
     duracion DECIMAL(5,2),
     distancia DECIMAL(10, 2),
-    punto_inicio_latitud DECIMAL(9, 6) NOT NULL,
-    punto_final_latitud DECIMAL(9, 6) NOT NULL,
-    punto_inicio_longitud DECIMAL(9, 6) NOT NULL,
-    punto_final_longitud DECIMAL(9, 6) NOT NULL,
+    nombre VARCHAR(255),
     descripcion VARCHAR(300),
     id_creador INT,
+    fechaInicio DATE,
+    fechaFin DATE,
+    horaInicio TIME,
+    horaFin TIME,
     FOREIGN KEY (id_creador) REFERENCES usuario(id) ON DELETE CASCADE
 );
 
@@ -88,6 +89,7 @@ CREATE TABLE punto_interes (
     FOREIGN KEY (id_creador) REFERENCES usuario(id) ON DELETE CASCADE,
     FOREIGN KEY (id_tipo) REFERENCES tipo_PuntoInteres(id) ON DELETE CASCADE
 );
+
 
 CREATE TABLE usuario_objetivo (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -117,7 +119,7 @@ CREATE TABLE usuario_ruta (
 CREATE TABLE favoritos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     fecha_agregado DATE NOT NULL,
-    descripcion VARCHAR(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+    descripcion VARCHAR(350),
     icon_favorito VARCHAR(300),
     id_usuario INT,
     id_ruta INT,
@@ -142,3 +144,8 @@ INSERT INTO tipo_PuntoInteres (titulo) VALUES ('🏋️‍♀️ Gimnasio');
 INSERT INTO tipo_PuntoInteres (titulo) VALUES ('Otro');
 
 INSERT INTO usuario (nombre, email, telefono, contrasena,tipo_usuario) VALUES ("admin", "admin@", "123456", "123456","admin");
+
+SELECT * FROM usuario;
+SELECT * FROM ruta;
+SELECT * FROM favoritos;
+SELECT * FROM coordenada;
