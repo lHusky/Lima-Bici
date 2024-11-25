@@ -7,8 +7,10 @@ import ruta from '../../api/ruta';
 import Footer from '../../components/footer/footer.jsx';
 import Mapa from '../../components/Mapa/Mapa.jsx';
 import BarraBusqueda from '../../components/BarraBusqueda/BarraBusqueda.jsx';
-import Carrusel from '../../components/Sugerencias/CarruselGeneral.jsx';
+import Carrousel from '../../components/Sugerencias/CarruselGeneral.jsx';
+import BotonInformacion from '../../components/BotonInformacion/BotonInformacion.jsx';
 import InformacionLugar from '../../components/InformacionLugar/InformacionLugar.jsx';
+import InformacionLugar1 from '../../components/InformacionLugar/InformacionLugar1.jsx';
 import { useGooglePlaces } from '../../context/ContextAPI/GooglePlacesContext';
 
 const PaginaBuscar = ({ navigation }) => {
@@ -18,6 +20,7 @@ const PaginaBuscar = ({ navigation }) => {
     const [destination, setDestination] = useState(null);
     const [direccion, setDireccion] = useState('');
     const [tracking, setTracking] = useState(false);
+    const [modalVisible1, setModalVisible1] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
     const [origin, setOrigin] = useState(null);
     const [routeCoordinates, setRouteCoordinates] = useState([]);
@@ -31,10 +34,10 @@ const PaginaBuscar = ({ navigation }) => {
 
 
     const datos = [
-        { id: '1', titulo: '🚲 Ciclovías' },
-        { id: '2', titulo: '🏪 Tiendas' },
-        { id: '3', titulo: '🧑‍🔧 Talleres' },
-        { id: '4', titulo: '🏯 Restaurantes' },
+        { id: '1', title: '🚲 Ciclovías' },
+        { id: '2', title: '🏪 Tiendas' },
+        { id: '3', title: '🧑‍🔧 Talleres' },
+        { id: '4', title: '🏯 Restaurantes' },
     ];
 
     useEffect(() => {
@@ -60,7 +63,10 @@ const PaginaBuscar = ({ navigation }) => {
 
         getCurrentLocation();
     }, []);
-
+    const handleTrackingToggle = () => {
+        setTracking((prevTracking) => !prevTracking);
+    };
+    
     // Manejo de selección desde la barra de búsqueda (Nueva Funcionalidad)
     const handleNewPlaceSelected = (placeInfo) => {
         const {
@@ -125,21 +131,23 @@ const PaginaBuscar = ({ navigation }) => {
                 setNewDestination={setSelectedMarker} // Pasamos la función para actualizar el marcador
                 onNewPlaceSelected={handleNewPlaceSelected}
             />
-            <Carrusel 
+            <Carrousel 
                 data={datos} 
                 onItemPress={(item) => console.log('Seleccionaste:', item)}
                 tamanoLetra={16}
                 altura={40}
                 colorLetra="black"
-                otrosEstilos={{
-                    position: "absolute",
-                    bottom: 95,
-                    left: 0,
-                    right: 0,
-                    paddingVertical: 10,
-                  }}
-                />
-          
+            />
+            <BotonInformacion onPress={() => setModalVisible1(true)} />
+            <InformacionLugar1
+                visible={modalVisible1}
+                address={direccion}
+                distance={distance}
+                duration={duration}
+                onClose={() => setModalVisible1(false)}
+                onTrackingToggle={handleTrackingToggle}
+                tracking={tracking}
+            />                
             {/* Modal para detalles básicos */}
             <InformacionLugar
                 visible={modalVisible}
