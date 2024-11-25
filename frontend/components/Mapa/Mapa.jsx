@@ -3,6 +3,7 @@ import { View, StyleSheet, Dimensions, Alert, ActivityIndicator  } from 'react-n
 import { useGooglePlaces } from '../../context/ContextAPI/GooglePlacesContext';
 import MapView from 'react-native-maps';
 import * as Location from 'expo-location';
+import AsyncStorage from '@react-native-async-storage/async-storage'; // Asegúrate de importar AsyncStorage
 
 import MapMarker from './Marker';
 import FixedRoutes from './FixedRoutes';
@@ -13,6 +14,7 @@ import RoutePlanner from '../../utils/RoutePlanner';
 import PlaceDetailsModal from './PlaceDetailsModal';
 import useUserLocation from '../../hooks/useUserLocation';
 import useLocationTracker from '../../hooks/useLocationTracker';
+import gestionUsuarioApi from '../../api/gestionUsuario.js';
 
 import api from '../../api/ruta';
 
@@ -22,7 +24,8 @@ const Mapa = ({ destination, setDestination, trackUser, apiKey, onMarkerDragEnd 
     const mapRef = useRef(null);
     const { location: origin, error } = useUserLocation();
     const { routeCoordinates, startTracking, stopTracking, distance, duration, startTime } = useLocationTracker();
-    
+    const [userId, setUserId] = useState(null);
+
     const [initialOrigin, setInitialOrigin] = useState(null);
     const [isMapReady, setIsMapReady] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
@@ -77,7 +80,22 @@ const Mapa = ({ destination, setDestination, trackUser, apiKey, onMarkerDragEnd 
         setSelectedLocation(null);
         setPlaceDetails(null);
     };
-
+    const cargarCreador = async () => {
+        try {
+            const storedUserId = await AsyncStorage.getItem("userId"); // Obtener userId del almacenamiento
+            if (storedUserId) {
+                setUserId(storedUserId); // Almacenar en el estado userId
+                console.log("ID de usuario cargado:", storedUserId);
+            } else {
+                console.warn("No se encontró ningún ID de usuario en AsyncStorage.");
+            }
+        } catch (error) {
+            console.error("Error al cargar el ID del usuario:", error);
+        }
+    };
+    useEffect(() => {
+        cargarCreador();
+    }, []);
     useEffect(() => {
         if (error) {
             Alert.alert('Error', error);
@@ -123,7 +141,7 @@ const Mapa = ({ destination, setDestination, trackUser, apiKey, onMarkerDragEnd 
             const fechaFin = new Date(startTime.getTime() + duration * 60000);
 
             const routeData = {
-                userId: 1,
+                userId: userId, // Usar el ID dinámico
                 nombre: `Ruta sin nombre asignado`,
                 descripcion: `Ruta sin descripcion`,
                 distancia: distance, // En metros
