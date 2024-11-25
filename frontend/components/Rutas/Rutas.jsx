@@ -1,9 +1,8 @@
-// src/components/Rutas/Rutas.jsx
-
 import React, { useState, useEffect } from 'react'; 
 import { View, Text, StyleSheet, FlatList, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import rutaApi from '../../api/ruta.js';
 import favoritoApi from '../../api/favorito.js';
 
@@ -12,7 +11,7 @@ const Rutas = ({ limite }) => {
     const [rutas, setRutas] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const usuarioActual = { id: 1 };
+    const [userId, setUserId] = useState(null);
 
     const handlePress = (id_ruta) => {
         console.log('Navigating to PaginaRuta with id_ruta:', id_ruta);
@@ -25,7 +24,7 @@ const Rutas = ({ limite }) => {
 
     const toggleFavorito = async (id_ruta) => {
         try {
-            const response = await favoritoApi.toggleFavorito({ id_usuario: usuarioActual.id, id_ruta });
+            const response = await favoritoApi.toggleFavorito({ id_usuario: userId, id_ruta });
             // Update local state of the route
             const nuevasRutas = rutas.map(ruta => {
                 if (ruta.id === id_ruta) {
@@ -40,21 +39,42 @@ const Rutas = ({ limite }) => {
     };
 
     useEffect(() => {
-        const fetchRutas = async () => {
+        const cargarUsuario = async () => {
             try {
-                const response = await rutaApi.findAll(limite, usuarioActual.id);
-                console.log('Fetched routes:', response.data);
+                const storedUserId = await AsyncStorage.getItem('userId');
+                if (storedUserId) {
+                    setUserId(parseInt(storedUserId, 10)); // Convertir a número
+                    console.log('ID de usuario cargado:', storedUserId);
+                } else {
+                    console.warn('No se encontró ningún ID de usuario en AsyncStorage.');
+                }
+            } catch (error) {
+                console.error('Error al cargar el ID del usuario:', error);
+            }
+        };
+        cargarUsuario();
+    }, []);
+    
+
+    useEffect(() => {
+        const fetchRutas = async () => {
+            if (!userId) return; // No buscar rutas si no hay userId
+            setLoading(true);
+            try {
+                const response = await rutaApi.findAll(limite, userId); // Enviar userId
                 setRutas(response.data);
             } catch (error) {
-                console.error('Error fetching routes:', error);
-                setError('Error al obtener las rutas');
+                console.error('Error al obtener rutas:', error);
+                setError('No se pudieron cargar las rutas.');
             } finally {
                 setLoading(false);
             }
         };
-
+        
+    
         fetchRutas();
-    }, [limite]);
+    }, [limite, userId]); // Dependencia de userId
+    
 
     const renderItem = ({ item }) => (
         <TouchableOpacity onPress={() => handlePress(item.id)}>
