@@ -5,7 +5,7 @@ import { View, StyleSheet, Text, TouchableOpacity, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Header from '../../components/header/header.jsx';
 import Footer from '../../components/footer/footer.jsx';
-import InformacionLugar from '../../components/InformacionLugar/InformacionLugar.jsx';
+import InformacionLugar from '../../components/InformacionLugar/InformacionLugar1.jsx';
 import RutaMapa from '../../components/Mapa/RutaMapa.jsx';
 import useLocationTracker from '../../hooks/useLocationTracker';
 
