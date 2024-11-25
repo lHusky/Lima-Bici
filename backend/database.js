@@ -13,3 +13,15 @@ export const pool = mysql
     })
     .promise();
 export default pool;
+
+export async function agregarFavorito(userId, rutaId = null, puntoInteresId = null, descripcion) {
+    const fechaAgregado = new Date();
+    const [result] = await pool.query(
+        `
+        INSERT INTO favoritos (id_usuario, id_ruta, id_punto_interes, descripcion, fecha_agregado)
+        VALUES (?, ?, ?, ?, ?)
+        `,
+        [userId, rutaId, puntoInteresId, descripcion, fechaAgregado]
+    );
+    return result.insertId;
+}
