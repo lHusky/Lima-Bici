@@ -1,17 +1,18 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
+import Header from '../../components/header/header.jsx';
 import Footer from '../../components/footer/footer.jsx';
-import RutasFavoritas from '../../components/RutasFavoritas/RutasFavoritas.jsx';
-import RutasRecientes from '../../components/RutasRecientes/RutasRecientes.jsx';
+import RutasFavoritasTodas from '../../components/RutasFavoritas/RutasFavoritasTodas.jsx';
+import RutasRecientes from '../../components/Rutas/Rutas.jsx';
 
 const PaginaInicio = ({ navigation }) => {
     return (
         <View style={styles.container}>
+            <Header title="Inicio" />
             <View style={styles.content}>
-                <RutasFavoritas />
+                <RutasFavoritasTodas />
                 <RutasRecientes />
             </View>
-            {/* Pasamos la navegación y la pantalla actual al Footer */}
             <Footer navigation={navigation} currentScreen="PaginaInicio" />
         </View>
     );
@@ -22,7 +23,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     content: {
-        flex: 1, // Ocupa todo el espacio disponible excepto el del footer
+        flex: 1,
     },
 });
 
