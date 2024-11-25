@@ -23,13 +23,20 @@ const crearRuta = async (req, res) => {
 
 const obtenerRutasUsuario = async (req, res) => {
     const userId = req.params.userId;
+
+    if (!userId) {
+        return res.status(400).json({ message: 'El parámetro userId es obligatorio.' });
+    }
+
     try {
-        const rutas = await gestionRuta.obtenerRutasUsuario(userId);
-        res.status(200).json({ message: 'Rutas obtenidas exitosamente', rutas: rutas });
+        const rutas = await GestionRuta.obtenerRutasPorUsuario(userId);
+        res.status(200).json({ success: true, rutas });
     } catch (error) {
-        res.status(500).json({ message: 'Error al obtener las rutas', error: error.message });
+        console.error('Error al obtener las rutas del usuario:', error);
+        res.status(500).json({ success: false, message: 'Error al obtener las rutas del usuario', error: error.message });
     }
 };
+
 
 const obtenerRutaPorId = async (req, res) => {
     const id = req.params.id; // Obtenemos el ID desde la URL
@@ -62,8 +69,12 @@ const agregarFavoritoControlador = async (req, res) => {
 const obtenerTodasLasRutas = async (req, res) => {
     const id_usuario = req.query.id_usuario;
 
+    if (!id_usuario) {
+        return res.status(400).json({ success: false, message: 'El parámetro id_usuario es obligatorio.' });
+    }
+
     try {
-        let query = `
+        const query = `
             SELECT 
                 ruta.id, 
                 ruta.descripcion, 
@@ -75,10 +86,11 @@ const obtenerTodasLasRutas = async (req, res) => {
                 CASE WHEN favoritos.id IS NOT NULL THEN 1 ELSE 0 END AS esFavorito
             FROM ruta
             LEFT JOIN favoritos ON ruta.id = favoritos.id_ruta AND favoritos.id_usuario = ?
+            WHERE ruta.id_creador = ?
             ORDER BY ruta.fechaInicio DESC, ruta.horaInicio DESC
         `;
-        
-        const [rows] = await db.query(query, [id_usuario]);
+
+        const [rows] = await db.query(query, [id_usuario, id_usuario]);
         res.status(200).json({ success: true, data: rows });
     } catch (error) {
         console.error('Error al obtener las rutas:', error);
