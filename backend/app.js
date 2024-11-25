@@ -3,6 +3,9 @@ import {gestionUserRouter} from './routes/gestionUsuario.js'; // Asegúrate de q
 import {puntoInteresRouter} from './routes/puntoInteres.js';
 import {tipoPuntoInteresRouter} from './routes/tipoPuntoInteres.js';
 
+import rutaRouter from './routes/rutas.js'; // Ajusta la ruta según tu estructura de archivos
+import favoritoRouter from './routes/favorito.js';
+
 import GestionUsuario from './modules/GestionUsuario.js';
 import cors from 'cors';
 
@@ -20,6 +23,10 @@ app.use("/gestionUsuario", gestionUserRouter);
 app.use("/puntoInteres", puntoInteresRouter);
 
 app.use("/tipoPuntoInteres", tipoPuntoInteresRouter);
+
+app.use('/api', favoritoRouter);
+
+app.use('/api', rutaRouter);
 
 app.listen(3000, '0.0.0.0', () => {
     console.log("Server running on port 3000");
