@@ -9,10 +9,12 @@ import InicioRecuperarContraseña from './screens/InicioRecuperarContraseña/Ini
 import InicioIngresarCodigo from './screens/InicioRecupContraIngCod/InicioIngresarCodigo.jsx';
 import InicioNuevaContraseña from './screens/InicioColocaNuevaContra/InicioColocarNuevaContra.jsx';
 import PaginaInicio from './screens/PaginaInicio/PaginaInicio';
-import PaginaMapas from './screens/PaginaMapas/PaginaMapas';
+import PaginaRutas from './screens/PaginaRutas/PaginaRutas';
 import PaginaBuscar from './screens/PaginaBuscar/PaginaBuscar';
 import PaginaFavoritos from './screens/PaginaFavoritos/PaginaFavoritos';
 import PaginaCuenta from './screens/PaginaCuenta/PaginaCuenta';
+import PaginaRuta from './screens/PaginaRuta/PaginaRuta';
+import PaginaEditarRuta from './screens/PaginaEditarRuta/PaginaEditarRuta';
 
 import Footer from './components/footer/footer';
 import { GooglePlacesProvider } from './context/ContextAPI/GooglePlacesContext';
@@ -37,10 +39,13 @@ const App = () => {
               {(props) => <RegistroUsuario {...props} />}
             </Stack.Screen>
             <Stack.Screen name="PaginaInicio" component={PaginaInicio} />
-            <Stack.Screen name="PaginaMapas" component={PaginaMapas} />
+            <Stack.Screen name="PaginaRutas" component={PaginaRutas} />
             <Stack.Screen name="PaginaBuscar" component={PaginaBuscar} />
             <Stack.Screen name="PaginaFavoritos" component={PaginaFavoritos} />
             <Stack.Screen name="PaginaCuenta" component={PaginaCuenta} />
+            <Stack.Screen name="PaginaRuta" component={PaginaRuta} />
+            <Stack.Screen name="PaginaEditarRuta" component={PaginaEditarRuta} />
+
           </Stack.Navigator>
         </NavigationContainer>
       </GooglePlacesProvider>
