@@ -1,32 +1,54 @@
 
-
 import PuntoInteres from '../modules/PuntoInteres.js';
 
-const crearUno = async (req, res) => {
-    
-    const {
-        id_creador , 
-        titulo, 
-        img_referencial, 
-        horario, 
-        direccion, 
-        descripcion,
-        id_tipo,latitud,
-        longitud} = req.body;
+import Coordenada from '../modules/Coordenada.js';
 
+
+const crearUno = async (req, res) => {
+    const {
+        nombrePunto,
+        horario = null, // Valor opcional
+        imagenPath = null, // Valor opcional
+        direccion,
+        descripcion = null, // Valor opcional
+        longitud,
+        latitud,
+        idTipoPunto,
+        id_creador
+    } = req.body;
+        // Valida los campos obligatorios
+    if (!nombrePunto || !direccion || !idTipoPunto || !latitud || !longitud || !id_creador) {
+        return res.status(400).json({
+            message: "Faltan campos obligatorios (nombrePunto, direccion, id_tipo, id_coordenada, id_creador).",
+        });
+    }
     try {
-        const item = new PuntoInteres(id_creador , titulo, img_referencial, horario, direccion, descripcion,id_tipo,latitud,longitud);
-        // Crear usuario y obtener id_usuario
-        const { id: itemID } = await item.agregaagregarPuntoInteresBD( id_creador , titulo, img_referencial, horario, direccion, descripcion,id_tipo,latitud,longitud);
-      
-        // Éxito - aprobación de creación de objeto
+        
+    
+        const punto = new PuntoInteres(
+            null, 
+            id_creador,
+            nombrePunto,
+            imagenPath,
+            horario,
+            direccion,
+            descripcion,
+            idTipoPunto,
+        );
+        const puntoCreado = await punto.agregarPuntoInteresBD();
+        const itemID = puntoCreado.getId();
+        
+        const coordenada = new Coordenada(null,1,latitud,longitud,null,itemID);
+        
+        const coordenadaSubida =coordenada.agregarCoordenadaPuntoBD()
+        
         res.status(201).json({
-            message: 'Punto Guardado creados exitosamente',
+            message: 'Punto interes creado exitosamente',
             itemID
         });
-        console.log(`MENSAJE DE EXITO ENVIADO`);
+        // console.log(MENSAJE DE EXITO ENVIADO);
     } catch (error) { 
-        console.error('Error al crear el punto de interes (controlador):', error.message); // Añadido para debug
+        console.error('Error al crear el punto de interes (controlador):', error.message); 
         res.status(500).json({
             message: 'Error al crear el punto de interes (controlador):',
             error: error.message
@@ -34,253 +56,127 @@ const crearUno = async (req, res) => {
     }
 };
 
-const obtenerTodos = async (req, res) => {
-    try{
-        const usuariosAgregados = await gestor.obtenerUsuariosBD();
 
-        if (!usuariosAgregados) {
-            return res.status(404).json({  //404: no se encontro elemento
-                message: 'No se encontraron usuarios en la base de datos.'
+const obtenerTodos = async (req, res) => {
+    try{ 
+        const listaItemsBD = await PuntoInteres.obtenerPuntosInteresBD();
+
+        if (!listaItemsBD) {
+            return res.status(404).json({ 
+                message: 'No se encontraron puntos interes en la base de datos.'
             });
         }
-
-        // Si se agregaron usuarios correctamente
         res.status(200).json({
-            message: 'Usuarios cargados y agregados exitosamente.',
-            usuarios: usuariosAgregados
+            message: 'Puntos interes cargados y agregados exitosamente.',
+            items: listaItemsBD
         });
-
 
     }catch (error) { 
-        console.error('Error al cargar usuarios (controlador):', error.message); // Añadido para debug
+        console.error('Error al cargar puntos interes (controlador):', error.message);
         res.status(500).json({
-            message: 'Error al cargar usuarios (controlador):',
+            message: 'Error al cargar puntos interes (controlador):',
             error: error.message
         });
     }
 
-}
-const iniciarSesion = async (req, res) => {
-    const { email, contrasena } = req.body;
-
-    try {
-        const response = await gestor.iniciarSesion(email, contrasena);
-        
-        // Aquí verificamos el código de estado devuelto por el gestor
-        if (response.status === 200) {
-            // Si el inicio de sesión es exitoso
-            res.status(200).json({
-                success: true,
-                message: 'Inicio de sesión exitoso',
-                usuario: response.user // Retorna el usuario
-            });
-        } else {
-            // Para errores de autenticación
-            return res.status(200).json({
-                success: false,
-                message: response.message // 'Correo electrónico incorrecto' o 'Contraseña incorrecta'
-            });
-        }
-    } catch (error) {
-        // En caso de un error en el servidor
-        res.status(500).json({ 
-            success: false,
-            message: 'Error al iniciar sesión (controlador)',
-            error });
-    }
-}
-
-
-const registrarUsuario = async (req, res) => {
-    const { email, contrasena,telefono,nombre } = req.body;
-
-    try {
-        const response = await gestor.registrarUsuario( nombre, email, contrasena, telefono);
-        
-        if (response.status === 200) {
-            // Si el inicio de sesión es exitoso
-            res.status(200).json({
-                success: true,
-                message: 'Registro exitoso',
-                usuario: response.user // Retorna el usuario
-            });
-        } else {
-            // Para errores de campos
-            return res.status(200).json({
-                success: false,
-                message: response.message // 'Correo Existente' 'Telefono Existente'
-            });
-        }
-    } catch (error) {
-        // En caso de un error en el servidor
-        res.status(500).json({ 
-            success: false,
-            message: 'Error al Registrar Usuario (controlador)',
-            error });
-    }
-}
-
-
-async function enviarCorreo(destinatario, codigo) {
-    const transporter = nodemailer.createTransport({
-      service: 'gmail', 
-      auth: {
-        user: 'lima.bicis@gmail.com',
-        pass: 'olmt oyox kbjw ehwx',
-      },
-    });
-  
-    const mailOptions = {
-      from: 'lima.bicis@gmail.com',
-      to: destinatario,
-      subject: 'Lima Bici - Código de verificación',
-      text: `Tu código de verificación es: ${codigo}`,
-    };
-  
-    try {
-      const info = await transporter.sendMail(mailOptions);
-      console.log('Correo enviado: ' + info.response);
-    } catch (error) {
-      console.error('Error al enviar el correo:', error);
-    }
-  }
-
-const crearCodVerificacion = async (req,res) => {
-    const {email} = req.body;
-
-    try {
-        const resultado = await gestor.asignarCodVerificacion(email);
-        
-        if (!resultado) {
-            return res.status(404).json({
-                message: 'no se encuentra usuario', 
-            });
-        }
-
-        await enviarCorreo(email, resultado.codigo);
-
-        return res.status(201).json({
-            message: 'Código creado',
-            codigo: resultado.codigo,
-        });
-
-
-
-    } catch (error) { 
-        console.error('Error asignar codigo a usuario (controlador):', error.message); 
-        return res.status(500).json({
-            message: 'Error asignar codigo a usuario (controlador):',
-            error: error.message
-        });
-    }
-}
-
-const cargarCodVerificacion = async(req,res) => {
-    const {email} = req.body;
-    try {
-        const resultado = await gestor.obtenerCodVerificacion(email);
-
-        console.log(resultado)
-
-        if (resultado.status === 410) {
-            return res.status(410).json({
-                message: resultado.message,
-            });
-        }
-
-        if (resultado.status === 404) {
-            return res.status(404).json({
-                message: resultado.message,
-            });
-        }
-
-        res.status(200).json({
-            message: 'Enviando código',
-            codigo: resultado.codigo,
-        });
-
-    } catch (error) {
-        console.error('Error recuperar codigo a usuario (controlador):', error.message); 
-        res.status(500).json({
-            message: 'Error recuperar codigo a usuario (controlador):',
-            error: error.message
-        });
-    }
-}
-
-const actualizarContraseña = async (req, res) => {
-    const { email, newPassword } = req.body;
-
-    try {
-        const resultado = await gestor.actContraseña(email, newPassword);
-        
-        if (!resultado) {
-            return res.status(404).json({
-                message: 'Usuario no encontrado o contraseña no actualizada', 
-            });
-        }
-
-        res.status(200).json({
-            message: resultado.message,
-        });
-
-    } catch (error) { 
-        console.error('Error al actualizar contraseña (controlador):', error.message); 
-        res.status(500).json({
-            message: 'Error al actualizar contraseña (controlador):',
-            error: error.message
-        });
-    }
-}
-
-
-const obtenerUsuarioPorID = async (req, res) => {
-
-    const { id } = req.params; // id del usuario a buscar
-    try {
-        const usuario = await gestor.obtenerUsuarioPorID(id);
-        if (usuario) {
-            return res.status(200).json({ 
-                success: true, usuario });
-        } else {
-            return res.status(404).json({ 
-                success: false, message: "Usuario no encontrado." });
-        }
-    } catch (error) {
-        return res.status(500).json({ success: false, message: "Error al obtener el usuario.", error: error.message });
-    }
 };
 
 
-const editarUsuario = async (req, res) => {
-    const{id} = req.params; // id del usuario a editar
-    const usuario = req.body;  //lista de datos editados
-
+const obtenerPorID = async (req, res) => {
+    const { id } = req.params; 
     try {
-        const result = await gestor.editarUsuario(usuario);
-
-        if (result) {
+        const item = await PuntoInteres.obtenerPuntosPorID(id);
+        if (item) {
             return res.status(200).json({ 
-                success: true, message: "Usuario actualizado con éxito." });
+                success: true, item });
         } else {
             return res.status(404).json({ 
-                success: false, message: "Usuario no encontrado." });
+                success: false, message: "Punto no encontrado (controlador)" });
+        }
+    } catch (error) {
+        return res.status(500).json({ success: false, message: "Error al obtener el Punto (controlador).", error: error.message });
+    }
+};
+
+const obtenerPorUsuario = async (req, res) => {
+    const { id } = req.params; 
+    try {
+        const item = await PuntoInteres.obtenerPuntosPorUsuario(id);
+        if (item) {
+            return res.status(200).json({ 
+                success: true, item });
+        } else {
+            return res.status(404).json({ 
+                success: false, message: "Punto no encontrado (controlador)" });
+        }
+    } catch (error) {
+        return res.status(500).json({ success: false, message: "Error al obtener el Punto (controlador).", error: error.message });
+    }
+};
+
+const obtenerPorTipo = async (req, res) => {
+    const { id_Usuario, id_tipo } = req.params; 
+    try {
+        const item = await PuntoInteres.obtenerPuntosPorTipo(id_Usuario, id_tipo);
+        if (item) {
+            return res.status(200).json({ 
+                success: true, item });
+        } else {
+            return res.status(404).json({ 
+                success: false, message: "Punto no encontrado (controlador)" });
+        }
+    } catch (error) {
+        return res.status(500).json({ success: false, message: "Error al obtener el Punto (controlador).", error: error.message });
+    }
+};
+
+const editar = async (req, res) => {
+    const{id} = req.params; 
+    const PuntoIntere= req.body;
+
+    try {
+        const resultado = await PuntoInteres.editarPuntoInteres(PuntoIntere);
+
+        if (resultado) {
+            return res.status(200).json({ 
+                success: true, message: "Punto actualizado con éxito." });
+        } else {
+            return res.status(404).json({ 
+                success: false, message: "Punto no encontrado. (controlador)" });
         }
     } catch (error) {
         return res.status(500).json({ 
-            success: false, message: "Error al actualizar el usuario.", error: error.message });
+            success: false, message: "Error al actualizar el Punto. (controlador)", error: error.message });
     }
 };
 
+const eliminarUno = async (req, res) => {
+    const{id} = req.params; 
+
+    try {
+        const resultado = await PuntoInteres.eliminarPuntoInteres(id);
+
+        if (resultado) {
+            return res.status(200).json({ 
+                success: true, message: "Punto eliminado con éxito." });
+        } else {
+            return res.status(404).json({ 
+                success: false, message: "Punto no encontrado. (controlador)" });
+        }
+    } catch (error) {
+        return res.status(500).json({ 
+            success: false, message: "Error al eliminado el Punto. (controlador)", error: error.message });
+    }
+};
+
+
 export { 
-    crearUsuario,
-    cargarUsuarios,
-    iniciarSesion,
-    registrarUsuario,
-    crearCodVerificacion,
-    cargarCodVerificacion,
-    actualizarContraseña,
-    editarUsuario,
-    obtenerUsuarioPorID
+    crearUno,
+    obtenerTodos,
+    obtenerPorID,
+    obtenerPorUsuario,
+    obtenerPorTipo,
+    editar,
+    eliminarUno
 };
 

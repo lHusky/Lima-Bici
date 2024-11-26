@@ -115,7 +115,7 @@ class TipoPuntoInteres {
                 return true;
             }
         } catch (error) {
-            console.error('Error al eliminar del usuario:', error.message);
+            console.error('Error al eliminar el tipo de punto de interés:', error.message);
             throw error;
         }
 

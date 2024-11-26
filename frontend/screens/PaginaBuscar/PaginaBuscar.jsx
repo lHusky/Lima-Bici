@@ -7,7 +7,7 @@ import ruta from '../../api/ruta';
 import Footer from '../../components/footer/footer.jsx';
 import Mapa from '../../components/Mapa/Mapa.jsx';
 import BarraBusqueda from '../../components/BarraBusqueda/BarraBusqueda.jsx';
-import Carrousel from '../../components/Sugerencias/CarruselGeneral.jsx';
+import Carrusel from '../../components/Sugerencias/CarruselGeneral.jsx';
 import BotonInformacion from '../../components/BotonInformacion/BotonInformacion.jsx';
 import InformacionLugar from '../../components/InformacionLugar/InformacionLugar.jsx';
 import InformacionLugar1 from '../../components/InformacionLugar/InformacionLugar1.jsx';
@@ -131,13 +131,20 @@ const PaginaBuscar = ({ navigation }) => {
                 setNewDestination={setSelectedMarker} // Pasamos la función para actualizar el marcador
                 onNewPlaceSelected={handleNewPlaceSelected}
             />
-            <Carrousel 
+            <Carrusel 
                 data={datos} 
                 onItemPress={(item) => console.log('Seleccionaste:', item)}
                 tamanoLetra={16}
                 altura={40}
                 colorLetra="black"
-            />
+                otrosEstilos={{
+                    position: "absolute",
+                    bottom: 95,
+                    left: 0,
+                    right: 0,
+                    paddingVertical: 10,
+                  }}
+                />
             <BotonInformacion onPress={() => setModalVisible1(true)} />
             <InformacionLugar1
                 visible={modalVisible1}

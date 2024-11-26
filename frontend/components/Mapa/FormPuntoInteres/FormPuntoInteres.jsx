@@ -1,3 +1,4 @@
+import { MaterialIcons } from "@expo/vector-icons"; 
 import React, { useEffect, useState} from "react";
 import {
   Modal,
@@ -8,41 +9,86 @@ import {
   StyleSheet,
   TouchableOpacity,
   Image,
+  Alert
 } from "react-native";
 import PropTypes from "prop-types";
 import InputConContador from "./InputConContador.jsx"
 import Carrusel from "../../Sugerencias/CarruselGeneral.jsx"
 import tipoPuntoInteresApi from '../../../api/tipoPuntoInteres.js';
+import puntoInteresApi from '../../../api/puntoInteres.js';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import gestionUsuarioApi from '../../../api/gestionUsuario.js';
 
-// import SubidaImagen from '../../SubidaImagen/SubidaImagen.jsx';
+import SubidaImagen from '../../SubidaImagen/SubidaImagen.jsx';
+import CampoEditable from './CampoEditable.jsx';
 
 const FormPuntoInteres = ({ 
     visible = false,  
     transparent, 
     animationType, 
     onClose= () => {},
-    volver = () => {}
+    volver = () => {},
+    nombrePunto="No hay nombre registrado",
+    direccion="No hay direccion registrada",
+    latitud,
+    longitud
+
 }) => {
-  const [tipoMarcador, setTipoMarcador] = useState("Ciclovías");
+  // const [tipoMarcador, setTipoMarcador] = useState("Ciclovías");
   const [nombre, setNombre] = useState("");
+  const [IdCreador, setIdCreador] = useState("");
   const [descripcion, setDescripcion] = useState("");
 
   const [datosTipoPunto, setDatosTipoPunto] = useState(null);
   const [cargando, setCargando] = useState(true);
+ 
+  const [NombrePunto, setNombrePunto] = useState(nombrePunto);
+  const [Direccion, setDireccion] = useState(direccion);
+
+  const [idTipoMarcadorSeleccionado, setIdTipoMarcadorSeleccionado] = useState(null);
   
-  const handleGuardar = () => {
-    console.log("Datos guardados:", { tipoMarcador, nombre, descripcion });
-    onClose();
+  const [imagenPath, setImagenPath] = useState("");
+
+  const handleImageUpload = (path) => {
+    setImagenPath(path);
   };
-  
+
+  const datosFormulario = {
+    nombrePunto: NombrePunto,
+    direccion: Direccion,
+    idTipoPunto: idTipoMarcadorSeleccionado, 
+    id_creador: IdCreador, 
+    descripcion: descripcion, 
+    imagenPath: imagenPath, 
+    latitud:latitud,
+    longitud: longitud
+  };
+
+
+  const handleGuardar = async () => {
+    if (
+      !NombrePunto ||
+      !Direccion ||
+      !idTipoMarcadorSeleccionado ||
+      !IdCreador ||
+      !longitud ||
+      !latitud
+    ) {
+      Alert.alert("Por favor, completa todos los campos.",);
+      return;
+    }
+    await puntoInteresApi.create(datosFormulario);
+    Alert.alert("Éxito", "El Punto se han guardado correctamente.");
+    onClose(); // Cierra el modal
+  };
+
+
   const obtenerTiposPuntos = async ()=>{
     try {
       const data  = await tipoPuntoInteresApi.findAll();
       // console.log("Respuesta completa de la API:", data.items);
-      setDatosTipoPunto(data.items); 
+      setDatosTipoPunto(data.items);
     } catch (error) {
       console.error("Error al obtener datos de tipo de punto de interés:", error);
     } finally {
@@ -53,15 +99,22 @@ const FormPuntoInteres = ({
   const cargarCreador = async () => {
     try {
       const userId = await AsyncStorage.getItem("userId");
+      await setIdCreador(userId);
       if (userId) {
         const { usuario } = await gestionUsuarioApi.findOne(userId);
-        console.log("USUARIO RECIBIDO", usuario)
+        // console.log("USUARIO RECIBIDO", usuario)}
         setNombre(usuario.nombre); 
       }
     } catch (error) {
       console.error("Error al cargar el nombre del usuario:", error);
     }
   };
+
+   useEffect(() => {
+    if (visible) {
+      console.log("DATOS:", datosFormulario);
+    }
+  }, [datosFormulario]);
 
   useEffect(() => {
     if (visible) {
@@ -71,76 +124,96 @@ const FormPuntoInteres = ({
     }
   }, [visible]);
 
-  useEffect(() => {
-      console.log("TIPOS DE PUNTO ",datosTipoPunto);
-  }, [datosTipoPunto]);
+  // useEffect(() => {
+  //     console.log("TIPOS DE PUNTO ",datosTipoPunto);
+  // }, [datosTipoPunto]);
 
   return (
     <Modal
-      visible={visible}
-      transparent={transparent}
-      animationType={animationType}
-      onRequestClose={volver}
-    >
+  visible={visible}
+  transparent={transparent}
+  animationType={animationType}
+  onRequestClose={volver}
+>
+  <View style={styles.modalContainer}>
+    <View style={styles.modalContent}>
       
-      <View style={styles.modalContainer}>
-        <View style={styles.modalContent}>
-        {cargando ?
-        <Text style={styles.label}>Cargando información...</Text>
-        :
+        {cargando ? (
+          <Text style={styles.label}>Cargando información...</Text>
+        ) : (
           <ScrollView>
-            <Text style={styles.title}>Centro Comercial La Rambla</Text>
-            <Text style={styles.subtitle}>
-              Av. Javier Prado Este 2010, Lima 15036
-            </Text>
+              <CampoEditable
+                value={NombrePunto}
+                onSave={(newValue) => setNombrePunto(newValue)}
+                
+                editableTitleStyle={styles.editableTitle}
+                displayTitleStyle={styles.title}
+                iconsContainerStyle={styles.iconsContainer}
+                rowStyle={styles.row}
+                iconColor={{ edit: "#4CAF50", save: "green", cancel: "red" }}
+              />
 
+              <CampoEditable
+                value={Direccion}
+                onSave={(newValue) => setDireccion(newValue)}
+                
+                editableTitleStyle={styles.editableSubtitle}
+                displayTitleStyle={styles.subtitle}
+                iconsContainerStyle={styles.iconsContainer}
+                rowStyle={styles.row}
+                iconColor={{ edit: "#4CAF50", save: "green", cancel: "red" }}
+              />
             <Text style={styles.label}>Tipo de marcador</Text>
-            {datosTipoPunto && 
-                <Carrusel 
-                    data={datosTipoPunto} 
-                    onItemPress={(item) => console.log('Seleccionaste:', item)}
-                    tamanoLetra={15}
-                    altura={40}
-                    colorLetraDefecto="black"
-                    colorLetraSelected="black"
-                    colorOpcionDefecto="white"
-                    colorOpcionSelected="#cef5b0"
-                    otrosEstilos={{
-                      paddingVertical: 10,
-                      flexDirection: 'row',
-                    }}
-                />
-              }
+            {datosTipoPunto && (
+              <Carrusel
+                data={datosTipoPunto}
+                onItemPress={(item) => setIdTipoMarcadorSeleccionado(item.id)}
+                tamanoLetra={15}
+                altura={40}
+                colorLetraDefecto="black"
+                colorLetraSelected="black"
+                colorOpcionDefecto="white"
+                colorOpcionSelected="#cef5b0"
+                otrosEstilos={{
+                  paddingVertical: 10,
+                  flexDirection: "row",
+                }}
+              />
+            )}
             <Text style={styles.label}>Creador</Text>
             <TextInput
               style={styles.inputCreador}
-              value={nombre} 
+              value={nombre}
               onChangeText={setNombre}
               editable={false}
             />
             <Text style={styles.label}>Descripción</Text>
-            
             <InputConContador
-                maxCaracteres={150}
-                value={descripcion}
-                onChangeText={(text) => setDescripcion(text)}
-                placeholder="Escribe una descripción aquí..."
-                style={styles.textAreaContainer}
-                alto={80}
-                alineaTexto = "top"
+              maxCaracteres={150}
+              value={descripcion}
+              onChangeText={(text) => setDescripcion(text)}
+              placeholder="Escribe una descripción aquí..."
+              style={styles.textAreaContainer}
+              alto={80}
+              alineaTexto="top"
             />
-¿
             <Text style={styles.label}>Imagen de Referencia</Text>
-            <TouchableOpacity style={styles.uploadButton}>
-              <Text style={styles.uploadButtonText}>📤 Subir Imagen</Text>
-            </TouchableOpacity>
-{/* 
-            <SubidaImagen
-              onImageSelect={(image) => {
-                console.log("Imagen seleccionada:", image);
-              }}
-            /> */}
-
+            <SubidaImagen 
+              onImageSelect={(image) =>
+                console.log("Imagen seleccionada:", image)
+              }
+              onImageUpload={(path) => handleImageUpload(path)}
+              onImageRemove={(image) =>
+                console.log("Imagen removed:", image)
+              }
+              renderPlaceholder={() => (
+                <Text style={styles.uploadButtonText}>📤 Subir Imagen</Text>
+              )}
+              containerStyle={styles.uploadButton} // Estilo personalizado para el contenedor
+              previewStyle={{ width: 150, height: 150 }} // Estilo personalizado para la vista previa
+              tipo="puntointeres"
+            />
+            {/* Botones dentro del ScrollView */}
             <View style={styles.buttonContainer}>
               <TouchableOpacity style={styles.button} onPress={handleGuardar}>
                 <Text style={styles.buttonText}>Guardar</Text>
@@ -155,11 +228,12 @@ const FormPuntoInteres = ({
               </TouchableOpacity>
             </View>
           </ScrollView>
-          }
-        </View>
-      </View>
-    </Modal>
-  );
+        )}
+
+    </View>
+  </View>
+</Modal>
+  )
 };
 
 FormPuntoInteres.propTypes = {
@@ -173,6 +247,7 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
     alignItems: "center",
     backgroundColor: "rgba(0, 0, 0, 0.3)",
+    // paddingVertical: 20,
   },
   modalContent: {
     width: "100%",
@@ -181,10 +256,11 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   title: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: "bold",
     textAlign: "center",
     marginBottom: 5,
+    flex: 1, 
   },
   subtitle: {
     fontSize: 14,
@@ -244,7 +320,7 @@ const styles = StyleSheet.create({
 
     marginBottom: 30,
     width: 145,
-    height:45
+    height: 45
   },
   uploadButtonText: {
     fontSize: 16,
@@ -253,12 +329,15 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: "row",
     justifyContent: "space-around",
+    marginTop: 10, 
+    alignSelf: "stretch",
   },
   button: {
     paddingVertical: 10,
     paddingHorizontal: 20,
     backgroundColor: "#4CAF50",
     minWidth: 150,
+    alignSelf:"top",
     fontSize:"10px",
     borderRadius: 50,
     alignItems: "center",
@@ -278,6 +357,40 @@ const styles = StyleSheet.create({
   cancelButtonText: {
     color: "#4CAF50",
   },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 10,
+  },
+  editableRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1, // Asegura que el contenedor ocupe todo el espacio
+  },
+  editableTitle: {
+    flex: 1, 
+    fontSize: 18,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
+    padding: 5,
+    marginRight: 10, 
+  },
+  editableSubtitle: {
+    flex: 1, // El input ocupa el espacio restante
+    fontSize: 14,
+    borderBottomWidth: 1, // Ancho de la línea gris
+    borderBottomColor: "#ccc", // Color de la línea gris
+    padding: 5,
+    marginRight: 10, // Da espacio entre el input y los íconos
+  },
+  iconsContainer: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    alignItems: "center",
+  },
 });
 
 export default FormPuntoInteres;
+
+

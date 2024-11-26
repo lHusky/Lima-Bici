@@ -33,9 +33,6 @@ const InformacionLugar = ({
     typeof newSelectedLocation.latitude === "number" &&
     typeof newSelectedLocation.longitude === "number";
 
-  // Log para verificar si los datos son válidos
-  // console.log("isValidPlaceDetails:", isValidPlaceDetails);
-
   // Función para abrir Google Maps
   const handleOpenGoogleMaps = () => {
     if (isValidPlaceDetails) {
@@ -193,6 +190,10 @@ const InformacionLugar = ({
           animationType="slide" 
           volver ={() => volverAInformacion()}
           onClose={() => setShowFormPuntoInteres(false)}
+          nombrePunto={newPlaceDetails?.name}
+          direccion={newPlaceDetails?.address}
+          latitud={newSelectedLocation.latitude}
+          longitud={newSelectedLocation.longitude}
         />
       }
     </>

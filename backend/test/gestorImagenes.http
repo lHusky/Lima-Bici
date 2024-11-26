@@ -1,0 +1,21 @@
+POST http://localhost:3000/gestorImagenes/puntointeres
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="imagen"; filename="FooterLupa.png"
+Content-Type: image/png
+
+< ../../frontend/assets/FooterLupa.png
+--boundary--
+
+
+####
+POST http://localhost:3000/gestorImagenes/perfil
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="imagen"; filename="FooterLupa.png"
+Content-Type: image/png
+
+< ../../frontend/assets/FooterLupa.png
+--boundary--

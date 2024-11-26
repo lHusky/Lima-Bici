@@ -1,4 +1,4 @@
-DROP DATABASE IF EXISTS lima_bici;
+DROP DATABASE lima_bici;
 CREATE DATABASE lima_bici CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 
 USE lima_bici;
@@ -23,7 +23,7 @@ CREATE TABLE usuario (
     nombre VARCHAR(100) NOT NULL,
     telefono VARCHAR(15) NOT NULL UNIQUE,
     fechaCumple DATE,
-    fotoPerfil VARCHAR(255),
+    fotoPerfil VARCHAR(400),
     contrasena VARCHAR(50),
     email VARCHAR(100) NOT NULL UNIQUE,
     peso DECIMAL(5,2),
@@ -56,40 +56,41 @@ CREATE TABLE ruta (
     id INT AUTO_INCREMENT PRIMARY KEY,
     duracion DECIMAL(5,2),
     distancia DECIMAL(10, 2),
-    nombre VARCHAR(255),
+    punto_inicio_latitud DECIMAL(9, 8) NOT NULL,
+    punto_final_latitud DECIMAL(9, 8) NOT NULL,
+    punto_inicio_longitud DECIMAL(9, 8) NOT NULL,
+    punto_final_longitud DECIMAL(9, 8) NOT NULL,
     descripcion VARCHAR(300),
     id_creador INT,
-    fechaInicio DATE,
-    fechaFin DATE,
-    horaInicio TIME,
-    horaFin TIME,
     FOREIGN KEY (id_creador) REFERENCES usuario(id) ON DELETE CASCADE
-);
-
-CREATE TABLE coordenada (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    orden INT,
-    latitud DECIMAL(10, 6) NOT NULL,
-    longitud DECIMAL(10, 6) NOT NULL,
-    id_ruta INT,
-    FOREIGN KEY (id_ruta) REFERENCES ruta(id) ON DELETE CASCADE
 );
 
 CREATE TABLE punto_interes (
     id INT AUTO_INCREMENT PRIMARY KEY,
     titulo VARCHAR(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
     horario VARCHAR(100),
-    img_referencial VARCHAR(255),
+    img_referencial VARCHAR(400),
     direccion VARCHAR(255),
     descripcion VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
-    id_coordenada INT,
     id_tipo INT,
     id_creador INT,
-    FOREIGN KEY (id_coordenada) REFERENCES coordenada(id) ON DELETE CASCADE,
     FOREIGN KEY (id_creador) REFERENCES usuario(id) ON DELETE CASCADE,
     FOREIGN KEY (id_tipo) REFERENCES tipo_PuntoInteres(id) ON DELETE CASCADE
 );
-
+CREATE TABLE coordenada (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    orden INT,
+    latitud DECIMAL(10, 6) NOT NULL,
+    longitud DECIMAL(10, 6) NOT NULL,
+    id_ruta INT NULL,
+    id_punto_interes INT NULL,
+    FOREIGN KEY (id_ruta) REFERENCES ruta(id) ON DELETE CASCADE,
+    FOREIGN KEY (id_punto_interes) REFERENCES punto_interes(id) ON DELETE CASCADE,
+    CONSTRAINT chk_coordenada_relacion CHECK (
+        (id_ruta IS NOT NULL AND id_punto_interes IS NULL) OR
+        (id_ruta IS NULL AND id_punto_interes IS NOT NULL)
+    )
+);
 
 CREATE TABLE usuario_objetivo (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -119,7 +120,7 @@ CREATE TABLE usuario_ruta (
 CREATE TABLE favoritos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     fecha_agregado DATE NOT NULL,
-    descripcion VARCHAR(350),
+    descripcion VARCHAR(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
     icon_favorito VARCHAR(300),
     id_usuario INT,
     id_ruta INT,
@@ -144,8 +145,3 @@ INSERT INTO tipo_PuntoInteres (titulo) VALUES ('🏋️‍♀️ Gimnasio');
 INSERT INTO tipo_PuntoInteres (titulo) VALUES ('Otro');
 
 INSERT INTO usuario (nombre, email, telefono, contrasena,tipo_usuario) VALUES ("admin", "admin@", "123456", "123456","admin");
-
-SELECT * FROM usuario;
-SELECT * FROM ruta;
-SELECT * FROM favoritos;
-SELECT * FROM coordenada;

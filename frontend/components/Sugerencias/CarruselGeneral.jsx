@@ -47,27 +47,6 @@ const Carrousel = ({
         </ScrollView>
       </View>
     );
-//   }
-
-//   // Renderizado para FlatList
-//   return (
-//     <View style={[styles.container, containerStyle]}>
-//       <FlatList
-//         data={data}
-//         horizontal
-//         showsHorizontalScrollIndicator={false}
-//         renderItem={({ item }) => (
-//           <Card
-//             title={item.title}
-//             image={item.image} // Opcional si la data incluye imágenes
-//             onPress={() => onItemPress(item)}
-//           />
-//         )}
-//         keyExtractor={(item) => item.id.toString()} // Asegurar que id sea único y string
-//         ItemSeparatorComponent={() => <View style={{ width: spacing }} />} // Separador dinámico
-//       />
-//     </View>
-//   );
 };
 
 

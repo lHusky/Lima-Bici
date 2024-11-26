@@ -1,4 +1,4 @@
-const URI = 'http://192.168.68.60:3000/';//'http://ec2-3-142-246-223.us-east-2.compute.amazonaws.com:3000/';
+const URI = 'http://192.168.18.10:3000/';//'http://ec2-3-142-246-223.us-east-2.compute.amazonaws.com:3000/';
 
 const get = async (endpoint) => {
     try {
@@ -39,6 +39,24 @@ const post = async (endpoint, payload) => {
 };
 
 
+const postImagen = async (endpoint, payload) => {
+    const response = await fetch(URI + endpoint, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+        body: payload, // `payload` debe ser un objeto FormData
+    });
+
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json(); // Extraer JSON del cuerpo de la respuesta
+    console.log("BASE FRONT",data)
+    return { status: response.status, data };
+};
+
 const put = async (endpoint, payload) => {
     try {
         const response = await fetch(URI + endpoint, {
@@ -78,6 +96,6 @@ const remove = async (endpoint) => {
     }
 };
 
-const base = { get, post, put, remove };
+const base = { get, post, put, remove, postImagen };
 
 export default base;
