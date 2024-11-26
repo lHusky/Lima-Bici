@@ -7,7 +7,7 @@ const PaginaCuenta = ({ navigation }) => {
     return (
         <View style={styles.container}>
             <View style={styles.content}>
-                <Usuario/>
+                <Usuario />
             </View>
             <Footer navigation={navigation} currentScreen="PaginaCuenta" />
         </View>

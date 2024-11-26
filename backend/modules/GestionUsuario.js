@@ -254,13 +254,36 @@ class GestionUsuario {
 
     async editarUsuario(id, usuario) {
         try {
-            const { nombre, telefono, fechaCumple, fotoPerfil, contrasena, email, peso} = usuario;
+            // Obtén los datos actuales del usuario
+            const [rows] = await pool.execute('SELECT * FROM usuario WHERE id = ?', [id]);
+            if (rows.length === 0) {
+                console.log(`No se encontró un usuario con el ID: ${id}`);
+                return { status: 404, message: 'Usuario no encontrado' };
+            }
+            const usuarioActual = rows[0];
     
+            // Combina los datos actuales con los nuevos (si están definidos)
+            let {
+                nombre = usuarioActual.nombre,
+                telefono = usuarioActual.telefono,
+                fechaCumple = usuarioActual.fechaCumple,
+                fotoPerfil = usuarioActual.fotoPerfil,
+                contrasena = usuarioActual.contrasena,
+                email = usuarioActual.email,
+                peso = usuarioActual.peso,
+            } = usuario;
+
+            // Convertir fecha de dd/mm/yyyy a yyyy-mm-dd si está definida
+            if (fechaCumple) {
+                const [dia, mes, año] = fechaCumple.split('/');
+                fechaCumple = `${año}-${mes}-${dia}`; // Convertir al formato yyyy-mm-dd
+            }
+            // Actualiza solo los valores combinados
             const [result] = await pool.execute(
                 `UPDATE usuario 
                     SET nombre = ?, telefono = ?, fechaCumple = ?, fotoPerfil = ?, contrasena = ?, email = ?, peso = ? 
                     WHERE id = ?`,
-                [nombre, telefono, fechaCumple, fotoPerfil, contrasena, email, peso,id]
+                [nombre, telefono, fechaCumple, fotoPerfil, contrasena, email, peso, id]
             );
     
             if (result.affectedRows === 0) {

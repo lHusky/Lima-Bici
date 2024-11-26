@@ -245,22 +245,31 @@ const obtenerUsuarioPorID = async (req, res) => {
 
 
 const editarUsuario = async (req, res) => {
-    const{id} = req.params; // id del usuario a editar
-    const usuario = req.body;  //lista de datos editados
+    const { id } = req.params; // id del usuario a editar
+    const usuario = req.body;  // lista de datos editados
+
+    console.log("ID recibido en la solicitud:", id); // Debugging
 
     try {
-        const result = await gestor.editarUsuario(id,usuario);
+        const result = await gestor.editarUsuario(id, usuario);
 
         if (result) {
-            return res.status(200).json({ 
-                success: true, message: "Usuario actualizado con éxito." });
+            return res.status(200).json({
+                success: true,
+                message: "Usuario actualizado con éxito.",
+            });
         } else {
-            return res.status(404).json({ 
-                success: false, message: "Usuario no encontrado." });
+            return res.status(404).json({
+                success: false,
+                message: "Usuario no encontrado.",
+            });
         }
     } catch (error) {
-        return res.status(500).json({ 
-            success: false, message: "Error al actualizar el usuario.", error: error.message });
+        return res.status(500).json({
+            success: false,
+            message: "Error al actualizar el usuario.",
+            error: error.message,
+        });
     }
 };
 

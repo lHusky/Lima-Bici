@@ -30,6 +30,8 @@ const iniciarSesion = async (email, password) => {
         email: usuarioData.email,
         contrasena: usuarioData.contrasena,
         fechaCumple: usuarioData.fechaCumple, 
+        peso: usuarioData.peso,
+        fotoPerfil: usuarioData.fotoPerfil,
     };
     return await base.put(`${endpoint}/${id}`, payload);
 };
