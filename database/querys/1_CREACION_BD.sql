@@ -56,12 +56,13 @@ CREATE TABLE ruta (
     id INT AUTO_INCREMENT PRIMARY KEY,
     duracion DECIMAL(5,2),
     distancia DECIMAL(10, 2),
-    punto_inicio_latitud DECIMAL(9, 8) NOT NULL,
-    punto_final_latitud DECIMAL(9, 8) NOT NULL,
-    punto_inicio_longitud DECIMAL(9, 8) NOT NULL,
-    punto_final_longitud DECIMAL(9, 8) NOT NULL,
+    nombre VARCHAR(255),
     descripcion VARCHAR(300),
     id_creador INT,
+    fechaInicio DATE,
+    fechaFin DATE,
+    horaInicio TIME,
+    horaFin TIME,
     FOREIGN KEY (id_creador) REFERENCES usuario(id) ON DELETE CASCADE
 );
 
