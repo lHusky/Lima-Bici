@@ -41,11 +41,11 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   txt: {
-    fontSize: 24, // Un poco más grande
-    fontWeight: 'bold', // Negrita para destacar
-    textAlign: 'center', // Centrando el texto
+    fontSize: 24, 
+    fontWeight: 'bold', 
+    textAlign: 'center',
     marginBottom: 30,
-    fontFamily: 'Roboto', // Recomendada, alternativa Open Sans
+    fontFamily: 'Roboto',
     color: '#333'
   }
 });

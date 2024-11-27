@@ -18,6 +18,7 @@ class GestionUsuario {
     async obtenerUsuariosBD() {
       
         try {
+                this.listaUsuarios = [];
                 const [usuarios] = await pool.execute('SELECT id, nombre, email,telefono, contrasena FROM usuario');
                 if (usuarios.length === 0) {
                     console.log("No se encontraron usuarios en la base de datos.");
@@ -300,6 +301,72 @@ class GestionUsuario {
         }
     }
     
+    async eliminarUsuario(id) {
+        try {
+          const [result] = await pool.execute('DELETE FROM usuario WHERE id = ?', [id]);
+    
+          if (result.affectedRows === 0) {
+            console.log(`No se encontró un usuario con el ID: ${id}`);
+            return false;
+          }
+    
+          // También eliminamos el usuario de la lista local
+          this.listaUsuarios = this.listaUsuarios.filter((usuario) => usuario.id !== parseInt(id));
+    
+          console.log(`Usuario con ID: ${id} eliminado correctamente.`);
+          return true;
+        } catch (error) {
+          console.error('Error al eliminar el usuario:', error);
+          throw error;
+        }
+      }
+
+      async AdmiEditarUsuario(id, datosActualizados) {
+        try {
+          const campos = [];
+          const valores = [];
+    
+          // Construir consulta dinámica en base a los campos proporcionados
+          if (datosActualizados.nombre) {
+            campos.push('nombre = ?');
+            valores.push(datosActualizados.nombre);
+          }
+          if (datosActualizados.email) {
+            campos.push('email = ?');
+            valores.push(datosActualizados.email);
+          }
+          if (datosActualizados.telefono) {
+            campos.push('telefono = ?');
+            valores.push(datosActualizados.telefono);
+          }
+          // Agrega más campos según sea necesario
+    
+          if (campos.length === 0) {
+            console.log('No hay campos para actualizar.');
+            return false;
+          }
+    
+          valores.push(id); // Añadimos el ID al final de los valores
+    
+          const query = `UPDATE usuario SET ${campos.join(', ')} WHERE id = ?`;
+    
+          const [result] = await pool.execute(query, valores);
+    
+          if (result.affectedRows === 0) {
+            console.log(`No se encontró un usuario con el ID: ${id}`);
+            return false;
+          }
+    
+          // Actualizar el usuario en la lista local
+          await this.obtenerUsuariosBD(); // Recargar los usuarios desde la BD
+    
+          console.log(`Usuario con ID: ${id} actualizado correctamente.`);
+          return true;
+        } catch (error) {
+          console.error('Error al actualizar el usuario:', error);
+          throw error;
+        }
+      }
 
     // Método para cerrar sesión
     cerrarSesion() {

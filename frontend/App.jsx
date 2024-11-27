@@ -16,8 +16,11 @@ import PaginaFavoritos from './screens/PaginaFavoritos/PaginaFavoritos';
 import PaginaCuenta from './screens/PaginaCuenta/PaginaCuenta';
 import PaginaRuta from './screens/PaginaRuta/PaginaRuta';
 import PaginaEditarRuta from './screens/PaginaEditarRuta/PaginaEditarRuta';
-
+import AdministrarUsuarios from './screens/AdminHome/AdministrarUsuarios/AdministrarUsuarios.jsx';
+import AdminRegistrarUsuario from './screens/AdminHome/AdminRegistrarUsuario/AdminRegistrarUsuario.jsx';
+import AdminEditarUsuario from './screens/AdminHome/AdminEditarUsuario/AdminEditarUsuario.jsx';
 import Footer from './components/footer/footer';
+import AdminFooter from './components/AdminFooter/AdminFooter.jsx';
 import { GooglePlacesProvider } from './context/ContextAPI/GooglePlacesContext';
 
 const Stack = createStackNavigator();
@@ -33,9 +36,13 @@ const App = () => {
             <Stack.Screen name="Iniciosesion">
               {(props) => <Iniciosesion {...props} />}
             </Stack.Screen>
+            <Stack.Screen name="AdminFooter" component={AdminFooter} />
             <Stack.Screen name="InicioRecuperarContraseña" component={InicioRecuperarContraseña} />
             <Stack.Screen name="InicioIngresarCodigo" component={InicioIngresarCodigo} />
             <Stack.Screen name="InicioNuevaContraseña" component={InicioNuevaContraseña} />
+            <Stack.Screen name="AdministrarUsuarios" component={AdministrarUsuarios} />
+            <Stack.Screen name="AdminRegistrarUsuario" component={AdminRegistrarUsuario} />
+            <Stack.Screen name="AdminEditarUsuario" component={AdminEditarUsuario} />
             <Stack.Screen name="RegistroUsuario">
               {(props) => <RegistroUsuario {...props} />}
             </Stack.Screen>

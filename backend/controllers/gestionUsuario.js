@@ -225,6 +225,34 @@ const actualizarContraseña = async (req, res) => {
     }
 }
 
+const AdmieditarUsuario = async (req, res) => {
+    const { id } = req.params;
+    const usuarioActualizado = req.body;
+  
+    try {
+      const resultado = await gestor.AdmiEditarUsuario(id, usuarioActualizado);
+  
+      if (resultado) {
+        return res.status(200).json({
+          success: true,
+          message: 'Usuario actualizado con éxito.',
+        });
+      } else {
+        return res.status(404).json({
+          success: false,
+          message: 'Usuario no encontrado.',
+        });
+      }
+    } catch (error) {
+      console.error('Error al actualizar usuario:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Error al actualizar usuario.',
+        error: error.message,
+      });
+    }
+  };
+
 
 const obtenerUsuarioPorID = async (req, res) => {
 
@@ -243,6 +271,32 @@ const obtenerUsuarioPorID = async (req, res) => {
     }
 };
 
+const eliminarUsuario = async (req, res) => {
+    const { id } = req.params;
+  
+    try {
+      const resultado = await gestor.eliminarUsuario(id);
+  
+      if (resultado) {
+        return res.status(200).json({
+          success: true,
+          message: 'Usuario eliminado con éxito.',
+        });
+      } else {
+        return res.status(404).json({
+          success: false,
+          message: 'Usuario no encontrado.',
+        });
+      }
+    } catch (error) {
+      console.error('Error al eliminar usuario:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Error al eliminar usuario.',
+        error: error.message,
+      });
+    }
+  };
 
 const editarUsuario = async (req, res) => {
     const { id } = req.params; // id del usuario a editar
@@ -282,7 +336,8 @@ export {
     cargarCodVerificacion,
     actualizarContraseña,
     editarUsuario,
-    obtenerUsuarioPorID
-    // eliminarUsuario
+    obtenerUsuarioPorID,
+    eliminarUsuario,
+    AdmieditarUsuario
 };
 

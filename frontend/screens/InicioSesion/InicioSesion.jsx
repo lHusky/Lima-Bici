@@ -32,9 +32,15 @@ import {handleLogin} from '../../services/validacion_credenciales/handleLogin.js
  const handleLoginPress = async () => {
   const validado = await handleLogin(email, password, setEmailError, setPasswordError);
   if (validado.success) {
-    console.log(validado.usuario);
-    await saveUserId(validado.usuario.id); // id nulo
-    navigation.navigate('Footer');
+    if (email == 'lima.bicis@gmail.com'){
+      console.log(validado.usuario);
+      await saveUserId(validado.usuario.id); // id nulo
+      navigation.navigate('AdministrarUsuarios');
+    } else {
+      console.log(validado.usuario);
+      await saveUserId(validado.usuario.id); // id nulo
+      navigation.navigate('Footer');
+    }
   }
 };
 

@@ -36,7 +36,7 @@ const iniciarSesion = async (email, password) => {
     return await base.put(`${endpoint}/${id}`, payload);
 };
 
-
+const updateOne = async (id, payload) => await base.put(`${endpoint}/admin/${id}`, payload);
 
 const registrarUsuario = async (payload) => await base.post(endpoint+'registrarUsuario', payload)
 
@@ -46,6 +46,6 @@ const findVerfCode = async(email) => await base.post(`${endpoint}findVerCodigo`,
 
 const updatePass = async(payload) => await base.put(`${endpoint}updateContrasena`, payload)
 
-const api = { findAll, create, update, remove, findOne, iniciarSesion,registrarUsuario, createVerfCode, findVerfCode, updatePass, editarUsuario}
+const api = { findAll, create, update, remove, findOne, iniciarSesion,registrarUsuario, createVerfCode, findVerfCode, updatePass, editarUsuario, updateOne}
 
 export default api;                 

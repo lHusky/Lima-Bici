@@ -12,10 +12,13 @@ import BotonInformacion from '../../components/BotonInformacion/BotonInformacion
 import InformacionLugar from '../../components/InformacionLugar/InformacionLugar.jsx';
 import InformacionLugar1 from '../../components/InformacionLugar/InformacionLugar1.jsx';
 import { useGooglePlaces } from '../../context/ContextAPI/GooglePlacesContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import AdminFooter from '../../components/AdminFooter/AdminFooter';
 
 const PaginaBuscar = ({ navigation }) => {
     const searchRef = useRef(null);
 
+    const [isAdmin, setIsAdmin] = useState(false);
     // Estados existentes
     const [destination, setDestination] = useState(null);
     const [direccion, setDireccion] = useState('');
@@ -41,6 +44,19 @@ const PaginaBuscar = ({ navigation }) => {
     ];
 
     useEffect(() => {
+        const checkIfAdmin = async () => {
+            try {
+                const userId = await AsyncStorage.getItem('userId');
+                if (userId && parseInt(userId, 10) === 1) {
+                    setIsAdmin(true); // Es administrador
+                } else {
+                    setIsAdmin(false); // Usuario regular
+                }
+                console.log(isAdmin)
+            } catch (error) {
+                console.error('Error al obtener el ID de usuario:', error);
+            }
+        };
         const getCurrentLocation = async () => {
             try {
                 const { status } = await Location.requestForegroundPermissionsAsync();
@@ -60,7 +76,7 @@ const PaginaBuscar = ({ navigation }) => {
                 Alert.alert('Error', 'No se pudo obtener la ubicación.');
             }
         };
-
+        checkIfAdmin();
         getCurrentLocation();
     }, []);
     const handleTrackingToggle = () => {
@@ -178,9 +194,11 @@ const PaginaBuscar = ({ navigation }) => {
                 loadingDetails={false} // Si es necesario, ajusta este valor
                 setNewDestination={setDestination} // Si aplicable
             />
-
-            <Footer navigation={navigation} currentScreen="PaginaBuscar" />
-        
+            {isAdmin ? (
+                <AdminFooter navigation={navigation} currentScreen="PaginaBuscar" />
+            ) : (
+                <Footer navigation={navigation} currentScreen="PaginaBuscar" />
+            )}
             </View>
     );
 };

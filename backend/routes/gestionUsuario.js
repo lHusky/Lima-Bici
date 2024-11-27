@@ -7,7 +7,9 @@ import { crearUsuario,
     cargarCodVerificacion, 
     actualizarContraseña, 
     editarUsuario,
-    obtenerUsuarioPorID} from '../controllers/gestionUsuario.js';
+    obtenerUsuarioPorID,
+    eliminarUsuario,
+    AdmieditarUsuario } from '../controllers/gestionUsuario.js';
 
 const gestionUserRouter = express.Router();
 
@@ -29,5 +31,9 @@ gestionUserRouter.post('/findVerCodigo', cargarCodVerificacion);
 gestionUserRouter.put('/updateContrasena', actualizarContraseña);
 
 gestionUserRouter.put('/:id',  editarUsuario);
+
+gestionUserRouter.put('/admin/:id', AdmieditarUsuario);
+
+gestionUserRouter.delete('/:id', eliminarUsuario);
 
 export {gestionUserRouter};
