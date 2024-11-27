@@ -3,8 +3,8 @@
 import { Graph } from 'graphlib';
 import haversine from 'haversine';
 
-export function buildGraphFromNearbyBikePaths(route, bikePaths, proximityRadius = 500) {
-  console.log('Iniciando construcción del grafo en buildGraphFromNearbyBikePaths');
+export function buildGraphFromNearbyBikePaths(route, bikePaths, proximityRadius = 300) {
+  console.log('Iniciando construcción del grafo de ciclovias');
   const graph = new Graph({ directed: false });
   const nearbyBikePaths = [];
 
@@ -52,7 +52,7 @@ export function buildGraphFromNearbyBikePaths(route, bikePaths, proximityRadius 
     }
   });
 
-  // **Nuevo código para conectar nodos cercanos de diferentes ciclovías**
+  // conectar nodos cercanos de diferentes ciclovías
   const bikeNodeIds = graph.nodes().filter(nodeId => nodeId.startsWith('bike_'));
   for (let i = 0; i < bikeNodeIds.length; i++) {
     const nodeIdA = bikeNodeIds[i];
@@ -69,36 +69,35 @@ export function buildGraphFromNearbyBikePaths(route, bikePaths, proximityRadius 
     }
   }
 
-  console.log('Finalizada la construcción del grafo en buildGraphFromNearbyBikePaths');
+  console.log('Finalizada la construcción del grafo de ciclovias');
   return graph;
 }
 
-
-// src/utils/graphUtils.js
-
-// src/utils/graphUtils.js
-
 export function addRouteToGraph(graph, routeCoords) {
-    console.log('Iniciando construcción de la ruta en addRouteToGraph');
+    console.log('Iniciando construcción de la ruta en el grafo');
   
-    for (let i = 0; i < routeCoords.length - 1; i++) {
+    for (let i = 0; i < routeCoords.length; i++) {
       const currentPoint = routeCoords[i];
-      const nextPoint = routeCoords[i + 1];
-  
       const currentNodeId = `route_${i}`;
-      const nextNodeId = `route_${i + 1}`;
-  
+    
       if (!graph.hasNode(currentNodeId)) {
         graph.setNode(currentNodeId, currentPoint);
       }
-      if (!graph.hasNode(nextNodeId)) {
-        graph.setNode(nextNodeId, nextPoint);
+    
+      // Conectar al siguiente punto solo si no es el último
+      if (i < routeCoords.length - 1) {
+        const nextPoint = routeCoords[i + 1];
+        const nextNodeId = `route_${i + 1}`;
+    
+        if (!graph.hasNode(nextNodeId)) {
+          graph.setNode(nextNodeId, nextPoint);
+        }
+    
+        const distance = haversine(currentPoint, nextPoint, { unit: 'meter' });
+        graph.setEdge(currentNodeId, nextNodeId, { weight: distance * 3 });
+        graph.setEdge(nextNodeId, currentNodeId, { weight: distance * 3 });
       }
-  
-      const distance = haversine(currentPoint, nextPoint, { unit: 'meter' });
-      graph.setEdge(currentNodeId, nextNodeId, { weight: distance * 3 });
-      graph.setEdge(nextNodeId, currentNodeId, { weight: distance * 3 });
-  
+    
       // Conectar con nodos de ciclovías cercanos
       const nearestBikeNodeId = findNearestBikeNodeId(graph, currentPoint);
       if (nearestBikeNodeId && graph.hasNode(nearestBikeNodeId)) {
@@ -107,28 +106,10 @@ export function addRouteToGraph(graph, routeCoords) {
         graph.setEdge(nearestBikeNodeId, currentNodeId, { weight: connectionDistance * 0.3 });
       }
     }
-  
-    // Conectar el último punto de la ruta con nodos de ciclovías cercanos
-    const lastIndex = routeCoords.length - 1;
-    const lastNodeId = `route_${lastIndex}`;
-    const lastPoint = routeCoords[lastIndex];
-  
-    if (!graph.hasNode(lastNodeId)) {
-      graph.setNode(lastNodeId, lastPoint);
-    }
-  
-    const nearestBikeNodeId = findNearestBikeNodeId(graph, lastPoint);
-    if (nearestBikeNodeId && graph.hasNode(nearestBikeNodeId)) {
-      const connectionDistance = haversine(lastPoint, graph.node(nearestBikeNodeId), { unit: 'meter' });
-      graph.setEdge(lastNodeId, nearestBikeNodeId, { weight: connectionDistance * 0.3 });
-      graph.setEdge(nearestBikeNodeId, lastNodeId, { weight: connectionDistance * 0.3 });
-    }
-  
-    console.log('Finalizada la construcción de la ruta en addRouteToGraph');
+
+    console.log('Finalizada la construcción de la ruta en el grafo');
     return graph;
   }
-  
-  
 
 function findNearestBikeNodeId(graph, point) {
   let nearestNodeId = null;
@@ -139,12 +120,11 @@ function findNearestBikeNodeId(graph, point) {
       const node = graph.node(nodeId);
       if (!node) return;
       const distance = haversine(point, node, { unit: 'meter' });
-      if (distance < minDistance && distance < 400) {
+      if (distance < minDistance && distance < 60) {
         minDistance = distance;
         nearestNodeId = nodeId;
       }
     }
   });
-
   return nearestNodeId;
 }
