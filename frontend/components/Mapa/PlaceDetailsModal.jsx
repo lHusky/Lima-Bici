@@ -10,25 +10,26 @@ const PlaceDetailsModal = ({ visible, placeDetails, loading, onClose, setDestina
     // Obtener el nombre del usuario desde AsyncStorage
     useEffect(() => {
         const fetchUsuario = async () => {
-            try {
-                const userId = await AsyncStorage.getItem("userId");
-                if (userId) {
-                    const response = await api.findOne(userId); 
-                    if (response?.usuario?.nombre) {
-                        setUsuarioNombre(response.usuario.nombre);
-                    } else {
-                        console.error("No se pudo obtener el nombre del usuario");
-                    }
-                } else {
-                    console.error("No se encontró el userId en AsyncStorage");
-                }
-            } catch (error) {
-                console.error("Error al obtener el usuario:", error);
-            }
-        };
-
-        fetchUsuario();
-    }, []);
+          try {
+              const userId = await AsyncStorage.getItem("userId");
+              if (!userId) {
+                  console.error("No se encontró el userId en AsyncStorage");
+                  return;
+              }
+  
+              const response = await api.findOne(userId);
+              if (!response?.usuario?.nombre) {
+                  console.error("No se pudo obtener el nombre del usuario");
+                  return;
+              }
+  
+              setUsuarioNombre(response.usuario.nombre);
+          } catch (error) {
+              console.error("Error al obtener el usuario:", error);
+          }
+      };
+      fetchUsuario();
+      }, []);
 
     // Función para compartir el punto de interés
     const handleCompartir = () => {
