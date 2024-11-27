@@ -60,7 +60,7 @@ const AdministrarUsuarios = ({ navigation }) => {
         onPress: async () => {
           try {
             const response = await gestionUsuarioApi.remove(id);
-            if (response.status === 200 && response.data.success) {
+            if (response.success) {
               setUsuarios((prevUsuarios) =>
                 prevUsuarios.filter((usuario) => usuario.id !== id)
               );
