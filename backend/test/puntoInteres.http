@@ -2,5 +2,5 @@ GET http://localhost:3000/puntoInteres/
 
 ####
 
-
+ GET  http://192.168.18.10:3000/puntoInteres/us/1
 ####

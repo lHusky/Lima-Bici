@@ -39,7 +39,7 @@ import {handleLogin} from '../../services/validacion_credenciales/handleLogin.js
     } else {
       console.log(validado.usuario);
       await saveUserId(validado.usuario.id); // id nulo
-      navigation.navigate('Footer');
+      navigation.navigate('PaginaCuenta');
     }
   }
 };

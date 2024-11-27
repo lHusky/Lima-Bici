@@ -1,4 +1,4 @@
-const URI = 'http://192.168.18.79:3000/';//'http://ec2-3-142-246-223.us-east-2.compute.amazonaws.com:3000/';
+const URI = 'http://192.168.18.10:3000/';//'http://ec2-3-142-246-223.us-east-2.compute.amazonaws.com:3000/';
 
 const get = async (endpoint) => {
     try {

@@ -12,7 +12,7 @@ import InicioNuevaContraseña from './screens/InicioColocaNuevaContra/InicioColo
 import PaginaInicio from './screens/PaginaInicio/PaginaInicio';
 import PaginaRutas from './screens/PaginaRutas/PaginaRutas';
 import PaginaBuscar from './screens/PaginaBuscar/PaginaBuscar';
-import PaginaFavoritos from './screens/PaginaFavoritos/PaginaFavoritos';
+import PaginaMarcadores from './screens/PaginaMarcadores/PaginaMarcadores';
 import PaginaCuenta from './screens/PaginaCuenta/PaginaCuenta';
 import PaginaRuta from './screens/PaginaRuta/PaginaRuta';
 import PaginaEditarRuta from './screens/PaginaEditarRuta/PaginaEditarRuta';
@@ -49,7 +49,7 @@ const App = () => {
             <Stack.Screen name="PaginaInicio" component={PaginaInicio} />
             <Stack.Screen name="PaginaRutas" component={PaginaRutas} />
             <Stack.Screen name="PaginaBuscar" component={PaginaBuscar} />
-            <Stack.Screen name="PaginaFavoritos" component={PaginaFavoritos} />
+            <Stack.Screen name="PaginaMarcadores" component={PaginaMarcadores} />
             <Stack.Screen name="PaginaCuenta" component={PaginaCuenta} />
             <Stack.Screen name="PaginaRuta" component={PaginaRuta} />
             <Stack.Screen name="PaginaEditarRuta" component={PaginaEditarRuta} />

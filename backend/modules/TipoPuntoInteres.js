@@ -72,7 +72,7 @@ class TipoPuntoInteres {
     static async editarTipoPuntoInteres(id, TipoPuntoInteres) {
         try {
             const { titulo} = TipoPuntoInteres;
-    
+            
             const [resultado] = await pool.execute(
                 `UPDATE tipo_PuntoInteres
                     SET titulo = ?

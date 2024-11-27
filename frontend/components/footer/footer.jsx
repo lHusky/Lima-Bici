@@ -7,7 +7,7 @@ const Footer = ({ navigation, currentScreen }) => {
     { label: 'Inicio', image: require('../../assets/FooterCasa.png'), screen: 'PaginaInicio' },
     { label: 'Rutas', image: require('../../assets/FooterRuta.png'), screen: 'PaginaRutas' },
     { label: 'Buscar', image: require('../../assets/FooterLupa.png'), screen: 'PaginaBuscar' },
-    { label: 'Favoritos', image: require('../../assets/FooterEstrella.png'), screen: 'PaginaFavoritos' },
+    { label: 'Marcadores', image: require('../../assets/FooterEstrella.png'), screen: 'PaginaMarcadores' },
     { label: 'Cuenta', image: require('../../assets/FooterPerfil.png'), screen: 'PaginaCuenta' },
   ];
 
@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
   selectedButtonText: {
     backgroundColor: '#1C6C00',
     borderRadius: 5,
-    paddingHorizontal: 5,
+    paddingHorizontal: 1,
     color: 'white',
   },
 });

@@ -1,8 +1,9 @@
-import express from 'express';
+import express from 'express'; 
 import {crearUno,
     obtenerTodos,
     obtenerPorID,
     obtenerPorUsuario,
+    obtenerPorUsuarioCoordenada, // Importa el nuevo controlador
     obtenerPorTipo,
     editar,
     eliminarUno
@@ -18,10 +19,12 @@ puntoInteresRouter.get('/:id', obtenerPorID);
 
 puntoInteresRouter.get('/us/:id', obtenerPorUsuario);
 
-puntoInteresRouter.get('/tipo/:id', obtenerPorTipo);
+puntoInteresRouter.get('/us-coordenada/:id', obtenerPorUsuarioCoordenada); // Nueva ruta para obtener puntos con coordenadas
 
-puntoInteresRouter.put('/:id',  editar);
+puntoInteresRouter.get('/:tipo/:id', obtenerPorTipo);
 
-puntoInteresRouter.delete('/:id',  eliminarUno);
+puntoInteresRouter.put('/:id', editar);
+
+puntoInteresRouter.delete('/:id', eliminarUno);
 
 export {puntoInteresRouter};

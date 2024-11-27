@@ -1,6 +1,6 @@
 import base from './base.js'
 
-const endpoint = 'puntoInteres/'
+const endpoint = 'puntoInteres'
 
 const findAll = async () => await base.get(endpoint)  //obtenerTodos
 
@@ -11,6 +11,8 @@ const update = async (payload) => await base.put(`${endpoint}/${id}`, payload) /
 const remove = async (id) => await base.remove(`${endpoint}/${id}`) //eliminarUno
 
 const findOne = async (id) => await base.get(`${endpoint}/${id}`)  //obtenerPorID
+
+const findOneByUserCordenada = async (id) => await base.get(`${endpoint}/us-coordenada/${id}`)  //obtenerPorIDCoordenada
 
 const findOneByUser = async (id) => await base.get(`${endpoint}/us/${id}`)  //obtenerPorID
 
@@ -23,6 +25,8 @@ const api = {
     remove, 
     findOne,
     findOneByUser,
-    findOneByType}
+    findOneByType,
+    findOneByUserCordenada
+}
     
 export default api;                 

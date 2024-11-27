@@ -87,15 +87,15 @@ class PuntoInteres {
     static async obtenerPuntosPorUsuario(id) {
         try {
             const [PuntoInteres] = await pool.execute(
-                'SELECT id, titulo FROM punto_interes WHERE id_creador IN (? , ?)',
+                'SELECT * FROM punto_interes WHERE id_creador IN (? , ?)',
                 [id,1]
             );
             if (PuntoInteres.length === 0) {
                 console.log(`No se encontró un punto interes con el ID de creador: ${id}`);
                 return null; 
             }
-            console.log(`Punto interes encontrado con ID: ${id}`, PuntoInteres[0]);
-            return PuntoInteres[0]; // Devuelve el primer (y único) resultado
+            console.log(`Punto interes encontrado con ID: ${id}`, PuntoInteres);
+            return PuntoInteres; // Devuelve el primer (y único) resultado
         } catch (error) {
             console.error('Error al obtener el punto interes en la base de datos:', error);
             throw error; 

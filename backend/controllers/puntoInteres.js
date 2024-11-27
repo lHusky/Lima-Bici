@@ -1,4 +1,3 @@
-
 import PuntoInteres from '../modules/PuntoInteres.js';
 
 import Coordenada from '../modules/Coordenada.js';
@@ -81,7 +80,7 @@ const obtenerTodos = async (req, res) => {
 
 };
 
-
+    
 const obtenerPorID = async (req, res) => {
     const { id } = req.params; 
     try {
@@ -101,18 +100,53 @@ const obtenerPorID = async (req, res) => {
 const obtenerPorUsuario = async (req, res) => {
     const { id } = req.params; 
     try {
-        const item = await PuntoInteres.obtenerPuntosPorUsuario(id);
-        if (item) {
+        const items = await PuntoInteres.obtenerPuntosPorUsuario(id);
+
+        // Si no hay puntos registrados, devolver una respuesta vacía en lugar de un error
+        if (!items || items.length === 0) {
             return res.status(200).json({ 
-                success: true, item });
-        } else {
-            return res.status(404).json({ 
-                success: false, message: "Punto no encontrado (controlador)" });
+                success: true, 
+                items: [], // Devolver un array vacío para evitar problemas en el frontend
+                message: "No se encontraron puntos registrados para este usuario."
+            });
         }
+        return res.status(200).json({ 
+            success: true, 
+            items 
+        });
     } catch (error) {
-        return res.status(500).json({ success: false, message: "Error al obtener el Punto (controlador).", error: error.message });
+        return res.status(500).json({ 
+            success: false, 
+            message: "Error al obtener los puntos registrados (controlador).", 
+            error: error.message 
+        });
     }
 };
+
+const obtenerPorUsuarioCoordenada = async (req, res) => {
+    const { id } = req.params; 
+    try {
+        const items = await PuntoInteres.obtenerPuntosPorUsuario(id);
+
+        if (!items || items.length === 0) {
+            return res.status(200).json({ success: true, items: [] });
+        }
+
+        // Añadir coordenadas desde la tabla 'coordenada'
+        for (const item of items) {
+            const coordenadas = await Coordenada.obtenerCoordenadasPorPuntoInteres(item.id);
+            if (coordenadas.length > 0) {
+                item.latitud = coordenadas[0].latitud;
+                item.longitud = coordenadas[0].longitud;
+            }
+        }
+
+        res.status(200).json({ success: true, items });
+    } catch (error) {
+        res.status(500).json({ message: "Error al obtener los puntos registrados.", error });
+    }
+};
+
 
 const obtenerPorTipo = async (req, res) => {
     const { id_Usuario, id_tipo } = req.params; 
@@ -177,6 +211,7 @@ export {
     obtenerPorUsuario,
     obtenerPorTipo,
     editar,
-    eliminarUno
+    eliminarUno,
+    obtenerPorUsuarioCoordenada
 };
 

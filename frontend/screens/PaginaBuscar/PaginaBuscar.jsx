@@ -14,6 +14,8 @@ import InformacionLugar1 from '../../components/InformacionLugar/InformacionLuga
 import { useGooglePlaces } from '../../context/ContextAPI/GooglePlacesContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AdminFooter from '../../components/AdminFooter/AdminFooter';
+import puntoInteresApi from '../../api/puntoInteres.js';
+import TipopuntoInteresApi from '../../api/tipoPuntoInteres.js';
 
 const PaginaBuscar = ({ navigation }) => {
     const searchRef = useRef(null);
@@ -35,6 +37,9 @@ const PaginaBuscar = ({ navigation }) => {
 
     const { apiKey, fetchRouteDetails, distance, duration } = useGooglePlaces();
 
+    const [cargaItemsCarrusel, setcargaItemsCarrusel] = useState(false);
+    const [ItemsCarrusel, setItemsCarrusel] = useState(false);
+
 
     const datos = [
         { id: '1', titulo: '🚲 Ciclovías' },
@@ -42,7 +47,44 @@ const PaginaBuscar = ({ navigation }) => {
         { id: '3', titulo: '🧑‍🔧 Talulores' },
         { id: '4', titulo: '🏯 Restaurantes' },
     ];
-
+    const buscarItemsCarrusel = async () => {
+        try {
+            const userId = await AsyncStorage.getItem("userId");
+    
+            // Obtener los datos del backend
+            const response = await puntoInteresApi.findOneByUser(userId);
+            if (!response?.success || !Array.isArray(response.items) || response.items.length === 0) {
+                console.log("El usuario no tiene puntos registrados.");
+                setcargaItemsCarrusel(false);
+                setItemsCarrusel([]);
+                return;
+            }
+            // Extraer los puntos de interés
+            const puntoInteres = response.items;
+    
+            // Obtener IDs únicos de tipos de puntos y ordenarlos
+            const IDtipospuntoInteres = [...new Set(puntoInteres.map(item => item.id_tipo))].sort();
+    
+    
+            // Obtener detalles de cada tipo de punto de interés
+    
+            const TipoPuntoInteres = await Promise.all(
+                IDtipospuntoInteres.map(item => TipopuntoInteresApi.findOne(item))
+            );
+    
+            const TodosTipoPuntoInteres = TipoPuntoInteres.map(res => res.item);
+            console.log("Datos procesados para el carrusel:", TodosTipoPuntoInteres);
+    
+            // Actualizar los estados con los datos procesados
+            setcargaItemsCarrusel(true);
+            setItemsCarrusel(TodosTipoPuntoInteres);
+        } catch (error) {
+            console.error("Error al buscar items para el carrusel:", error);
+            setcargaItemsCarrusel(false);
+            setItemsCarrusel([]);
+        }
+    };
+    
     useEffect(() => {
         const checkIfAdmin = async () => {
             try {
@@ -78,6 +120,7 @@ const PaginaBuscar = ({ navigation }) => {
         };
         checkIfAdmin();
         getCurrentLocation();
+        buscarItemsCarrusel();
     }, []);
     const handleTrackingToggle = () => {
         setTracking((prevTracking) => !prevTracking);
@@ -147,8 +190,9 @@ const PaginaBuscar = ({ navigation }) => {
                 setNewDestination={setSelectedMarker} // Pasamos la función para actualizar el marcador
                 onNewPlaceSelected={handleNewPlaceSelected}
             />
+            {ItemsCarrusel.length > 0 && 
             <Carrusel 
-                data={datos} 
+                data={ItemsCarrusel} 
                 onItemPress={(item) => console.log('Seleccionaste:', item)}
                 tamanoLetra={16}
                 altura={40}
@@ -161,6 +205,7 @@ const PaginaBuscar = ({ navigation }) => {
                     paddingVertical: 10,
                   }}
                 />
+            }
             <BotonInformacion onPress={() => setModalVisible1(true)} />
             <InformacionLugar1
                 visible={modalVisible1}
