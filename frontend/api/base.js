@@ -40,21 +40,26 @@ const post = async (endpoint, payload) => {
 
 
 const postImagen = async (endpoint, payload) => {
-    const response = await fetch(URI + endpoint, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'multipart/form-data',
-        },
-        body: payload, // `payload` debe ser un objeto FormData
-    });
+    try {
+        console.log(`Enviando imagen a ${URI + endpoint}`);
+        const response = await fetch(URI + endpoint, {
+            method: 'POST',
+            body: payload, // FormData con la imagen
+        });
 
-    if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        if (!response.ok) {
+            const errorBody = await response.text();
+            console.error("Error del servidor:", errorBody);
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log("Respuesta del servidor (postImagen):", data);
+        return { status: response.status, data };
+    } catch (error) {
+        console.error("Error al enviar imagen:", error.message);
+        throw Error(`Error al enviar imagen: ${error.message}`);
     }
-
-    const data = await response.json(); // Extraer JSON del cuerpo de la respuesta
-    console.log("BASE FRONT",data)
-    return { status: response.status, data };
 };
 
 const put = async (endpoint, payload) => {

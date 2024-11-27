@@ -37,10 +37,10 @@ const PaginaBuscar = ({ navigation }) => {
 
 
     const datos = [
-        { id: '1', title: '🚲 Ciclovías' },
-        { id: '2', title: '🏪 Tiendas' },
-        { id: '3', title: '🧑‍🔧 Talleres' },
-        { id: '4', title: '🏯 Restaurantes' },
+        { id: '1', titulo: '🚲 Ciclovías' },
+        { id: '2', titulo: '🏪 Tiendas' },
+        { id: '3', titulo: '🧑‍🔧 Talulores' },
+        { id: '4', titulo: '🏯 Restaurantes' },
     ];
 
     useEffect(() => {

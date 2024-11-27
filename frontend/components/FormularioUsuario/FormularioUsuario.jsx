@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
         marginTop: 20,
     },
     saveButton: {
-        backgroundColor: '#a1fca1',
+        backgroundColor: '#88C057',
         flex: 1,
         marginRight: 5,
         borderRadius: 10,

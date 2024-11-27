@@ -3,24 +3,19 @@ import path from "path";
 
 const gestorImagenes = new GestorImagenes();
 
-// Controlador para subir imágenes
-
-// Controlador para subir imágenes
 const subirImagen = (req, res) => {
   const tipo = req.params.tipo;
   const upload = gestorImagenes.obtenerMulter(tipo).single("imagen");
 
-  // Ejecutar Multer para subir el archivo
-  upload(req, res, (err) => {
+  upload(req, res, async (err) => {
     if (err) {
-      // Error en la subida del archivo
       console.error("Error en Multer:", err.message);
       return res.status(400).json({ success: false, message: err.message });
     }
 
-    // Validar el tipo
     const tipoNormalizado = tipo.toLowerCase();
     if (!gestorImagenes.rutas[tipoNormalizado]) {
+      console.error(`Tipo no soportado: ${tipoNormalizado}`);
       return res.status(400).json({
         success: false,
         message: `Tipo no soportado. Tipos válidos: ${Object.keys(
@@ -29,7 +24,6 @@ const subirImagen = (req, res) => {
       });
     }
 
-    // Verificar si el archivo fue subido
     if (!req.file) {
       console.error("Archivo no encontrado en la solicitud");
       return res.status(400).json({
@@ -37,18 +31,17 @@ const subirImagen = (req, res) => {
         message: "No se subió ninguna imagen",
       });
     }
+    console.log("Archivo recibido y guardado en:", req.file.path);
+    console.log("Datos del archivo recibido:", req.file);
+    
+      // Generar la ruta relativa para la respuesta
+    const rutaCompleta = `${req.protocol}://${req.get('host')}/assets/${tipoNormalizado}/${req.file.filename}`;
 
-    // Generar la ruta relativa del archivo subido
-    const rutaRelativa = path.join(
-      gestorImagenes.rutas[tipoNormalizado],
-      req.file.filename
-    );
-
-    // Responder con éxito
+    console.log("Ruta relativa generada:", rutaCompleta);
     res.json({
       success: true,
-      message: "Imagen subida correctamente",
-      path: rutaRelativa,
+      message: "Imagen subida y convertida correctamente",
+      path: rutaCompleta,
     });
   });
 };

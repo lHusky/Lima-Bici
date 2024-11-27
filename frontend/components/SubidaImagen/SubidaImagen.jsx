@@ -46,24 +46,6 @@ const SubidaImagen = ({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       quality: 0.8,
     });
-  
-    const handleGuardar = () => {
-  if (
-    !NombrePunto ||
-    !Direccion ||
-    !idTipoMarcadorSeleccionado ||
-    !nombre ||
-    !descripcion ||
-    !imagenPath
-  ) {
-    Alert.alert("Error", "Por favor, completa todos los campos.");
-    return;
-  }
-
-  console.log("Datos guardados:", datosFormulario);
-  Alert.alert("Éxito", "Los datos del formulario se han guardado correctamente.");
-  onClose(); // Cierra el modal
-};
     
     if (!result.canceled && result.assets?.length) {
       setImagen(result.assets[0]);

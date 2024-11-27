@@ -368,16 +368,16 @@ class GestionUsuario {
         }
       }
 
-    // Método para cerrar sesión
-    cerrarSesion() {
-        if (this.usuarioLogueado) {
-            this.usuarioLogueado.estaLogueado = false;
-            console.log(`Sesión cerrada: Adiós, ${this.usuarioLogueado.nombre}`);
-            this.usuarioLogueado = null; // Eliminamos el usuario logueado
-        } else {
-            console.log('No hay ningún usuario logueado.');
-        }
-    }
+    // // Método para cerrar sesión
+    // cerrarSesion() {
+    //     if (this.usuarioLogueado) {
+    //         this.usuarioLogueado.estaLogueado = false;
+    //         console.log(`Sesión cerrada: Adiós, ${this.usuarioLogueado.nombre}`);
+    //         this.usuarioLogueado = null; // Eliminamos el usuario logueado
+    //     } else {
+    //         console.log('No hay ningún usuario logueado.');
+    //     }
+    // }
 
     // Método para mostrar todos los usuarios (solo para propósitos de ejemplo)
     mostrarUsuarios() {
